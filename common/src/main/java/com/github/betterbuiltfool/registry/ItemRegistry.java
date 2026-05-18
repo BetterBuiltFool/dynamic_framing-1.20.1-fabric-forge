@@ -15,8 +15,14 @@ public class ItemRegistry {
             Registries.ITEM
     );
     
+    public static RegistrySupplier<Item> FROE;
+    
     public static void register() {
         DynamicFraming.LOGGER.info("Registering items");
+        FROE = register(
+                FroeTool.ITEM_ID,
+                () -> new FroeTool(new Item.Properties().arch$tab(TabRegistry.FRAMING_TOOLS))
+        );
         
         ITEMS.register();
     }

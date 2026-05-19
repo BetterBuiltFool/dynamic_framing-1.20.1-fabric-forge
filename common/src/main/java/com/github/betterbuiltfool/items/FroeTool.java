@@ -1,6 +1,12 @@
 package com.github.betterbuiltfool.items;
 
 import com.github.betterbuiltfool.DynamicFraming;
+
+import java.util.HashSet;
+import java.util.Set;
+
+import net.minecraft.tags.ItemTags;
+import net.minecraft.tags.TagKey;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.InteractionResultHolder;
@@ -15,8 +21,29 @@ public class FroeTool extends Item {
     
     public static final String ITEM_ID = "froe";
     
+    private static final Set<TagKey<Item>> whitelist = new HashSet<>();
+    
+    static{
+        // TODO: Read this in from config file
+        whitelist.add(ItemTags.LOGS);
+    }
+    
     public FroeTool(Properties properties) {
         super(properties);
+    }
+    
+    public boolean validateOffhand(
+            Player player
+    ) {
+        var offhandItem = player.getOffhandItem();
+        
+        for (TagKey<Item> tag : whitelist) {
+            if (offhandItem.is(tag)) {
+                return true;
+            }
+        }
+        
+        return false;
     }
     
     @Override

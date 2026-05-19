@@ -33,9 +33,8 @@ public class FroeTool extends Item {
     }
     
     public boolean validateOffhand(
-            Player player
+            ItemStack offhandItem
     ) {
-        var offhandItem = player.getOffhandItem();
         
         for (TagKey<Item> tag : whitelist) {
             if (offhandItem.is(tag)) {
@@ -52,16 +51,20 @@ public class FroeTool extends Item {
             Player player,
             InteractionHand usedHand
     ) {
-        DynamicFraming.LOGGER.info("Used froe in air.");
-        DynamicFraming.LOGGER.info("Client sided: {}", level.isClientSide());
+        if (level.isClientSide()) {
+            return super.use(level, player, usedHand);
+        }
+        
+        {  // TODO: move to method
+            DynamicFraming.LOGGER.info("Used froe");
+            ItemStack offhandItem = player.getOffhandItem();
+            if (!validateOffhand(offhandItem)) {
+                DynamicFraming.LOGGER.info("Invalid offhand item: {}; cannot place!", offhandItem);
+                return super.use(level, player, usedHand);
+            }
+            DynamicFraming.LOGGER.info("Valid offhand item: {}", offhandItem);
+        }
+        
         return super.use(level, player, usedHand);
-    }
-    
-    @Override
-    public @NotNull InteractionResult useOn(UseOnContext context) {
-        var blockPos = context.getClickedPos();
-        DynamicFraming.LOGGER.info("Used from on position {}", blockPos);
-        DynamicFraming.LOGGER.info("Client sided: {}", context.getLevel().isClientSide());
-        return super.useOn(context);
     }
 }

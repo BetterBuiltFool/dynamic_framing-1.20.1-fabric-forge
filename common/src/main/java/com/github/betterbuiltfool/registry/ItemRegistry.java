@@ -1,6 +1,7 @@
 package com.github.betterbuiltfool.registry;
 
 import com.github.betterbuiltfool.DynamicFraming;
+import com.github.betterbuiltfool.items.FroeTool;
 import dev.architectury.registry.registries.DeferredRegister;
 import dev.architectury.registry.registries.RegistrySupplier;
 import net.minecraft.core.registries.Registries;

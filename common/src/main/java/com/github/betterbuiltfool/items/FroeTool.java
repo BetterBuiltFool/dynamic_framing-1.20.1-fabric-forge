@@ -12,6 +12,7 @@ import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
 
@@ -61,6 +62,15 @@ public class FroeTool extends Item {
                 return super.use(level, player, usedHand);
             }
             DynamicFraming.LOGGER.info("Valid offhand item: {}", offhandItem);
+            
+            var ray = getPlayerPOVHitResult(level, player, ClipContext.Fluid.NONE);
+            var lookPos = ray.getBlockPos();
+            
+            if (level.getBlockState(lookPos).isAir()) {
+                DynamicFraming.LOGGER.info("Used froe on air");
+            } else {
+                DynamicFraming.LOGGER.info("Used froe on {}", lookPos);
+            }
         }
         
         return super.use(level, player, usedHand);

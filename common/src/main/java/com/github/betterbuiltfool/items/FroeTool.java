@@ -87,7 +87,7 @@ public class FroeTool extends Item {
             return InteractionResultHolder.success(froeTool);
         }
         
-        var secondPos = getSecondPos(firstPos, lookPos);
+        var secondPos = calcSecondPos(firstPos, lookPos);
         
         var offhandItem = player.getOffhandItem();
         
@@ -110,22 +110,22 @@ public class FroeTool extends Item {
     }
     
     private void removeMaterialCost(
-            Player player,
-            ItemStack offhandItem
+            @NotNull Player player,
+            @NotNull ItemStack offhandItem
     ) {
     
     }
     
     private void tryPlaceEdge(
-            BlockPos firstPos,
-            BlockPos secondPos
+            @NotNull BlockPos firstPos,
+            @NotNull BlockPos secondPos
     ) {
     
     }
     
     private int inventoryCount(
-            Player player,
-            ItemStack offhandItem
+            @NotNull Player player,
+            @NotNull ItemStack offhandItem
     ) {
         return 0;
     }
@@ -137,14 +137,45 @@ public class FroeTool extends Item {
         return 0;
     }
     
-    private BlockPos getSecondPos(
-            BlockPos firstPos,
-            BlockPos lookPos
+    /**
+     * Calculates the second position of an edge based on where the player is looking.
+     *
+     * @param firstPos The starting position of the edge
+     * @param lookPos The position at which the player is looking
+     * @return A BlockPos that is coaxial to the firstPos
+     */
+    private @NotNull BlockPos calcSecondPos(
+            @NotNull BlockPos firstPos,
+            @NotNull BlockPos lookPos
     ) {
-        return null;
+        BlockPos secondPos;
+        
+        var delta = lookPos.subtract(firstPos);
+        
+        // Find the longest axis in the difference between position
+        var max = Math.max(
+                Math.abs(delta.getX()),
+                Math.max(
+                        Math.abs(delta.getY()),
+                        Math.abs(delta.getZ())
+                )
+        );
+        
+        if (max == delta.getX()) {
+            // Align along X axis
+            secondPos = new BlockPos(lookPos.getX(), firstPos.getY(), firstPos.getZ());
+        } else if (max == delta.getY()) {
+            // Align along Y axis
+            secondPos = new BlockPos(firstPos.getX(), lookPos.getY(), firstPos.getZ());
+        } else {
+            // Align along Z axis
+            secondPos = new BlockPos(firstPos.getX(), firstPos.getY(), lookPos.getZ());
+        }
+        
+        return secondPos;
     }
     
-    private static @Nullable BlockPos getFirstPos(ItemStack item) {
+    private static @Nullable BlockPos getFirstPos(@NotNull ItemStack item) {
         if (!(item.hasTag() && item.getTag().contains(FIRST_POS_DATA))) {
             return null;
         }
@@ -159,8 +190,8 @@ public class FroeTool extends Item {
     }
     
     private void setFirstPos(
-            ItemStack froeTool,
-            BlockPos lookPos
+            @NotNull ItemStack froeTool,
+            @NotNull BlockPos lookPos
     ) {
         CompoundTag firstPosTag = froeTool.getOrCreateTag();
         

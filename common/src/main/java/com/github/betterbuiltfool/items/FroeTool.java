@@ -24,6 +24,7 @@ public class FroeTool extends Item {
     public static final String ITEM_ID = "froe";
     
     private static final Set<TagKey<Item>> whitelist = new HashSet<>();
+    public static final String FIRST_POS_DATA = "FirstPosData";
     
     static{
         // TODO: Read this in from config file
@@ -121,10 +122,10 @@ public class FroeTool extends Item {
     }
     
     private static @Nullable BlockPos getFirstPos(ItemStack item) {
-        if (!(item.hasTag() && item.getTag().contains("FirstPos"))) {
+        if (!(item.hasTag() && item.getTag().contains(FIRST_POS_DATA))) {
             return null;
         }
-        CompoundTag firstPosTag = item.getTag().getCompound("FirstPos");
+        CompoundTag firstPosTag = item.getTag().getCompound(FIRST_POS_DATA);
         
         return new BlockPos(
                 firstPosTag.getInt("X"),
@@ -138,6 +139,13 @@ public class FroeTool extends Item {
             ItemStack froeTool,
             BlockPos lookPos
     ) {
-    
+        CompoundTag firstPosTag = froeTool.getOrCreateTag();
+        
+        CompoundTag posTag = new CompoundTag();
+        posTag.putInt("X", lookPos.getX());
+        posTag.putInt("Y", lookPos.getY());
+        posTag.putInt("Z", lookPos.getZ());
+        
+        firstPosTag.put(FIRST_POS_DATA, posTag);
     }
 }

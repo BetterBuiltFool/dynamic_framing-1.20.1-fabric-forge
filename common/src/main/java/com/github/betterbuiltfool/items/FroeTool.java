@@ -3,10 +3,12 @@ package com.github.betterbuiltfool.items;
 import com.github.betterbuiltfool.DynamicFraming;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.InteractionHand;
@@ -14,6 +16,7 @@ import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
@@ -33,6 +36,25 @@ public class FroeTool extends Item {
     
     public FroeTool(Properties properties) {
         super(properties);
+    }
+    
+    @Override
+    public void appendHoverText(
+            ItemStack stack,
+            @Nullable Level level,
+            List<Component> tooltipComponents,
+            TooltipFlag isAdvanced
+    ) {
+        var firstPos = getFirstPos(stack);
+        
+        if (firstPos != null) {
+            tooltipComponents.add(
+                    Component.translatable(
+                            "tooltip.dynamic_framing.froe.firstpos").append(firstPos.toShortString()
+                    )
+            );
+        }
+        super.appendHoverText(stack, level, tooltipComponents, isAdvanced);
     }
     
     public boolean validateOffhand(

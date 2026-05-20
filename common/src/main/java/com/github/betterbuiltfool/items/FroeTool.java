@@ -5,6 +5,8 @@ import com.github.betterbuiltfool.DynamicFraming;
 import java.util.HashSet;
 import java.util.Set;
 
+import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.InteractionHand;
@@ -15,6 +17,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class FroeTool extends Item {
     
@@ -50,29 +53,91 @@ public class FroeTool extends Item {
             Player player,
             InteractionHand usedHand
     ) {
-        if (level.isClientSide()) {
-            return super.use(level, player, usedHand);
+        var froeTool = player.getUseItem();
+        var firstPos = getFirstPos(froeTool);
+        var ray = getPlayerPOVHitResult(level, player, ClipContext.Fluid.NONE);
+        var lookPos = ray.getBlockPos();
+        
+        if (firstPos == null) {
+            setFirstPos(froeTool, lookPos);
+            return InteractionResultHolder.success(froeTool);
         }
         
-        {  // TODO: move to method
-            DynamicFraming.LOGGER.info("Used froe");
-            ItemStack offhandItem = player.getOffhandItem();
-            if (!validateOffhand(offhandItem)) {
-                DynamicFraming.LOGGER.info("Invalid offhand item: {}; cannot place!", offhandItem);
-                return super.use(level, player, usedHand);
-            }
-            DynamicFraming.LOGGER.info("Valid offhand item: {}", offhandItem);
-            
-            var ray = getPlayerPOVHitResult(level, player, ClipContext.Fluid.NONE);
-            var lookPos = ray.getBlockPos();
-            
-            if (level.getBlockState(lookPos).isAir()) {
-                DynamicFraming.LOGGER.info("Used froe on air");
-            } else {
-                DynamicFraming.LOGGER.info("Used froe on {}", lookPos);
-            }
+        var secondPos = getSecondPos(firstPos, lookPos);
+        
+        var offhandItem = player.getOffhandItem();
+        
+        if (!validateOffhand(offhandItem)) {
+            DynamicFraming.LOGGER.info("Invalid offhand item {}", offhandItem.getDisplayName());
+            return InteractionResultHolder.fail(froeTool);
         }
         
-        return super.use(level, player, usedHand);
+        int materialCost = calcEdgeLength(firstPos, secondPos);
+        
+        if (inventoryCount(player, offhandItem) < materialCost) {
+            DynamicFraming.LOGGER.info("Not enough {} for edge length of {}", offhandItem.getDisplayName(), materialCost);
+            return InteractionResultHolder.fail(froeTool);
+        }
+        
+        tryPlaceEdge(firstPos, secondPos);
+        removeMaterialCost(player, offhandItem);
+        
+        return InteractionResultHolder.success(froeTool);
+    }
+    
+    private void removeMaterialCost(
+            Player player,
+            ItemStack offhandItem
+    ) {
+    
+    }
+    
+    private void tryPlaceEdge(
+            BlockPos firstPos,
+            BlockPos secondPos
+    ) {
+    
+    }
+    
+    private int inventoryCount(
+            Player player,
+            ItemStack offhandItem
+    ) {
+        return 0;
+    }
+    
+    private int calcEdgeLength(
+            BlockPos firstPos,
+            BlockPos secondPos
+    ) {
+        return 0;
+    }
+    
+    private BlockPos getSecondPos(
+            BlockPos firstPos,
+            BlockPos lookPos
+    ) {
+        return null;
+    }
+    
+    private static @Nullable BlockPos getFirstPos(ItemStack item) {
+        if (!(item.hasTag() && item.getTag().contains("FirstPos"))) {
+            return null;
+        }
+        CompoundTag firstPosTag = item.getTag().getCompound("FirstPos");
+        
+        return new BlockPos(
+                firstPosTag.getInt("X"),
+                firstPosTag.getInt("Y"),
+                firstPosTag.getInt("Z")
+        );
+        
+    }
+    
+    private void setFirstPos(
+            ItemStack froeTool,
+            BlockPos lookPos
+    ) {
+    
     }
 }

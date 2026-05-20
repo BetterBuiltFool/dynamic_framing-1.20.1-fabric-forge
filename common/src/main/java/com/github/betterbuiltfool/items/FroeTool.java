@@ -96,7 +96,7 @@ public class FroeTool extends Item {
             return InteractionResultHolder.fail(froeTool);
         }
         
-        int materialCost = calcEdgeLength(firstPos, secondPos);
+        int materialCost = calcMaterialCost(firstPos, secondPos);
         
         if (inventoryCount(player, offhandItem) < materialCost) {
             DynamicFraming.LOGGER.info("Not enough {} for edge length of {}", offhandItem.getDisplayName(), materialCost);
@@ -130,9 +130,9 @@ public class FroeTool extends Item {
         return 0;
     }
     
-    private int calcEdgeLength(
-            BlockPos firstPos,
-            BlockPos secondPos
+    private int calcMaterialCost(
+            @NotNull BlockPos firstPos,
+            @NotNull BlockPos secondPos
     ) {
         return 0;
     }

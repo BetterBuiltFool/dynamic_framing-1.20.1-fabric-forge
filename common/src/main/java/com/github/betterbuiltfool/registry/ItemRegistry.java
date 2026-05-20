@@ -22,7 +22,7 @@ public class ItemRegistry {
         DynamicFraming.LOGGER.info("Registering items");
         FROE = register(
                 FroeTool.ITEM_ID,
-                () -> new FroeTool(new Item.Properties().arch$tab(TabRegistry.FRAMING_TOOLS))
+                () -> new FroeTool(new Item.Properties().arch$tab(TabRegistry.FRAMING_TOOLS).stacksTo(1))
         );
         
         ITEMS.register();

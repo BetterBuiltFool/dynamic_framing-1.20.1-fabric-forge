@@ -15,6 +15,7 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
@@ -99,20 +100,24 @@ public class FroeTool extends Item {
         
         int materialCost = calcMaterialCost(firstPos, secondPos);
         
-        if (inventoryCount(player.getInventory(), offhandItem) < materialCost) {
+        Inventory inventory = player.getInventory();
+        
+        if (inventory.countItem(offhandItem.getItem()) < materialCost) {
             DynamicFraming.LOGGER.info("Not enough {} for edge length of {}", offhandItem.getDisplayName(), materialCost);
             return InteractionResultHolder.fail(froeTool);
         }
         
         tryPlaceEdge(firstPos, secondPos);
-        removeMaterialCost(player.getInventory(), offhandItem);
+        
+        removeMaterialCost(inventory, offhandItem, materialCost);
         
         return InteractionResultHolder.success(froeTool);
     }
     
     private void removeMaterialCost(
             @NotNull Inventory inventory,
-            @NotNull ItemStack offhandItem
+            @NotNull ItemStack offhandItem,
+            int materialCost
     ) {
     
     }
@@ -122,13 +127,6 @@ public class FroeTool extends Item {
             @NotNull BlockPos secondPos
     ) {
     
-    }
-    
-    private int inventoryCount(
-            @NotNull Inventory inventory,
-            @NotNull ItemStack offhandItem
-    ) {
-        return 0;
     }
     
     private int calcMaterialCost(

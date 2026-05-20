@@ -76,7 +76,8 @@ public class FroeTool extends Item {
             Player player,
             InteractionHand usedHand
     ) {
-        var froeTool = player.getUseItem();
+        var froeTool = player.getMainHandItem();
+        
         var firstPos = getFirstPos(froeTool);
         var ray = getPlayerPOVHitResult(level, player, ClipContext.Fluid.NONE);
         var lookPos = ray.getBlockPos();

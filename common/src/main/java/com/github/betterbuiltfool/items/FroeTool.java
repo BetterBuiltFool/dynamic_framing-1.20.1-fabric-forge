@@ -119,6 +119,21 @@ public class FroeTool extends Item {
             @NotNull ItemStack offhandItem,
             int materialCost
     ) {
+        int amountRemoved = 0;
+        for (ItemStack slotItem: inventory.items){
+            if (slotItem.getItem() != offhandItem.getItem()) {
+                continue;
+            }
+            int slotCount = slotItem.getCount();
+            amountRemoved += slotCount;
+            
+            if (amountRemoved >= materialCost) {
+                slotItem.setCount(materialCost-amountRemoved);
+                break;
+            } else {
+                slotItem.setCount(0);
+            }
+        }
     
     }
     

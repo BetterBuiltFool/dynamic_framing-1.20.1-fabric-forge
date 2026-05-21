@@ -15,7 +15,6 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
@@ -70,6 +69,11 @@ public class FroeTool extends Item {
         }
         
         return false;
+    }
+    
+    public static boolean validatePlacement(BlockPos pos) {
+        // TODO: actual implementation
+        return true;
     }
     
     @Override
@@ -148,7 +152,9 @@ public class FroeTool extends Item {
             @NotNull BlockPos firstPos,
             @NotNull BlockPos secondPos
     ) {
-        return 0;
+        return Math.toIntExact(BlockPos.betweenClosedStream(firstPos, secondPos)
+                                       .filter(FroeTool::validatePlacement)
+                                       .count());
     }
     
     /**

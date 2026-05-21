@@ -71,11 +71,6 @@ public class FroeTool extends Item {
         return false;
     }
     
-    public static boolean validatePlacement(BlockPos pos) {
-        // TODO: actual implementation
-        return true;
-    }
-    
     @Override
     public @NotNull InteractionResultHolder<ItemStack> use(
             Level level,
@@ -152,9 +147,7 @@ public class FroeTool extends Item {
             @NotNull BlockPos firstPos,
             @NotNull BlockPos secondPos
     ) {
-        return Math.toIntExact(BlockPos.betweenClosedStream(firstPos, secondPos)
-                                       .filter(FroeTool::validatePlacement)
-                                       .count());
+        return Math.toIntExact(BlockPos.betweenClosedStream(firstPos, secondPos).count());
     }
     
     /**

@@ -87,6 +87,7 @@ public class FroeTool extends Item {
         var ray = getPlayerPOVHitResult(level, player, ClipContext.Fluid.NONE);
         var lookPos = ray.getBlockPos();
         
+        // TODO: break out 'firstUse' as new method
         if (firstPos == null) {
             setFirstPos(froeTool, lookPos);
             return InteractionResultHolder.success(froeTool);
@@ -96,6 +97,8 @@ public class FroeTool extends Item {
             clearFirstPos(froeTool);
             return InteractionResultHolder.fail(froeTool);
         }
+        
+        // TODO: break out into 'secondUse' as new method
         
         var secondPos = calcSecondPos(firstPos, lookPos);
         
@@ -154,6 +157,7 @@ public class FroeTool extends Item {
             @NotNull BlockPos secondPos,
             @NotNull Block offhandBlock
     ) {
+        // TODO: Add a filter to remove the irreplaceable blocks
         BlockPos.betweenClosedStream(firstPos, secondPos).forEach(pos -> {
             var currentBlockState = level.getBlockState(pos);
             if (!currentBlockState.isAir()){
@@ -180,6 +184,7 @@ public class FroeTool extends Item {
             @NotNull BlockPos firstPos,
             @NotNull BlockPos secondPos
     ) {
+        // TODO: Add a filter to remove the irreplaceable blocks
         return Math.toIntExact(BlockPos.betweenClosedStream(firstPos, secondPos).count());
     }
     

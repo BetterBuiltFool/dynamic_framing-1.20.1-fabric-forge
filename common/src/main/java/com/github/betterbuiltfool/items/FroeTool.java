@@ -92,14 +92,20 @@ public class FroeTool extends Item {
         var ray = getPlayerPOVHitResult(level, player, ClipContext.Fluid.NONE);
         var lookPos = ray.getBlockPos();
         
-        // TODO: break out 'firstUse' as new method
         if (firstPos == null) {
-            setFirstPos(froeTool, lookPos);
-            return InteractionResultHolder.success(froeTool);
+            return firstUse(froeTool, lookPos);
         }
         
-        // TODO: break out into 'secondUse' as new method
-        
+        return secondUse(level, player, firstPos, lookPos, froeTool);
+    }
+    
+    private @NotNull InteractionResultHolder<ItemStack> secondUse(
+            Level level,
+            Player player,
+            BlockPos firstPos,
+            BlockPos lookPos,
+            ItemStack froeTool
+    ) {
         var secondPos = calcSecondPos(firstPos, lookPos);
         
         var offhandItem = player.getOffhandItem();
@@ -125,6 +131,13 @@ public class FroeTool extends Item {
         }
         
         clearFirstPos(froeTool);
+        return InteractionResultHolder.success(froeTool);
+    }
+    
+    private @NotNull InteractionResultHolder<ItemStack> firstUse(ItemStack froeTool,
+                                                                                            BlockPos lookPos
+    ) {
+        setFirstPos(froeTool, lookPos);
         return InteractionResultHolder.success(froeTool);
     }
     

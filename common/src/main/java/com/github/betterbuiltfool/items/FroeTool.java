@@ -88,6 +88,11 @@ public class FroeTool extends Item {
             return InteractionResultHolder.success(froeTool);
         }
         
+        if (player.isShiftKeyDown()) {
+            clearFirstPos(froeTool);
+            return InteractionResultHolder.fail(froeTool);
+        }
+        
         var secondPos = calcSecondPos(firstPos, lookPos);
         
         var offhandItem = player.getOffhandItem();
@@ -102,7 +107,8 @@ public class FroeTool extends Item {
         Inventory inventory = player.getInventory();
         
         if (inventory.countItem(offhandItem.getItem()) < materialCost) {
-            DynamicFraming.LOGGER.info("Not enough {} for edge length of {}", offhandItem.getDisplayName(), materialCost);
+            DynamicFraming.LOGGER.info("Not enough {} for edge length of {}", offhandItem.getDisplayName().getString(), materialCost);
+            clearFirstPos(froeTool);
             return InteractionResultHolder.fail(froeTool);
         }
         
@@ -110,6 +116,7 @@ public class FroeTool extends Item {
         
         removeMaterialCost(inventory, offhandItem, materialCost);
         
+        clearFirstPos(froeTool);
         return InteractionResultHolder.success(froeTool);
     }
     
@@ -214,5 +221,9 @@ public class FroeTool extends Item {
         posTag.putInt("Z", lookPos.getZ());
         
         firstPosTag.put(FIRST_POS_DATA, posTag);
+    }
+    
+    private void clearFirstPos( @NotNull ItemStack froeTool) {
+        froeTool.getTag().getCompound(FIRST_POS_DATA).remove(FIRST_POS_DATA);
     }
 }

@@ -83,6 +83,11 @@ public class FroeTool extends Item {
     ) {
         var froeTool = player.getMainHandItem();
         
+        if (player.isShiftKeyDown()) {
+            clearFirstPos(froeTool);
+            return InteractionResultHolder.fail(froeTool);
+        }
+        
         var firstPos = getFirstPos(froeTool);
         var ray = getPlayerPOVHitResult(level, player, ClipContext.Fluid.NONE);
         var lookPos = ray.getBlockPos();
@@ -91,11 +96,6 @@ public class FroeTool extends Item {
         if (firstPos == null) {
             setFirstPos(froeTool, lookPos);
             return InteractionResultHolder.success(froeTool);
-        }
-        
-        if (player.isShiftKeyDown()) {
-            clearFirstPos(froeTool);
-            return InteractionResultHolder.fail(froeTool);
         }
         
         // TODO: break out into 'secondUse' as new method

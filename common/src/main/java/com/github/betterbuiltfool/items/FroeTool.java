@@ -255,6 +255,9 @@ public class FroeTool extends Item {
     }
     
     private void clearFirstPos( @NotNull ItemStack froeTool) {
-        froeTool.getTag().getCompound(FIRST_POS_DATA).remove(FIRST_POS_DATA);
+        var tag = froeTool.getTag();
+        if (tag != null) {
+            tag.getCompound(FIRST_POS_DATA).remove(FIRST_POS_DATA);
+        }
     }
 }

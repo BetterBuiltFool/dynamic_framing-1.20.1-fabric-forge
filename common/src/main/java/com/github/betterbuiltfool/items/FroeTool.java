@@ -65,6 +65,8 @@ public class FroeTool extends Item {
     public boolean validateOffhand(
             ItemStack offhandItem
     ) {
+        // TODO: Extract this to common class for use by other tools
+        // Class name StructureUtils?
         
         for (TagKey<Item> tag : whitelist) {
             if (offhandItem.is(tag)) {
@@ -175,6 +177,7 @@ public class FroeTool extends Item {
             @NotNull BlockPos secondPos,
             @NotNull Block offhandBlock
     ) {
+        // TODO: Extract this to relevant node/edge class
         // TODO: Add a filter to remove the irreplaceable blocks
         BlockPos.betweenClosedStream(firstPos, secondPos).forEach(pos -> {
             var currentBlockState = level.getBlockState(pos);
@@ -202,6 +205,7 @@ public class FroeTool extends Item {
             @NotNull BlockPos firstPos,
             @NotNull BlockPos secondPos
     ) {
+        // TODO: Extract this to relevant node/edge class
         // TODO: Add a filter to remove the irreplaceable blocks
         return Math.toIntExact(BlockPos.betweenClosedStream(firstPos, secondPos).count());
     }

@@ -143,6 +143,16 @@ public class FroeTool extends Item {
         return InteractionResultHolder.success(froeTool);
     }
     
+    /**
+     * Extracts the material cost from the given inventory, preferentially removing first from the inventory, and
+     * removing the remainder from the offhand stack.
+     * <p>
+     * Note this will not fail if the inventory does not have enough items.
+     *
+     * @param inventory The source inventory that supplies raw materials.
+     * @param offhandItem The item type to be removed, and secondary source of raw materials
+     * @param materialCost The total amount of materials to be extracted.
+     */
     private void removeMaterialCost(
             @NotNull Inventory inventory,
             @NotNull ItemStack offhandItem,
@@ -248,8 +258,15 @@ public class FroeTool extends Item {
         return secondPos;
     }
     
-    private static @Nullable BlockPos getFirstPos(@NotNull ItemStack item) {
-        CompoundTag firstPosTag = item.getTagElement(FIRST_POS_DATA);
+    /**
+     * Extracts the first set pos from the itemstack tags.
+     * If null, first pos is unset.
+     *
+     * @param froeTool The ItemStack version of the tool
+     * @return BlockPos of first set point or null if none.
+     */
+    private static @Nullable BlockPos getFirstPos(@NotNull ItemStack froeTool) {
+        CompoundTag firstPosTag = froeTool.getTagElement(FIRST_POS_DATA);
         
         if (firstPosTag == null) {
             return null;
@@ -263,6 +280,12 @@ public class FroeTool extends Item {
         
     }
     
+    /**
+     * Creates or modifies a tag on the tool with the first set position.
+     *
+     * @param froeTool The ItemStack version of the tool
+     * @param lookPos The BlockPos to be stored as the first position
+     */
     private void setFirstPos(
             @NotNull ItemStack froeTool,
             @NotNull BlockPos lookPos
@@ -277,6 +300,11 @@ public class FroeTool extends Item {
         firstPosTag.put(FIRST_POS_DATA, posTag);
     }
     
+    /**
+     * Clears the FirstPos tag from the tool item.
+     *
+     * @param froeTool The ItemStack version of the tool
+     */
     private void clearFirstPos( @NotNull ItemStack froeTool) {
         froeTool.removeTagKey(FIRST_POS_DATA);
     }

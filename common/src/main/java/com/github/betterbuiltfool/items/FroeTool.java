@@ -216,31 +216,12 @@ public class FroeTool extends Item {
             @NotNull BlockPos firstPos,
             @NotNull BlockPos lookPos
     ) {
-        BlockPos secondPos;
         
         var delta = lookPos.subtract(firstPos);
+        var direction = Direction.getNearest(delta.getX(), delta.getY(), delta.getZ());
+        var axis = direction.getAxis();
         
-        // Find the longest axis in the difference between position
-        var max = Math.max(
-                Math.abs(delta.getX()),
-                Math.max(
-                        Math.abs(delta.getY()),
-                        Math.abs(delta.getZ())
-                )
-        );
-        
-        if (max == delta.getX()) {
-            // Align along X axis
-            secondPos = new BlockPos(lookPos.getX(), firstPos.getY(), firstPos.getZ());
-        } else if (max == delta.getY()) {
-            // Align along Y axis
-            secondPos = new BlockPos(firstPos.getX(), lookPos.getY(), firstPos.getZ());
-        } else {
-            // Align along Z axis
-            secondPos = new BlockPos(firstPos.getX(), firstPos.getY(), lookPos.getZ());
-        }
-        
-        return secondPos;
+        return firstPos.relative(axis, delta.get(axis));
     }
     
     /**

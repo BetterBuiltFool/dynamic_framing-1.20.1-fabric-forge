@@ -185,7 +185,7 @@ public class FroeTool extends Item {
                     directionVector.getZ()
             );
             
-            var newBlockState = offhandBlock.defaultBlockState().setValue(BlockStateProperties.FACING, facing);
+            var newBlockState = offhandBlock.defaultBlockState().setValue(BlockStateProperties.AXIS, facing.getAxis());
             
             level.setBlockAndUpdate(pos, newBlockState);
             

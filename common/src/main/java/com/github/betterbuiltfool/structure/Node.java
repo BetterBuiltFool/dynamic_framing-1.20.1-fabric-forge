@@ -4,6 +4,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Vec3i;
 
 import java.util.HashSet;
+import java.util.Iterator;
 
 public class Node {
     private final HashSet<Edge> edges;
@@ -21,5 +22,9 @@ public class Node {
     
     public void addEdge(Edge edge) {
         edges.add(edge);
+    }
+    
+    public Iterator<Edge> getEdges() {
+        return this.edges.iterator();
     }
 }

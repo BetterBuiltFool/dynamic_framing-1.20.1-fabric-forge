@@ -1,21 +1,22 @@
 package com.github.betterbuiltfool.structure;
 
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Vec3i;
+
 import java.util.HashSet;
 
 public class Node {
     private final HashSet<Edge> edges;
+    private final BlockPos nodePosition;
     
-    public Node() {
+    public Node(Vec3i position) {
+        nodePosition = new BlockPos(position);
         edges = new HashSet<>();
     }
     
-    public Node(Edge edge) {
-        edges = new HashSet<>();
+    public Node(Vec3i position, Edge edge) {
+        this(position);
         edges.add(edge);
-    }
-    
-    public Node(HashSet<Edge> inherited) {
-        edges = inherited;
     }
     
     public void addEdge(Edge edge) {

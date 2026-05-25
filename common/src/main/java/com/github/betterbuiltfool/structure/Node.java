@@ -38,7 +38,7 @@ public class Node {
         return edgeToNode(new Node(position), material);
     }
     
-    private Edge edgeToNode(Node node, Block material) {
+    public Edge edgeToNode(Node node, Block material) {
         assert node != this;
         var edge = new StructureEdge(this, node, material);
         this.addEdge(edge);

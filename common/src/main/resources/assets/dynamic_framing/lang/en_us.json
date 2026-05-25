@@ -1,5 +1,7 @@
 {
   "item.dynamic_framing.froe": "Froe",
 
+  "tooltip.dynamic_framing.froe.firstpos": "First selected position: ",
+
   "category.framing_tools_tab": "Framing Tools"
 }

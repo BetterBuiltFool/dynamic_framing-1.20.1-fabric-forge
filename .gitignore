@@ -31,3 +31,4 @@ src/main/resources/mcmod.info
 *.log
 *.jar
 .lock
+/common/build/libs/

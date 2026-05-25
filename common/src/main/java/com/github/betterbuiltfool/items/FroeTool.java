@@ -251,6 +251,7 @@ public class FroeTool extends Item {
      * @return BlockPos of first set point or null if none.
      */
     private static @Nullable BlockPos getFirstPos(@NotNull ItemStack froeTool) {
+        // TODO: Extract this to common class for use by other tools
         CompoundTag firstPosTag = froeTool.getTagElement(FIRST_POS_DATA);
         
         if (firstPosTag == null) {
@@ -275,6 +276,7 @@ public class FroeTool extends Item {
             @NotNull ItemStack froeTool,
             @NotNull BlockPos lookPos
     ) {
+        // TODO: Extract this to common class for use by other tools
         CompoundTag firstPosTag = froeTool.getOrCreateTag();
         
         CompoundTag posTag = new CompoundTag();
@@ -291,6 +293,7 @@ public class FroeTool extends Item {
      * @param froeTool The ItemStack version of the tool
      */
     private void clearFirstPos( @NotNull ItemStack froeTool) {
+        // TODO: Extract this to common class for use by other tools
         froeTool.removeTagKey(FIRST_POS_DATA);
     }
     

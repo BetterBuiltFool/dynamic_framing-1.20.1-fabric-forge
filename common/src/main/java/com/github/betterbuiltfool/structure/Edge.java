@@ -1,7 +1,7 @@
 package com.github.betterbuiltfool.structure;
 
 /**
- * Abstract item representing a connection between two nodes.
+ * Abstract object representing a connection between two nodes.
  */
 abstract public class Edge {
     private final Node startNode;
@@ -19,4 +19,7 @@ abstract public class Edge {
     public Node getEndNode() {
         return endNode;
     }
+    
+    abstract public int getLength();
+    abstract public int getMaterialCost();
 }

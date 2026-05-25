@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import com.github.betterbuiltfool.structure.Node;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
@@ -104,12 +105,22 @@ public class FroeTool extends Item {
         
         var offhandItem = player.getOffhandItem();
         
+        var startNode = new Node(firstPos);
+        var endNode = new Node(secondPos);
+        
+        if (!(offhandItem.getItem() instanceof BlockItem offhandBlock)) {
+            DynamicFraming.LOGGER.info("Invalid offhand item {}", offhandItem.getDisplayName());
+            return InteractionResultHolder.fail(froeTool);
+        }
+        
+        var edge = startNode.edgeToNode(endNode, offhandBlock.getBlock());
+        
         if (!validateOffhand(offhandItem)) {
             DynamicFraming.LOGGER.info("Invalid offhand item {}", offhandItem.getDisplayName());
             return InteractionResultHolder.fail(froeTool);
         }
         
-        int materialCost = calcMaterialCost(firstPos, secondPos);
+        int materialCost = edge.getMaterialCost();
         
         Inventory inventory = player.getInventory();
         
@@ -119,10 +130,8 @@ public class FroeTool extends Item {
             return InteractionResultHolder.fail(froeTool);
         }
         
-        if (offhandItem.getItem() instanceof BlockItem offhandBlock) {
-            tryPlaceEdge(level, firstPos, secondPos, offhandBlock.getBlock());
-            removeMaterialCost(inventory, offhandItem, materialCost);
-        }
+        edge.generateFill(level);
+        removeMaterialCost(inventory, offhandItem, materialCost);
         
         clearFirstPos(froeTool);
         return InteractionResultHolder.success(froeTool);

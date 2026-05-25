@@ -249,10 +249,11 @@ public class FroeTool extends Item {
     }
     
     private static @Nullable BlockPos getFirstPos(@NotNull ItemStack item) {
-        if (!(item.hasTag() && item.getTag().contains(FIRST_POS_DATA))) {
+        CompoundTag firstPosTag = item.getTagElement(FIRST_POS_DATA);
+        
+        if (firstPosTag == null) {
             return null;
         }
-        CompoundTag firstPosTag = item.getTag().getCompound(FIRST_POS_DATA);
         
         return new BlockPos(
                 firstPosTag.getInt("X"),

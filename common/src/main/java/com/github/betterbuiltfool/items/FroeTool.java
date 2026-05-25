@@ -62,21 +62,6 @@ public class FroeTool extends Item {
         super.appendHoverText(stack, level, tooltipComponents, isAdvanced);
     }
     
-    public boolean validateOffhand(
-            ItemStack offhandItem
-    ) {
-        // TODO: Extract this to common class for use by other tools
-        // Class name StructureUtils?
-        
-        for (TagKey<Item> tag : whitelist) {
-            if (offhandItem.is(tag)) {
-                return true;
-            }
-        }
-        
-        return false;
-    }
-    
     @Override
     public @NotNull InteractionResultHolder<ItemStack> use(
             Level level,
@@ -99,6 +84,13 @@ public class FroeTool extends Item {
         }
         
         return secondUse(level, player, firstPos, lookPos, froeTool);
+    }
+    
+    private @NotNull InteractionResultHolder<ItemStack> firstUse(ItemStack froeTool,
+                                                                 BlockPos lookPos
+    ) {
+        setFirstPos(froeTool, lookPos);
+        return InteractionResultHolder.success(froeTool);
     }
     
     private @NotNull InteractionResultHolder<ItemStack> secondUse(
@@ -133,13 +125,6 @@ public class FroeTool extends Item {
         }
         
         clearFirstPos(froeTool);
-        return InteractionResultHolder.success(froeTool);
-    }
-    
-    private @NotNull InteractionResultHolder<ItemStack> firstUse(ItemStack froeTool,
-                                                                                            BlockPos lookPos
-    ) {
-        setFirstPos(froeTool, lookPos);
         return InteractionResultHolder.success(froeTool);
     }
     
@@ -307,5 +292,20 @@ public class FroeTool extends Item {
      */
     private void clearFirstPos( @NotNull ItemStack froeTool) {
         froeTool.removeTagKey(FIRST_POS_DATA);
+    }
+    
+    public boolean validateOffhand(
+            ItemStack offhandItem
+    ) {
+        // TODO: Extract this to common class for use by other tools
+        // Class name StructureUtils?
+        
+        for (TagKey<Item> tag : whitelist) {
+            if (offhandItem.is(tag)) {
+                return true;
+            }
+        }
+        
+        return false;
     }
 }

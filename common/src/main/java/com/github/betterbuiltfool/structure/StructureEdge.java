@@ -1,12 +1,12 @@
 package com.github.betterbuiltfool.structure;
 
 import net.minecraft.core.BlockPos;
-import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.Block;
 
 public class StructureEdge extends Edge{
-    private final BlockState edgeMaterial;
+    private final Block edgeMaterial;
     
-    public StructureEdge(Node start, Node end, BlockState material) {
+    public StructureEdge(Node start, Node end, Block material) {
         super(start, end);
         edgeMaterial = material;
     }

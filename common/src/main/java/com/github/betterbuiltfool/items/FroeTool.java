@@ -155,11 +155,16 @@ public class FroeTool extends Item {
             amountRemoved += slotCount;
             
             if (amountRemoved >= materialCost) {
-                slotItem.setCount(materialCost-amountRemoved);
+                int amountUsed = amountRemoved - materialCost;
+                slotItem.setCount(amountUsed);
                 break;
             } else {
                 slotItem.setCount(0);
             }
+        }
+        if (amountRemoved < materialCost) {
+            int amountUsed = materialCost - amountRemoved;
+            offhandItem.setCount(offhandItem.getCount()-amountUsed);
         }
     
     }

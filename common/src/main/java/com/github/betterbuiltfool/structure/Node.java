@@ -2,6 +2,7 @@ package com.github.betterbuiltfool.structure;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Vec3i;
+import net.minecraft.world.level.block.Block;
 
 import java.util.HashSet;
 import java.util.Iterator;
@@ -30,5 +31,18 @@ public class Node {
     
     public BlockPos getPosition() {
         return nodePosition;
+    }
+    
+    public Edge edgeToPosition(Vec3i position, Block material) {
+        assert position != nodePosition;
+        return edgeToNode(new Node(position), material);
+    }
+    
+    private Edge edgeToNode(Node node, Block material) {
+        assert node != this;
+        var edge = new StructureEdge(this, node, material);
+        this.addEdge(edge);
+        node.addEdge(edge);
+        return edge;
     }
 }

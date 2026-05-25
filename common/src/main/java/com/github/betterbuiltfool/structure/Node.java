@@ -27,4 +27,8 @@ public class Node {
     public Iterator<Edge> getEdges() {
         return this.edges.iterator();
     }
+    
+    public BlockPos getPosition() {
+        return nodePosition;
+    }
 }

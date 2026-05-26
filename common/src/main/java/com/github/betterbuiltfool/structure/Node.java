@@ -47,6 +47,10 @@ public class Node {
         return edge;
     }
     
+    public Iterator<Node> getStructure() {
+        return new NodeIterator(this);
+    }
+    
     private final class NodeIterator implements Iterator<Node> {
         private final HashSet<Node> traversed;
         private final Stack<Edge> toTraverse;

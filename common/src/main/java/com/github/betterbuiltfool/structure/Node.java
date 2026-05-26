@@ -47,7 +47,7 @@ public class Node {
         return edge;
     }
     
-    private class NodeIterator implements Iterator<Node> {
+    private final class NodeIterator implements Iterator<Node> {
         private final HashSet<Node> traversed;
         private final Stack<Edge> toTraverse;
         

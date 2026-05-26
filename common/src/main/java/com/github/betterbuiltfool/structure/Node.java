@@ -3,6 +3,7 @@ package com.github.betterbuiltfool.structure;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Vec3i;
 import net.minecraft.world.level.block.Block;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.HashSet;
 import java.util.Iterator;
@@ -47,38 +48,50 @@ public class Node {
         return edge;
     }
     
-    public Iterator<Node> getStructure() {
-        return new NodeIterator(this);
+    public Iterable<Node> getStructure() {
+        return new NodeIterable(this);
     }
     
-    private final class NodeIterator implements Iterator<Node> {
-        private final HashSet<Node> traversed;
-        private final Stack<Edge> toTraverse;
+    private static final class NodeIterable implements Iterable<Node> {
+        private final Node start;
         
-        public NodeIterator(Node start){
-            this.traversed = new HashSet<>();
-            this.traversed.add(start);
+        private NodeIterable(Node start) {
+            this.start = start;
+        }
+        
+        public @NotNull Iterator<Node> iterator() {
+            return new NodeIterator(this.start);
+        }
+        
+        private static final class NodeIterator implements Iterator<Node> {
+            private final HashSet<Node> traversed;
+            private final Stack<Edge> toTraverse;
             
-            this.toTraverse = new Stack<>();
-        }
-        
-        @Override
-        public boolean hasNext() {
-            return !this.toTraverse.empty();
-        }
-        
-        @Override
-        public Node next() {
-            var nextEdge = toTraverse.pop();
-            var nextNode = nextEdge.getEndNode();
-            for (Edge newEdge: nextNode.edges) {
-                if (traversed.contains(newEdge.getEndNode())) {
-                    continue;
-                }
-                toTraverse.add(newEdge);
+            private NodeIterator(Node start){
+                this.traversed = new HashSet<>();
+                this.traversed.add(start);
+                
+                this.toTraverse = new Stack<>();
             }
-            traversed.add(nextNode);
-            return nextNode;
+            
+            @Override
+            public boolean hasNext() {
+                return !this.toTraverse.empty();
+            }
+            
+            @Override
+            public Node next() {
+                var nextEdge = this.toTraverse.pop();
+                var nextNode = nextEdge.getEndNode();
+                for (Edge newEdge: nextNode.edges) {
+                    if (this.traversed.contains(newEdge.getEndNode())) {
+                        continue;
+                    }
+                    this.toTraverse.add(newEdge);
+                }
+                this.traversed.add(nextNode);
+                return nextNode;
+            }
         }
     }
 }

@@ -6,6 +6,7 @@ import net.minecraft.world.level.block.Block;
 
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.Stack;
 
 public class Node {
     private final HashSet<Edge> edges;
@@ -44,5 +45,36 @@ public class Node {
         this.addEdge(edge);
         node.addEdge(edge);
         return edge;
+    }
+    
+    private class NodeIterator implements Iterator<Node> {
+        private final HashSet<Node> traversed;
+        private final Stack<Edge> toTraverse;
+        
+        public NodeIterator(Node start){
+            this.traversed = new HashSet<>();
+            this.traversed.add(start);
+            
+            this.toTraverse = new Stack<>();
+        }
+        
+        @Override
+        public boolean hasNext() {
+            return !this.toTraverse.empty();
+        }
+        
+        @Override
+        public Node next() {
+            var nextEdge = toTraverse.pop();
+            var nextNode = nextEdge.getEndNode();
+            for (Edge newEdge: nextNode.edges) {
+                if (traversed.contains(newEdge.getEndNode())) {
+                    continue;
+                }
+                toTraverse.add(newEdge);
+            }
+            traversed.add(nextNode);
+            return nextNode;
+        }
     }
 }

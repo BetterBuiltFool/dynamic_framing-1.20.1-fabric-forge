@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import com.github.betterbuiltfool.structure.Node;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
@@ -22,8 +23,6 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -55,8 +54,8 @@ public class FroeTool extends Item {
         if (firstPos != null) {
             tooltipComponents.add(
                     Component.translatable(
-                            "tooltip.dynamic_framing.froe.firstpos").append(firstPos.toShortString()
-                    )
+                            "tooltip.dynamic_framing.froe.firstpos"
+                    ).append(firstPos.toShortString())
             );
         }
         super.appendHoverText(stack, level, tooltipComponents, isAdvanced);
@@ -72,7 +71,7 @@ public class FroeTool extends Item {
         
         if (player.isShiftKeyDown()) {
             clearFirstPos(froeTool);
-            return InteractionResultHolder.fail(froeTool);
+            return InteractionResultHolder.consume(froeTool);
         }
         
         var firstPos = getFirstPos(froeTool);
@@ -104,25 +103,33 @@ public class FroeTool extends Item {
         
         var offhandItem = player.getOffhandItem();
         
-        if (!validateOffhand(offhandItem)) {
+        var startNode = new Node(firstPos);
+        var endNode = new Node(secondPos);
+        
+        if (!(offhandItem.getItem() instanceof BlockItem offhandBlock)) {
             DynamicFraming.LOGGER.info("Invalid offhand item {}", offhandItem.getDisplayName());
-            return InteractionResultHolder.fail(froeTool);
+            return InteractionResultHolder.consume(froeTool);
         }
         
-        int materialCost = calcMaterialCost(firstPos, secondPos);
+        var edge = startNode.edgeToNode(endNode, offhandBlock.getBlock());
+        
+        if (!validateOffhand(offhandItem)) {
+            DynamicFraming.LOGGER.info("Invalid offhand item {}", offhandItem.getDisplayName());
+            return InteractionResultHolder.consume(froeTool);
+        }
+        
+        int materialCost = edge.getMaterialCost();
         
         Inventory inventory = player.getInventory();
         
         if (inventory.countItem(offhandItem.getItem()) < materialCost) {
             DynamicFraming.LOGGER.info("Not enough {} for edge length of {}", offhandItem.getDisplayName().getString(), materialCost);
             clearFirstPos(froeTool);
-            return InteractionResultHolder.fail(froeTool);
+            return InteractionResultHolder.consume(froeTool);
         }
         
-        if (offhandItem.getItem() instanceof BlockItem offhandBlock) {
-            tryPlaceEdge(level, firstPos, secondPos, offhandBlock.getBlock());
-            removeMaterialCost(inventory, offhandItem, materialCost);
-        }
+        edge.generateFill(level);
+        removeMaterialCost(inventory, offhandItem, materialCost);
         
         clearFirstPos(froeTool);
         return InteractionResultHolder.success(froeTool);
@@ -164,45 +171,6 @@ public class FroeTool extends Item {
             offhandItem.setCount(offhandItem.getCount()-amountUsed);
         }
     
-    }
-    
-    private void tryPlaceEdge(
-            @NotNull Level level,
-            @NotNull BlockPos firstPos,
-            @NotNull BlockPos secondPos,
-            @NotNull Block offhandBlock
-    ) {
-        // TODO: Extract this to relevant node/edge class
-        // TODO: Add a filter to remove the irreplaceable blocks
-        BlockPos.betweenClosedStream(firstPos, secondPos).forEach(pos -> {
-            var currentBlockState = level.getBlockState(pos);
-            if (!currentBlockState.isAir()){
-                return;
-            }
-            
-            var directionVector = firstPos.subtract(secondPos);
-            
-            var facing = Direction.getNearest(
-                    directionVector.getX(),
-                    directionVector.getY(),
-                    directionVector.getZ()
-            );
-            
-            var newBlockState = offhandBlock.defaultBlockState().setValue(BlockStateProperties.AXIS, facing.getAxis());
-            
-            level.setBlockAndUpdate(pos, newBlockState);
-            
-        });
-    
-    }
-    
-    private int calcMaterialCost(
-            @NotNull BlockPos firstPos,
-            @NotNull BlockPos secondPos
-    ) {
-        // TODO: Extract this to relevant node/edge class
-        // TODO: Add a filter to remove the irreplaceable blocks
-        return Math.toIntExact(BlockPos.betweenClosedStream(firstPos, secondPos).count());
     }
     
     /**

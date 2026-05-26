@@ -14,6 +14,7 @@ public class BlockPosValidator {
     private static final HashSet<TagKey<Block>> edgeReplacementWhitelist = new HashSet<>();
     
     static {
+        // TODO: read this in from config
         edgeReplacementWhitelist.add(BlockTags.REPLACEABLE);
     }
     

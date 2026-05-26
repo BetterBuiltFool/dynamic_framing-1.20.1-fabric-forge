@@ -2,17 +2,14 @@ package com.github.betterbuiltfool.items;
 
 import com.github.betterbuiltfool.DynamicFraming;
 
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import com.github.betterbuiltfool.structure.Node;
+import com.github.betterbuiltfool.validation.ItemValidator;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.tags.ItemTags;
-import net.minecraft.tags.TagKey;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.player.Inventory;
@@ -30,13 +27,7 @@ public class FroeTool extends Item {
     
     public static final String ITEM_ID = "froe";
     
-    private static final Set<TagKey<Item>> whitelist = new HashSet<>();
     public static final String FIRST_POS_DATA = "FirstPosData";
-    
-    static{
-        // TODO: Read this in from config file
-        whitelist.add(ItemTags.LOGS);
-    }
     
     public FroeTool(Properties properties) {
         super(properties);
@@ -113,12 +104,12 @@ public class FroeTool extends Item {
         
         var edge = startNode.edgeToNode(endNode, offhandBlock.getBlock());
         
-        if (!validateOffhand(offhandItem)) {
+        if (!ItemValidator.validateStructureItem(offhandItem)) {
             DynamicFraming.LOGGER.info("Invalid offhand item {}", offhandItem.getDisplayName());
             return InteractionResultHolder.consume(froeTool);
         }
         
-        int materialCost = edge.getMaterialCost();
+        int materialCost = edge.getMaterialCost(level);
         
         Inventory inventory = player.getInventory();
         
@@ -244,20 +235,5 @@ public class FroeTool extends Item {
     private void clearFirstPos( @NotNull ItemStack froeTool) {
         // TODO: Extract this to common class for use by other tools
         froeTool.removeTagKey(FIRST_POS_DATA);
-    }
-    
-    public boolean validateOffhand(
-            ItemStack offhandItem
-    ) {
-        // TODO: Extract this to common class for use by other tools
-        // Class name StructureUtils?
-        
-        for (TagKey<Item> tag : whitelist) {
-            if (offhandItem.is(tag)) {
-                return true;
-            }
-        }
-        
-        return false;
     }
 }

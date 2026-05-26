@@ -71,7 +71,7 @@ public class FroeTool extends Item {
         
         if (player.isShiftKeyDown()) {
             clearFirstPos(froeTool);
-            return InteractionResultHolder.fail(froeTool);
+            return InteractionResultHolder.consume(froeTool);
         }
         
         var firstPos = getFirstPos(froeTool);
@@ -108,14 +108,14 @@ public class FroeTool extends Item {
         
         if (!(offhandItem.getItem() instanceof BlockItem offhandBlock)) {
             DynamicFraming.LOGGER.info("Invalid offhand item {}", offhandItem.getDisplayName());
-            return InteractionResultHolder.fail(froeTool);
+            return InteractionResultHolder.consume(froeTool);
         }
         
         var edge = startNode.edgeToNode(endNode, offhandBlock.getBlock());
         
         if (!validateOffhand(offhandItem)) {
             DynamicFraming.LOGGER.info("Invalid offhand item {}", offhandItem.getDisplayName());
-            return InteractionResultHolder.fail(froeTool);
+            return InteractionResultHolder.consume(froeTool);
         }
         
         int materialCost = edge.getMaterialCost();
@@ -125,7 +125,7 @@ public class FroeTool extends Item {
         if (inventory.countItem(offhandItem.getItem()) < materialCost) {
             DynamicFraming.LOGGER.info("Not enough {} for edge length of {}", offhandItem.getDisplayName().getString(), materialCost);
             clearFirstPos(froeTool);
-            return InteractionResultHolder.fail(froeTool);
+            return InteractionResultHolder.consume(froeTool);
         }
         
         edge.generateFill(level);

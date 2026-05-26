@@ -1,5 +1,6 @@
 package com.github.betterbuiltfool.structure;
 
+import com.github.betterbuiltfool.validation.BlockPosValidator;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.level.Level;
@@ -21,12 +22,13 @@ public class StructureEdge extends Edge{
     }
     
     @Override
-    public int getMaterialCost() {
+    public int getMaterialCost(@NotNull Level level) {
         // TODO: Add a filter to remove the irreplaceable blocks
         return Math.toIntExact(
                 BlockPos.betweenClosedStream(
                         getStartNode().getPosition(),
                         getEndNode().getPosition())
+                .filter(blockPos -> BlockPosValidator.validateEdgePlacement(level, blockPos))
                 .count());
     }
     
@@ -34,7 +36,9 @@ public class StructureEdge extends Edge{
     public void generateFill(@NotNull Level level) {
         var firstPos = getStartNode().getPosition();
         var secondPos = getEndNode().getPosition();
-        BlockPos.betweenClosedStream(firstPos, secondPos).forEach(pos -> {
+        BlockPos.betweenClosedStream(firstPos, secondPos)
+            .filter(blockPos -> BlockPosValidator.validateEdgePlacement(level, blockPos))
+            .forEach(pos -> {
             var currentBlockState = level.getBlockState(pos);
             if (!currentBlockState.isAir()){
                 return;

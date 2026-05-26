@@ -2,9 +2,7 @@ package com.github.betterbuiltfool.items;
 
 import com.github.betterbuiltfool.DynamicFraming;
 
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import com.github.betterbuiltfool.structure.Node;
 import com.github.betterbuiltfool.validation.ItemValidator;
@@ -12,8 +10,6 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
-import net.minecraft.tags.ItemTags;
-import net.minecraft.tags.TagKey;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.player.Inventory;
@@ -113,7 +109,7 @@ public class FroeTool extends Item {
             return InteractionResultHolder.consume(froeTool);
         }
         
-        int materialCost = edge.getMaterialCost();
+        int materialCost = edge.getMaterialCost(level);
         
         Inventory inventory = player.getInventory();
         

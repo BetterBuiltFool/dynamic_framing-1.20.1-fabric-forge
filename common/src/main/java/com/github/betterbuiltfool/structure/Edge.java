@@ -24,6 +24,6 @@ abstract public class Edge {
     }
     
     abstract public int getLength();
-    abstract public int getMaterialCost();
+    abstract public int getMaterialCost(@NotNull Level level);
     abstract public void generateFill(@NotNull Level level);
 }

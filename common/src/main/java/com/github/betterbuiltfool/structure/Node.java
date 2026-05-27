@@ -5,9 +5,7 @@ import net.minecraft.core.Vec3i;
 import net.minecraft.world.level.block.Block;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Stack;
+import java.util.*;
 
 public class Node {
     private final HashSet<Edge> edges;
@@ -65,23 +63,23 @@ public class Node {
         
         private static final class NodeIterator implements Iterator<Node> {
             private final HashSet<Node> traversed;
-            private final Stack<Edge> toTraverse;
+            private final ArrayDeque<Edge> toTraverse;
             
             private NodeIterator(Node start){
                 this.traversed = new HashSet<>();
                 this.traversed.add(start);
                 
-                this.toTraverse = new Stack<>();
+                this.toTraverse = new ArrayDeque<>();
             }
             
             @Override
             public boolean hasNext() {
-                return !this.toTraverse.empty();
+                return !this.toTraverse.isEmpty();
             }
             
             @Override
             public Node next() {
-                var nextEdge = this.toTraverse.pop();
+                var nextEdge = this.toTraverse.removeFirst();
                 var nextNode = nextEdge.getEndNode();
                 for (Edge newEdge: nextNode.edges) {
                     if (this.traversed.contains(newEdge.getEndNode())) {

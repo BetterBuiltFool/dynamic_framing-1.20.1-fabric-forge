@@ -4,7 +4,7 @@ import com.github.betterbuiltfool.DynamicFraming;
 
 import java.util.List;
 
-import com.github.betterbuiltfool.structure.Node;
+import com.github.betterbuiltfool.structure.JointNode;
 import com.github.betterbuiltfool.validation.ItemValidator;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -94,8 +94,8 @@ public class FroeTool extends Item {
         
         var offhandItem = player.getOffhandItem();
         
-        var startNode = new Node(firstPos);
-        var endNode = new Node(secondPos);
+        var startNode = new JointNode(firstPos);
+        var endNode = new JointNode(secondPos);
         
         if (!(offhandItem.getItem() instanceof BlockItem offhandBlock)) {
             DynamicFraming.LOGGER.info("Invalid offhand item {}", offhandItem.getDisplayName());

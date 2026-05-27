@@ -50,46 +50,41 @@ public class Node {
         return new NodeIterable(this);
     }
     
-    private static final class NodeIterable implements Iterable<Node> {
-        private final Node start;
-        
-        private NodeIterable(Node start) {
-            this.start = start;
-        }
+    private record NodeIterable(Node start) implements Iterable<Node> {
         
         public @NotNull Iterator<Node> iterator() {
-            return new NodeIterator(this.start);
-        }
-        
-        private static final class NodeIterator implements Iterator<Node> {
-            private final HashSet<Node> traversed;
-            private final ArrayDeque<Edge> toTraverse;
+                return new NodeIterator(this.start);
+            }
             
-            private NodeIterator(Node start){
-                this.traversed = new HashSet<>();
-                this.traversed.add(start);
+            private static final class NodeIterator implements Iterator<Node> {
+                private final HashSet<Node> traversed;
+                private final ArrayDeque<Edge> toTraverse;
                 
-                this.toTraverse = new ArrayDeque<>();
-            }
-            
-            @Override
-            public boolean hasNext() {
-                return !this.toTraverse.isEmpty();
-            }
-            
-            @Override
-            public Node next() {
-                var nextEdge = this.toTraverse.removeFirst();
-                var nextNode = nextEdge.getEndNode();
-                for (Edge newEdge: nextNode.edges) {
-                    if (this.traversed.contains(newEdge.getEndNode())) {
-                        continue;
-                    }
-                    this.toTraverse.add(newEdge);
+                private NodeIterator(Node start) {
+                    this.traversed = new HashSet<>();
+                    this.traversed.add(start);
+                    
+                    this.toTraverse = new ArrayDeque<>();
                 }
-                this.traversed.add(nextNode);
-                return nextNode;
+                
+                @Override
+                public boolean hasNext() {
+                    return !this.toTraverse.isEmpty();
+                }
+                
+                @Override
+                public Node next() {
+                    var nextEdge = this.toTraverse.removeFirst();
+                    var nextNode = nextEdge.getEndNode();
+                    for (Edge newEdge : nextNode.edges) {
+                        if (this.traversed.contains(newEdge.getEndNode())) {
+                            continue;
+                        }
+                        this.toTraverse.add(newEdge);
+                    }
+                    this.traversed.add(nextNode);
+                    return nextNode;
+                }
             }
         }
-    }
 }

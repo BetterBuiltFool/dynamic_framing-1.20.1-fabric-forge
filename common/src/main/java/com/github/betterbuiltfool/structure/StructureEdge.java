@@ -11,7 +11,7 @@ import org.jetbrains.annotations.NotNull;
 public class StructureEdge extends Edge{
     private final Block edgeMaterial;
     
-    public StructureEdge(Node start, Node end, Block material) {
+    public StructureEdge(JointNode start, JointNode end, Block material) {
         super(start, end);
         edgeMaterial = material;
     }

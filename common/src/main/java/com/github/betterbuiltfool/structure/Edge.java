@@ -7,19 +7,19 @@ import org.jetbrains.annotations.NotNull;
  * Abstract object representing a connection between two nodes.
  */
 abstract public class Edge {
-    private final Node startNode;
-    private final Node endNode;
+    private final JointNode startNode;
+    private final JointNode endNode;
     
-    public Edge(Node start, Node end) {
+    public Edge(JointNode start, JointNode end) {
         startNode = start;
         endNode = end;
     }
     
-    public Node getStartNode() {
+    public JointNode getStartNode() {
         return startNode;
     }
     
-    public Node getEndNode() {
+    public JointNode getEndNode() {
         return endNode;
     }
     

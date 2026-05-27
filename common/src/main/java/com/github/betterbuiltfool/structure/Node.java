@@ -16,11 +16,6 @@ public class Node {
         edges = new HashSet<>();
     }
     
-    public Node(Vec3i position, Edge edge) {
-        this(position);
-        edges.add(edge);
-    }
-    
     public void addEdge(Edge edge) {
         edges.add(edge);
     }
@@ -46,6 +41,11 @@ public class Node {
         return edge;
     }
     
+    /**
+     * Allows traversal of the entire structure to which the node is attached.
+     *
+     * @return An iterable of all Nodes connected to the starting Node.
+     */
     public Iterable<Node> getStructure() {
         return new NodeIterable(this);
     }

@@ -1,13 +1,19 @@
 package com.github.betterbuiltfool.ui;
 
+import com.github.betterbuiltfool.DynamicFraming;
 import com.github.betterbuiltfool.structure.Edge;
 import com.github.betterbuiltfool.structure.JointNode;
 import dev.architectury.event.events.client.ClientGuiEvent;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.core.BlockPos;
+import net.minecraft.resources.ResourceLocation;
 
 public class NodeViewOverlay {
+    
+    private static final ResourceLocation NODE_MARKER = new ResourceLocation(
+            DynamicFraming.MOD_ID, "node_marker"
+    );
     
     public static void register() {
         ClientGuiEvent.RENDER_HUD.register((guiGraphics, deltaTRacker) -> {

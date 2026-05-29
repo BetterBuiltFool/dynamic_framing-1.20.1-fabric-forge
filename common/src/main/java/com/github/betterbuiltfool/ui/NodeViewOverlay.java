@@ -1,6 +1,7 @@
 package com.github.betterbuiltfool.ui;
 
 import com.github.betterbuiltfool.DynamicFraming;
+import com.github.betterbuiltfool.items.FroeTool;
 import com.github.betterbuiltfool.structure.Edge;
 import com.github.betterbuiltfool.structure.JointNode;
 import dev.architectury.event.events.client.ClientGuiEvent;
@@ -21,6 +22,12 @@ public class NodeViewOverlay {
             
             if (client.player == null || client.level == null) {
                 return;
+            }
+            
+            var item = client.player.getMainHandItem();
+            
+            if (item.getItem() instanceof FroeTool) {
+                DynamicFraming.LOGGER.info("Tool Equipped");
             }
         
         });

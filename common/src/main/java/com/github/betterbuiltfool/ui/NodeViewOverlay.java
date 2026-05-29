@@ -13,7 +13,7 @@ import net.minecraft.resources.ResourceLocation;
 public class NodeViewOverlay {
     
     private static final ResourceLocation NODE_MARKER = new ResourceLocation(
-            DynamicFraming.MOD_ID, "node_marker"
+            DynamicFraming.MOD_ID, "textures/ui/node_marker"
     );
     
     public static void register() {

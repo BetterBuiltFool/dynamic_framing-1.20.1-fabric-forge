@@ -9,6 +9,8 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
+import org.joml.Matrix4f;
+import org.joml.Vector4f;
 
 public class NodeViewOverlay {
     
@@ -49,7 +51,28 @@ public class NodeViewOverlay {
     
     }
     
-    private static void drawNodeMarker(BlockPos pos) {
+    private static ScreenPos worldToScreen(BlockPos worldPos, Matrix4f projection) {
+//        Minecraft client = Minecraft.getInstance();
+        
+//        GameRenderer renderer = client.gameRenderer;
+//        Matrix4f projection = renderer.getProjectionMatrix(client.getWindow().getGuiScale());
+        
+        var center = worldPos.getCenter();
+        
+        var vec4WorldPos = new Vector4f(
+                (float) center.x,
+                (float) center.y,
+                (float) center.z,
+                1.0f
+        );
+        
+        var screenPos = projection.transform(vec4WorldPos);
+        
+        return new ScreenPos((int) screenPos.x, (int) screenPos.y);
+        
+    }
+    
+    private static void renderNodeMarker(BlockPos pos) {
     
     }
 }

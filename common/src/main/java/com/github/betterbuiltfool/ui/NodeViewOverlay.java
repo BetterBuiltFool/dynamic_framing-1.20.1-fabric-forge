@@ -17,7 +17,7 @@ import org.joml.Vector4f;
 public class NodeViewOverlay {
     
     private static final ResourceLocation NODE_MARKER = new ResourceLocation(
-            DynamicFraming.MOD_ID, "textures/ui/node_marker"
+            DynamicFraming.MOD_ID, "textures/ui/node_marker.png"
     );
     
     public static void register() {

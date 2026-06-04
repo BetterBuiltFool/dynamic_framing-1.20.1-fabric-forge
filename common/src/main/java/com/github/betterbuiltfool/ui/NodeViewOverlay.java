@@ -21,7 +21,7 @@ public class NodeViewOverlay {
     );
     
     public static void register() {
-        ClientGuiEvent.RENDER_HUD.register((guiGraphics, deltaTRacker) -> {
+        ClientGuiEvent.RENDER_HUD.register((guiGraphics, deltaTracker) -> {
             Minecraft client = Minecraft.getInstance();
             
             if (client.player == null || client.level == null) {

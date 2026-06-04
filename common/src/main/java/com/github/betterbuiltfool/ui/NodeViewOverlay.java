@@ -10,6 +10,8 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 import org.joml.Matrix4f;
+import org.joml.Vector2i;
+import org.joml.Vector3f;
 import org.joml.Vector4f;
 
 public class NodeViewOverlay {
@@ -33,6 +35,31 @@ public class NodeViewOverlay {
             }
         
         });
+    }
+    
+    private static @NotNull Vector4f worldToNDC(@NotNull Vec3 worldPos) {
+        return worldToNDC(new Vector4f(
+                (float) worldPos.x,
+                (float) worldPos.y,
+                (float) worldPos.z,
+                1.0f
+        ));
+    }
+    
+    private static @NotNull Vector4f worldToNDC(@NotNull Vector4f worldPos){
+        var pos = new Vector4f(worldPos);
+//        return pos.mul(viewMatrix).mul(projection).div(pos.w);
+        return pos.mul(projection).mul(viewMatrix).div(pos.w);
+    }
+    
+    private static Vector2i ndcToScreen(Vector4f ndcPosition) {
+        var pos = new Vector4f(ndcPosition);
+//        pos.div(pos.w);
+        
+        return new Vector2i(
+                (int) ((pos.x + 1) / 2) * screenSize.x,
+                (int) ((1-pos.y) / 2) * screenSize.y
+        );
     }
     
     public static void renderOverlay(GuiGraphics guiGraphics, Minecraft client) {

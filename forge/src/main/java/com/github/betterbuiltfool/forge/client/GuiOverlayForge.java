@@ -1,6 +1,7 @@
 package com.github.betterbuiltfool.forge.client;
 
 import com.github.betterbuiltfool.DynamicFraming;
+import com.github.betterbuiltfool.ui.NodeViewOverlay;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.client.event.RenderLevelStageEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
@@ -14,6 +15,6 @@ public class GuiOverlayForge {
         if (event.getStage() != RenderLevelStageEvent.Stage.AFTER_PARTICLES) {
             return;
         }
-        // TODO: call overlay method
+        NodeViewOverlay.renderOverlay(event.getPoseStack(), event.getLevelRenderer());
     }
 }

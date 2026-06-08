@@ -190,7 +190,7 @@ public class FroeTool extends Item {
      * @param froeTool The ItemStack version of the tool
      * @return BlockPos of first set point or null if none.
      */
-    private static @Nullable BlockPos getFirstPos(@NotNull ItemStack froeTool) {
+    public static @Nullable BlockPos getFirstPos(@NotNull ItemStack froeTool) {
         // TODO: Extract this to common class for use by other tools
         CompoundTag firstPosTag = froeTool.getTagElement(FIRST_POS_DATA);
         

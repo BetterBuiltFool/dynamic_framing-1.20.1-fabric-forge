@@ -18,7 +18,5 @@ public final class DynamicFraming {
         TabRegistry.register();
         BlockRegistry.register();
         ItemRegistry.register();
-        
-        NodeViewOverlay.register();
     }
 }

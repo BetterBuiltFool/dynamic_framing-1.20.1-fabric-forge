@@ -48,13 +48,13 @@ public class NodeViewOverlay {
                 
                 buffer.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION);
                 
-                int width = 8;
-                int height = 8;
+                float width = 0.25f;
+                float height = 0.25f;
                 
-                buffer.vertex(pose, - (float) width / 2, + (float) height / 2, 0).endVertex();
-                buffer.vertex(pose, + (float) width / 2, + (float) height / 2, 0).endVertex();
-                buffer.vertex(pose, + (float) width / 2, - (float) height / 2, 0).endVertex();
-                buffer.vertex(pose, - (float) width / 2, - (float) height / 2, 0).endVertex();
+                buffer.vertex(pose, - width / 2, + height / 2, 0).endVertex();
+                buffer.vertex(pose, + width / 2, + height / 2, 0).endVertex();
+                buffer.vertex(pose, + width / 2, - height / 2, 0).endVertex();
+                buffer.vertex(pose, - width / 2, - height / 2, 0).endVertex();
                 
                 RenderSystem.setShader(GameRenderer::getPositionShader);
                 

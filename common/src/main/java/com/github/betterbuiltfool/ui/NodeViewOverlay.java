@@ -57,8 +57,11 @@ public class NodeViewOverlay {
                 buffer.vertex(pose, - width / 2, - height / 2, 0).endVertex();
                 
                 RenderSystem.setShader(GameRenderer::getPositionShader);
+                RenderSystem.disableDepthTest();
                 
                 tesselator.end();
+                
+                RenderSystem.enableDepthTest();
                 
                 poseStack.popPose();
             }

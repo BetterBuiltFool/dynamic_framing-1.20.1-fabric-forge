@@ -1,13 +1,11 @@
 package com.github.betterbuiltfool.fabric.client;
 
 import com.github.betterbuiltfool.ui.NodeViewOverlay;
-import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents;
 
-public class GuiOverlayFabric implements ClientModInitializer {
+public class GuiOverlayFabric {
     
-    @Override
-    public void onInitializeClient() {
+    public static void registerGui() {
         WorldRenderEvents.AFTER_TRANSLUCENT.register(context -> {
             NodeViewOverlay.renderOverlay(context.matrixStack(), context.worldRenderer());
         });

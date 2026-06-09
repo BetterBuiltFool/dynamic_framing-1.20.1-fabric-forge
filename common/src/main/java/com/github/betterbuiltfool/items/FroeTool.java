@@ -2,6 +2,7 @@ package com.github.betterbuiltfool.items;
 
 import com.github.betterbuiltfool.DynamicFraming;
 
+import java.util.HashSet;
 import java.util.List;
 
 import com.github.betterbuiltfool.structure.JointNode;
@@ -23,7 +24,7 @@ import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class FroeTool extends Item {
+public class FroeTool extends Item implements RendersOverlay{
     
     public static final String ITEM_ID = "froe";
     
@@ -235,5 +236,17 @@ public class FroeTool extends Item {
     private void clearFirstPos( @NotNull ItemStack froeTool) {
         // TODO: Extract this to common class for use by other tools
         froeTool.removeTagKey(FIRST_POS_DATA);
+    }
+    
+    @Override
+    public @NotNull Iterable<JointNode> getNodes(@NotNull ItemStack itemStack) {
+        HashSet<JointNode> nodes = new HashSet<>();
+        
+        BlockPos firstPos = FroeTool.getFirstPos(itemStack);
+        if (firstPos != null) {
+            nodes.add(new JointNode(firstPos));
+        }
+        
+        return nodes;
     }
 }

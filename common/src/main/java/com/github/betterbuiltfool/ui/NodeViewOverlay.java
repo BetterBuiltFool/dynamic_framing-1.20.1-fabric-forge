@@ -2,6 +2,8 @@ package com.github.betterbuiltfool.ui;
 
 import com.github.betterbuiltfool.DynamicFraming;
 import com.github.betterbuiltfool.items.FroeTool;
+import com.github.betterbuiltfool.items.RendersOverlay;
+import com.github.betterbuiltfool.structure.JointNode;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.*;
 import net.minecraft.client.Camera;
@@ -26,17 +28,12 @@ public class NodeViewOverlay {
         }
         var item = client.player.getMainHandItem();
         
-        if (item.getItem() instanceof FroeTool) {
-            // TODO: add a base class or interface for approving tools
-            DynamicFraming.LOGGER.info("Tool Equipped");
+        if (item.getItem() instanceof RendersOverlay toolItem) {
             
             Camera camera = client.getEntityRenderDispatcher().camera;
             
-            var currentNodePos = FroeTool.getFirstPos(item);
-            if (currentNodePos != null) {
-                
-                Vec3 renderPos = currentNodePos.getCenter().subtract(camera.getPosition());
-                
+            for(JointNode node: toolItem.getNodes(item)) {
+                Vec3 renderPos = node.getPosition().getCenter().subtract(camera.getPosition());
                 renderNode(poseStack, renderPos, camera);
             }
         }

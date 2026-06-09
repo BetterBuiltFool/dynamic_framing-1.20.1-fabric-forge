@@ -24,6 +24,9 @@ import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+/**
+ * A Framing tool for establishing the shape of a structure by placing nodes.
+ */
 public class FramingHammer extends Item implements RendersOverlay{
     
     public static final String ITEM_ID = "framing_hammer";

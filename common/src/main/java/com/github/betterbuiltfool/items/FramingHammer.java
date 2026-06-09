@@ -49,7 +49,7 @@ public class FramingHammer extends Item implements RendersOverlay{
         if (firstPos != null) {
             tooltipComponents.add(
                     Component.translatable(
-                            "tooltip.dynamic_framing.froe.firstpos"
+                            "tooltip.dynamic_framing.framing_hammer.firstpos"
                     ).append(firstPos.toShortString())
             );
         }
@@ -62,29 +62,29 @@ public class FramingHammer extends Item implements RendersOverlay{
             Player player,
             InteractionHand usedHand
     ) {
-        var froeTool = player.getMainHandItem();
+        var hammerTool = player.getMainHandItem();
         
         if (player.isShiftKeyDown()) {
-            clearFirstPos(froeTool);
-            return InteractionResultHolder.consume(froeTool);
+            clearFirstPos(hammerTool);
+            return InteractionResultHolder.consume(hammerTool);
         }
         
-        var firstPos = getFirstPos(froeTool);
+        var firstPos = getFirstPos(hammerTool);
         var ray = getPlayerPOVHitResult(level, player, ClipContext.Fluid.NONE);
         var lookPos = ray.getBlockPos();
         
         if (firstPos == null) {
-            return firstUse(froeTool, lookPos);
+            return firstUse(hammerTool, lookPos);
         }
         
-        return secondUse(level, player, firstPos, lookPos, froeTool);
+        return secondUse(level, player, firstPos, lookPos, hammerTool);
     }
     
-    private @NotNull InteractionResultHolder<ItemStack> firstUse(ItemStack froeTool,
+    private @NotNull InteractionResultHolder<ItemStack> firstUse(ItemStack hammerTool,
                                                                  BlockPos lookPos
     ) {
-        setFirstPos(froeTool, lookPos);
-        return InteractionResultHolder.success(froeTool);
+        setFirstPos(hammerTool, lookPos);
+        return InteractionResultHolder.success(hammerTool);
     }
     
     private @NotNull InteractionResultHolder<ItemStack> secondUse(
@@ -92,7 +92,7 @@ public class FramingHammer extends Item implements RendersOverlay{
             Player player,
             BlockPos firstPos,
             BlockPos lookPos,
-            ItemStack froeTool
+            ItemStack hammerTool
     ) {
         var secondPos = calcSecondPos(firstPos, lookPos);
         
@@ -103,14 +103,14 @@ public class FramingHammer extends Item implements RendersOverlay{
         
         if (!(offhandItem.getItem() instanceof BlockItem offhandBlock)) {
             DynamicFraming.LOGGER.info("Invalid offhand item {}", offhandItem.getDisplayName());
-            return InteractionResultHolder.consume(froeTool);
+            return InteractionResultHolder.consume(hammerTool);
         }
         
         var edge = startNode.edgeToNode(endNode, offhandBlock.getBlock());
         
         if (!ItemValidator.validateStructureItem(offhandItem)) {
             DynamicFraming.LOGGER.info("Invalid offhand item {}", offhandItem.getDisplayName());
-            return InteractionResultHolder.consume(froeTool);
+            return InteractionResultHolder.consume(hammerTool);
         }
         
         int materialCost = edge.getMaterialCost(level);
@@ -119,15 +119,15 @@ public class FramingHammer extends Item implements RendersOverlay{
         
         if (inventory.countItem(offhandItem.getItem()) < materialCost) {
             DynamicFraming.LOGGER.info("Not enough {} for edge length of {}", offhandItem.getDisplayName().getString(), materialCost);
-            clearFirstPos(froeTool);
-            return InteractionResultHolder.consume(froeTool);
+            clearFirstPos(hammerTool);
+            return InteractionResultHolder.consume(hammerTool);
         }
         
         edge.generateFill(level);
         removeMaterialCost(inventory, offhandItem, materialCost);
         
-        clearFirstPos(froeTool);
-        return InteractionResultHolder.success(froeTool);
+        clearFirstPos(hammerTool);
+        return InteractionResultHolder.success(hammerTool);
     }
     
     /**
@@ -191,12 +191,12 @@ public class FramingHammer extends Item implements RendersOverlay{
      * Extracts the first set pos from the itemstack tags.
      * If null, first pos is unset.
      *
-     * @param froeTool The ItemStack version of the tool
+     * @param hammerTool The ItemStack version of the tool
      * @return BlockPos of first set point or null if none.
      */
-    public static @Nullable BlockPos getFirstPos(@NotNull ItemStack froeTool) {
+    public static @Nullable BlockPos getFirstPos(@NotNull ItemStack hammerTool) {
         // TODO: Extract this to common class for use by other tools
-        CompoundTag firstPosTag = froeTool.getTagElement(FIRST_POS_DATA);
+        CompoundTag firstPosTag = hammerTool.getTagElement(FIRST_POS_DATA);
         
         if (firstPosTag == null) {
             return null;
@@ -213,15 +213,15 @@ public class FramingHammer extends Item implements RendersOverlay{
     /**
      * Creates or modifies a tag on the tool with the first set position.
      *
-     * @param froeTool The ItemStack version of the tool
+     * @param hammerTool The ItemStack version of the tool
      * @param lookPos The BlockPos to be stored as the first position
      */
     private void setFirstPos(
-            @NotNull ItemStack froeTool,
+            @NotNull ItemStack hammerTool,
             @NotNull BlockPos lookPos
     ) {
         // TODO: Extract this to common class for use by other tools
-        CompoundTag firstPosTag = froeTool.getOrCreateTag();
+        CompoundTag firstPosTag = hammerTool.getOrCreateTag();
         
         CompoundTag posTag = new CompoundTag();
         posTag.putInt("X", lookPos.getX());
@@ -234,11 +234,11 @@ public class FramingHammer extends Item implements RendersOverlay{
     /**
      * Clears the FirstPos tag from the tool item.
      *
-     * @param froeTool The ItemStack version of the tool
+     * @param hammerTool The ItemStack version of the tool
      */
-    private void clearFirstPos( @NotNull ItemStack froeTool) {
+    private void clearFirstPos( @NotNull ItemStack hammerTool) {
         // TODO: Extract this to common class for use by other tools
-        froeTool.removeTagKey(FIRST_POS_DATA);
+        hammerTool.removeTagKey(FIRST_POS_DATA);
     }
     
     @Override

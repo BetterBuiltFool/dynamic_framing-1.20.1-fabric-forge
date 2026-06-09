@@ -1,7 +1,8 @@
 {
   "item.dynamic_framing.froe": "Froe",
+  "item.dynamic_framing.framing_hammer": "Framing Mallet",
 
-  "tooltip.dynamic_framing.froe.firstpos": "First selected position: ",
+  "tooltip.dynamic_framing.framing_hammer.firstpos": "First selected position: ",
 
   "category.framing_tools_tab": "Framing Tools"
 }

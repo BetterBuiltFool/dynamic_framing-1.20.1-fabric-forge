@@ -38,12 +38,13 @@ public class NodeViewOverlay {
                 
                 Vec3 renderPos = currentNodePos.getCenter().subtract(camera.getPosition());
                 poseStack.pushPose();
-                Matrix4f pose = poseStack.last().pose();
-                Tesselator tesselator = Tesselator.getInstance();
-                BufferBuilder buffer = tesselator.getBuilder();
                 
                 poseStack.translate((float) renderPos.x(), (float) renderPos.y(), (float) renderPos.z());
                 poseStack.mulPose(camera.rotation());
+                
+                Matrix4f pose = poseStack.last().pose();
+                Tesselator tesselator = Tesselator.getInstance();
+                BufferBuilder buffer = tesselator.getBuilder();
                 
                 buffer.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION);
                 

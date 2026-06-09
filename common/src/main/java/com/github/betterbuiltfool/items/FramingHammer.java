@@ -24,13 +24,13 @@ import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class FroeTool extends Item implements RendersOverlay{
+public class FramingHammer extends Item implements RendersOverlay{
     
-    public static final String ITEM_ID = "froe";
+    public static final String ITEM_ID = "framing_hammer";
     
     public static final String FIRST_POS_DATA = "FirstPosData";
     
-    public FroeTool(Properties properties) {
+    public FramingHammer(Properties properties) {
         super(properties);
     }
     
@@ -242,7 +242,7 @@ public class FroeTool extends Item implements RendersOverlay{
     public @NotNull Iterable<JointNode> getNodes(@NotNull ItemStack itemStack) {
         HashSet<JointNode> nodes = new HashSet<>();
         
-        BlockPos firstPos = FroeTool.getFirstPos(itemStack);
+        BlockPos firstPos = FramingHammer.getFirstPos(itemStack);
         if (firstPos != null) {
             nodes.add(new JointNode(firstPos));
         }

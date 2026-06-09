@@ -23,7 +23,7 @@ public class TabRegistry {
                 "framing_tools",
                 () -> CreativeTabRegistry.create(
                         Component.translatable("category.framing_tools_tab"),
-                        () -> new ItemStack(ItemRegistry.FROE.get())
+                        () -> new ItemStack(ItemRegistry.FRAMING_HAMMER.get())
                 )
         );
         

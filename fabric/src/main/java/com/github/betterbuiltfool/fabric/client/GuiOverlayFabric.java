@@ -6,8 +6,6 @@ import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents;
 public class GuiOverlayFabric {
     
     public static void registerGui() {
-        WorldRenderEvents.LAST.register(context -> {
-            NodeViewOverlay.renderOverlay(context.matrixStack(), context.worldRenderer());
-        });
+        WorldRenderEvents.LAST.register(context -> NodeViewOverlay.renderOverlay(context.matrixStack()));
     }
 }

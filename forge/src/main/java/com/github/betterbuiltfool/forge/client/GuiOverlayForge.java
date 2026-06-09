@@ -15,6 +15,6 @@ public class GuiOverlayForge {
         if (event.getStage() != RenderLevelStageEvent.Stage.AFTER_PARTICLES) {
             return;
         }
-        NodeViewOverlay.renderOverlay(event.getPoseStack(), event.getLevelRenderer());
+        NodeViewOverlay.renderOverlay(event.getPoseStack());
     }
 }

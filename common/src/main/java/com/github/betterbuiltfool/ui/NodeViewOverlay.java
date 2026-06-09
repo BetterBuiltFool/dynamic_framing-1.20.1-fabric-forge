@@ -1,7 +1,6 @@
 package com.github.betterbuiltfool.ui;
 
 import com.github.betterbuiltfool.DynamicFraming;
-import com.github.betterbuiltfool.items.FroeTool;
 import com.github.betterbuiltfool.items.RendersOverlay;
 import com.github.betterbuiltfool.structure.JointNode;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -9,7 +8,6 @@ import com.mojang.blaze3d.vertex.*;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GameRenderer;
-import net.minecraft.client.renderer.LevelRenderer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.phys.Vec3;
 import org.joml.*;
@@ -20,7 +18,7 @@ public class NodeViewOverlay {
             DynamicFraming.MOD_ID, "textures/ui/node_marker.png"
     );
     
-    public static void renderOverlay(PoseStack poseStack, LevelRenderer levelRenderer) {
+    public static void renderOverlay(PoseStack poseStack) {
         Minecraft client = Minecraft.getInstance();
         
         if (client.player == null || client.level == null) {

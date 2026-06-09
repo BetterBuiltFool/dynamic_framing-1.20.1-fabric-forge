@@ -46,17 +46,18 @@ public class NodeViewOverlay {
                 Tesselator tesselator = Tesselator.getInstance();
                 BufferBuilder buffer = tesselator.getBuilder();
                 
-                buffer.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION);
+                buffer.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
                 
                 float width = 0.25f;
                 float height = 0.25f;
                 
-                buffer.vertex(pose, - width / 2, + height / 2, 0).endVertex();
-                buffer.vertex(pose, + width / 2, + height / 2, 0).endVertex();
-                buffer.vertex(pose, + width / 2, - height / 2, 0).endVertex();
-                buffer.vertex(pose, - width / 2, - height / 2, 0).endVertex();
+                buffer.vertex(pose, - width / 2, + height / 2, 0).uv(0.0f, 0.0f).endVertex();
+                buffer.vertex(pose, + width / 2, + height / 2, 0).uv(1.0f, 0.0f).endVertex();
+                buffer.vertex(pose, + width / 2, - height / 2, 0).uv(1.0f, 1.0f).endVertex();
+                buffer.vertex(pose, - width / 2, - height / 2, 0).uv(0.0f, 1.0f).endVertex();
                 
-                RenderSystem.setShader(GameRenderer::getPositionShader);
+                RenderSystem.setShader(GameRenderer::getPositionTexShader);
+                RenderSystem.setShaderTexture(0, NODE_MARKER);
                 RenderSystem.disableDepthTest();
                 
                 tesselator.end();

@@ -30,43 +30,51 @@ public class NodeViewOverlay {
             // TODO: add a base class or interface for approving tools
             DynamicFraming.LOGGER.info("Tool Equipped");
             
+            Camera camera = client.getEntityRenderDispatcher().camera;
             
             var currentNodePos = FroeTool.getFirstPos(item);
             if (currentNodePos != null) {
                 
-                Camera camera = client.getEntityRenderDispatcher().camera;
-                
                 Vec3 renderPos = currentNodePos.getCenter().subtract(camera.getPosition());
-                poseStack.pushPose();
                 
-                poseStack.translate((float) renderPos.x(), (float) renderPos.y(), (float) renderPos.z());
-                poseStack.mulPose(camera.rotation());
-                
-                Matrix4f pose = poseStack.last().pose();
-                Tesselator tesselator = Tesselator.getInstance();
-                BufferBuilder buffer = tesselator.getBuilder();
-                
-                buffer.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
-                
-                float width = 0.25f;
-                float height = 0.25f;
-                
-                buffer.vertex(pose, - width / 2, + height / 2, 0).uv(0.0f, 0.0f).endVertex();
-                buffer.vertex(pose, + width / 2, + height / 2, 0).uv(1.0f, 0.0f).endVertex();
-                buffer.vertex(pose, + width / 2, - height / 2, 0).uv(1.0f, 1.0f).endVertex();
-                buffer.vertex(pose, - width / 2, - height / 2, 0).uv(0.0f, 1.0f).endVertex();
-                
-                RenderSystem.setShader(GameRenderer::getPositionTexShader);
-                RenderSystem.setShaderTexture(0, NODE_MARKER);
-                RenderSystem.disableDepthTest();
-                
-                tesselator.end();
-                
-                RenderSystem.enableDepthTest();
-                
-                poseStack.popPose();
+                renderNode(poseStack, renderPos, camera);
             }
         }
         
+    }
+    
+    private static void renderNode(
+            PoseStack poseStack,
+            Vec3 renderPos,
+            Camera camera
+    ) {
+        poseStack.pushPose();
+        
+        poseStack.translate((float) renderPos.x(), (float) renderPos.y(), (float) renderPos.z());
+        poseStack.mulPose(camera.rotation());
+        
+        Matrix4f pose = poseStack.last().pose();
+        Tesselator tesselator = Tesselator.getInstance();
+        BufferBuilder buffer = tesselator.getBuilder();
+        
+        buffer.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
+        
+        float width = 0.25f;
+        float height = 0.25f;
+        
+        buffer.vertex(pose, - width / 2, + height / 2, 0).uv(0.0f, 0.0f).endVertex();
+        buffer.vertex(pose, + width / 2, + height / 2, 0).uv(1.0f, 0.0f).endVertex();
+        buffer.vertex(pose, + width / 2, - height / 2, 0).uv(1.0f, 1.0f).endVertex();
+        buffer.vertex(pose, - width / 2, - height / 2, 0).uv(0.0f, 1.0f).endVertex();
+        
+        RenderSystem.setShader(GameRenderer::getPositionTexShader);
+        RenderSystem.setShaderTexture(0, NODE_MARKER);
+        RenderSystem.disableDepthTest();
+        
+        tesselator.end();
+        
+        RenderSystem.enableDepthTest();
+        
+        poseStack.popPose();
     }
 }

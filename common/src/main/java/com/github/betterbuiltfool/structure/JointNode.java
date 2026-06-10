@@ -20,6 +20,15 @@ public class JointNode {
         return this.connections.iterator();
     }
     
+    public Edge connectTo(JointNode node) {
+        this.connections.add(node);
+        return new StructureEdge(this, node);
+    }
+    
+    public Edge connectTo(Vec3i position) {
+        return connectTo(new JointNode(position));
+    }
+    
     public BlockPos getPosition() {
         return nodePosition;
     }

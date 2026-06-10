@@ -21,6 +21,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -106,7 +107,8 @@ public class FramingHammer extends Item implements RendersOverlay{
             return InteractionResultHolder.consume(hammerTool);
         }
         
-        var edge = startNode.edgeToNode(endNode, offhandBlock.getBlock());
+        Block fillBlock = offhandBlock.getBlock();
+        var edge = startNode.connectTo(endNode);
         
         if (!ItemValidator.validateStructureItem(offhandItem)) {
             DynamicFraming.LOGGER.info("Invalid offhand item {}", offhandItem.getDisplayName());
@@ -123,7 +125,7 @@ public class FramingHammer extends Item implements RendersOverlay{
             return InteractionResultHolder.consume(hammerTool);
         }
         
-        edge.generateFill(level);
+        edge.generateFill(level, fillBlock);
         removeMaterialCost(inventory, offhandItem, materialCost);
         
         clearFirstPos(hammerTool);

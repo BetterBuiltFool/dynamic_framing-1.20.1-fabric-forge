@@ -9,11 +9,9 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import org.jetbrains.annotations.NotNull;
 
 public class StructureEdge extends Edge{
-    private final Block edgeMaterial;
     
-    public StructureEdge(JointNode start, JointNode end, Block material) {
+    public StructureEdge(JointNode start, JointNode end) {
         super(start, end);
-        edgeMaterial = material;
     }
     
     @Override
@@ -33,7 +31,7 @@ public class StructureEdge extends Edge{
     }
     
     @Override
-    public void generateFill(@NotNull Level level) {
+    public void generateFill(@NotNull Level level, Block edgeMaterial) {
         var firstPos = getStartNode().getPosition();
         var secondPos = getEndNode().getPosition();
         BlockPos.betweenClosedStream(firstPos, secondPos)

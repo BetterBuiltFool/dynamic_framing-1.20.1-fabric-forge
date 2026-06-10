@@ -8,20 +8,16 @@ import org.jetbrains.annotations.NotNull;
 import java.util.*;
 
 public class JointNode {
-    private final HashSet<Edge> edges;
+    private final Set<JointNode> connections;
     private final BlockPos nodePosition;
     
     public JointNode(Vec3i position) {
         nodePosition = new BlockPos(position);
-        edges = new HashSet<>();
+        connections = new HashSet<>();
     }
     
-    public void addEdge(Edge edge) {
-        edges.add(edge);
-    }
-    
-    public Iterator<Edge> getEdges() {
-        return this.edges.iterator();
+    public Iterator<JointNode> getConnections() {
+        return this.connections.iterator();
     }
     
     public BlockPos getPosition() {

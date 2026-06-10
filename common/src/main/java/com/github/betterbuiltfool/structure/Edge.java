@@ -1,6 +1,7 @@
 package com.github.betterbuiltfool.structure;
 
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -25,5 +26,5 @@ abstract public class Edge {
     
     abstract public int getLength();
     abstract public int getMaterialCost(@NotNull Level level);
-    abstract public void generateFill(@NotNull Level level);
+    abstract public void generateFill(@NotNull Level level, Block edgeMaterial);
 }

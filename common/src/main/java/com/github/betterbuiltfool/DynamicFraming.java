@@ -1,5 +1,6 @@
 package com.github.betterbuiltfool;
 
+import com.github.betterbuiltfool.network.DynamicFramingNetworking;
 import com.github.betterbuiltfool.registry.BlockRegistry;
 import com.github.betterbuiltfool.registry.ItemRegistry;
 import com.github.betterbuiltfool.registry.TabRegistry;
@@ -18,5 +19,7 @@ public final class DynamicFraming {
         TabRegistry.register();
         BlockRegistry.register();
         ItemRegistry.register();
+        
+        DynamicFramingNetworking.init();
     }
 }

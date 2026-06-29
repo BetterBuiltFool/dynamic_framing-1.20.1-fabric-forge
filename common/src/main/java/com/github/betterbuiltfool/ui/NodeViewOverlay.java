@@ -14,10 +14,6 @@ import org.joml.*;
 
 public class NodeViewOverlay {
     
-    private static final ResourceLocation NODE_MARKER = new ResourceLocation(
-            DynamicFraming.MOD_ID, "textures/ui/node_marker.png"
-    );
-    
     public static void renderOverlay(PoseStack poseStack) {
         Minecraft client = Minecraft.getInstance();
         
@@ -27,49 +23,8 @@ public class NodeViewOverlay {
         var item = client.player.getMainHandItem();
         
         if (item.getItem() instanceof RendersOverlay toolItem) {
-            
-            Camera camera = client.getEntityRenderDispatcher().camera;
-            
-            for(JointNode node: toolItem.getNodes(item)) {
-                Vec3 renderPos = node.getPosition().getCenter().subtract(camera.getPosition());
-                renderNode(poseStack, renderPos, camera);
-            }
+            toolItem.renderOverlay(client, poseStack, item);
         }
         
-    }
-    
-    private static void renderNode(
-            PoseStack poseStack,
-            Vec3 renderPos,
-            Camera camera
-    ) {
-        poseStack.pushPose();
-        
-        poseStack.translate((float) renderPos.x(), (float) renderPos.y(), (float) renderPos.z());
-        poseStack.mulPose(camera.rotation());
-        
-        Matrix4f pose = poseStack.last().pose();
-        Tesselator tesselator = Tesselator.getInstance();
-        BufferBuilder buffer = tesselator.getBuilder();
-        
-        buffer.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_TEX);
-        
-        float width = 0.25f;
-        float height = 0.25f;
-        
-        buffer.vertex(pose, - width / 2, + height / 2, 0).uv(0.0f, 0.0f).endVertex();
-        buffer.vertex(pose, + width / 2, + height / 2, 0).uv(1.0f, 0.0f).endVertex();
-        buffer.vertex(pose, + width / 2, - height / 2, 0).uv(1.0f, 1.0f).endVertex();
-        buffer.vertex(pose, - width / 2, - height / 2, 0).uv(0.0f, 1.0f).endVertex();
-        
-        RenderSystem.setShader(GameRenderer::getPositionTexShader);
-        RenderSystem.setShaderTexture(0, NODE_MARKER);
-        RenderSystem.disableDepthTest();
-        
-        tesselator.end();
-        
-        RenderSystem.enableDepthTest();
-        
-        poseStack.popPose();
     }
 }

@@ -1,11 +1,13 @@
 package com.github.betterbuiltfool.items;
 
 import com.github.betterbuiltfool.structure.JointNode;
+import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.Minecraft;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
 public interface RendersOverlay {
     
-    public @NotNull Iterable<JointNode> getNodes(@NotNull ItemStack itemStack);
+    public void renderOverlay(Minecraft client, PoseStack poseStack, @NotNull ItemStack itemStack);
     
 }

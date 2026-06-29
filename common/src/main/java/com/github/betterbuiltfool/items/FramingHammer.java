@@ -6,7 +6,11 @@ import java.util.HashSet;
 import java.util.List;
 
 import com.github.betterbuiltfool.structure.JointNode;
+import com.github.betterbuiltfool.ui.overlays.FramingHammerOverlay;
 import com.github.betterbuiltfool.validation.ItemValidator;
+import com.mojang.blaze3d.vertex.PoseStack;
+import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
+import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
@@ -244,6 +248,18 @@ public class FramingHammer extends Item implements RendersOverlay{
     }
     
     @Override
+    public void renderOverlay(Minecraft client,
+                              PoseStack poseStack,
+                              @NotNull ItemStack itemStack
+    ) {
+        LongOpenHashSet nodes = new LongOpenHashSet();
+        BlockPos firstPos = getFirstPos(itemStack);
+        if (firstPos != null) {
+            nodes.add(firstPos.asLong());
+        }
+        FramingHammerOverlay.renderOverlay(client, poseStack, nodes);
+    }
+    
     public @NotNull Iterable<JointNode> getNodes(@NotNull ItemStack itemStack) {
         HashSet<JointNode> nodes = new HashSet<>();
         

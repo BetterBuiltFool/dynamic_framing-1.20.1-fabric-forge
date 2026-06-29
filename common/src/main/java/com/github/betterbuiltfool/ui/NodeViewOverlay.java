@@ -23,13 +23,7 @@ public class NodeViewOverlay {
         var item = client.player.getMainHandItem();
         
         if (item.getItem() instanceof RendersOverlay toolItem) {
-            
-            Camera camera = client.getEntityRenderDispatcher().camera;
-            
-            for(JointNode node: toolItem.getNodes(item)) {
-                Vec3 renderPos = node.getPosition().getCenter().subtract(camera.getPosition());
-                NodeMarkerRenderer.renderNode(poseStack, renderPos, camera);
-            }
+            toolItem.renderOverlay(client, poseStack, item);
         }
         
     }

@@ -1,5 +1,7 @@
 package com.github.betterbuiltfool.network;
 
+import com.github.betterbuiltfool.data.FramedStructureStorage;
+import dev.architectury.networking.NetworkManager;
 import it.unimi.dsi.fastutil.longs.LongArrayList;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import it.unimi.dsi.fastutil.longs.LongSet;
@@ -7,6 +9,7 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 
@@ -53,5 +56,11 @@ public class ChunkNodeRequestPacket {
     public void encode(FriendlyByteBuf buffer) {
         buffer.writeResourceLocation(this.dimensionKey.location());
         buffer.writeLongArray(this.chunkPos.toLongArray());
+    }
+    
+    public void handle(NetworkManager.PacketContext context) {
+        context.queue(() -> {
+            FramedStructureStorage.sendChunkDataToPlayer((ServerPlayer) context.getPlayer(), this.dimensionKey, this.chunkPos.toLongArray());
+        });
     }
 }

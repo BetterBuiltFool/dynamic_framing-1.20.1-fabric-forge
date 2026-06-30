@@ -66,4 +66,8 @@ public class FramedStructureStorage extends SavedData {
                 DATA_ID
         );
     }
+    
+    public StructureGraph getDimensionGraph(ResourceKey<Level> dimensionKey) {
+        return dimensionGraphs.get(dimensionKey);
+    }
 }

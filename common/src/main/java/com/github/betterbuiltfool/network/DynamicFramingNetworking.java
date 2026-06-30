@@ -7,7 +7,7 @@ import net.minecraft.resources.ResourceLocation;
 public class DynamicFramingNetworking {
     
     private static final ResourceLocation CHANNEL_ID = new ResourceLocation(DynamicFraming.MOD_ID, "main");
-    private static final NetworkChannel CHANNEL = NetworkChannel.create(CHANNEL_ID);
+    public static final NetworkChannel CHANNEL = NetworkChannel.create(CHANNEL_ID);
     
     public static void init() {
         // TODO: Initialize the network sync classes

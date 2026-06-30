@@ -14,6 +14,7 @@ import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 
 import java.util.Arrays;
+import java.util.function.Supplier;
 
 public class ChunkNodeRequestPacket {
     private final LongSet chunkPos = new LongOpenHashSet();
@@ -58,7 +59,8 @@ public class ChunkNodeRequestPacket {
         buffer.writeLongArray(this.chunkPos.toLongArray());
     }
     
-    public void handle(NetworkManager.PacketContext context) {
+    public void handle(Supplier<NetworkManager.PacketContext> contextSupplier) {
+        var context = contextSupplier.get();
         context.queue(() -> {
             FramedStructureStorage.sendChunkDataToPlayer((ServerPlayer) context.getPlayer(), this.dimensionKey, this.chunkPos.toLongArray());
         });

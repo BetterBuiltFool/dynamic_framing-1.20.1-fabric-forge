@@ -47,8 +47,7 @@ public class ChunkNodeDataPacket {
     public void handle(Supplier<NetworkManager.PacketContext> contextSupplier) {
         var context = contextSupplier.get();
         context.queue(() -> {
-            ClientLocalNodes.clear();
-            ClientLocalNodes.addNodes(this.nodePositions);
+            ClientLocalNodes.handleNodeDataSync(this.nodePositions);
         });
     }
 }

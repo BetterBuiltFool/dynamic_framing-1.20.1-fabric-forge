@@ -1,6 +1,5 @@
 package com.github.betterbuiltfool.network;
 
-import com.github.betterbuiltfool.client.ClientLocalNodes;
 import dev.architectury.networking.NetworkManager;
 import it.unimi.dsi.fastutil.longs.*;
 import net.minecraft.network.FriendlyByteBuf;
@@ -38,7 +37,7 @@ public class ChunkNodeDataPacket {
     public void handle(Supplier<NetworkManager.PacketContext> contextSupplier) {
         var context = contextSupplier.get();
         context.queue(() -> {
-            ClientLocalNodes.handleNodeDataSync(this.nodePositions);
+            ClientPacketReceiver.handleNodeDataSync(this.nodePositions);
         });
     }
 }

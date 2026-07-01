@@ -1,7 +1,5 @@
 package com.github.betterbuiltfool.client;
 
-import dev.architectury.utils.Env;
-import dev.architectury.utils.EnvExecutor;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.longs.LongSet;
@@ -15,13 +13,6 @@ public class ClientLocalNodes {
     
     public static void addNodes(Long2ObjectMap<LongSet> nodeData) {
         LOCAL_NODES.putAll(nodeData);
-    }
-    
-    public static void handleNodeDataSync(Long2ObjectMap<LongSet> nodeData) {
-        EnvExecutor.runInEnv(Env.CLIENT, () -> (Runnable) () -> {
-            clear();
-            addNodes(nodeData);
-        });
     }
     
     public static Long2ObjectMap<LongSet> getLocalNodes() {

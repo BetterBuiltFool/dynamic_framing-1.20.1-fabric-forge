@@ -1,9 +1,6 @@
 package com.github.betterbuiltfool.structure;
 
-import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
-import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
-import it.unimi.dsi.fastutil.longs.LongSet;
-import it.unimi.dsi.fastutil.longs.LongSets;
+import it.unimi.dsi.fastutil.longs.*;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -14,7 +11,7 @@ import java.util.Arrays;
 
 public final class StructureGraph {
     private final ObjectArrayList<Node> levelNodes = new ObjectArrayList<>();
-    private final Long2ObjectOpenHashMap<LongSet> chunkMap = new Long2ObjectOpenHashMap<>();
+    private final Long2ObjectMap<LongSet> chunkMap = new Long2ObjectOpenHashMap<>();
     
     /**
      * Finds the set of packed node positions that exist within the provided chunks. They will be collected into a

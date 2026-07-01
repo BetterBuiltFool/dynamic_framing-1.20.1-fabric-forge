@@ -1,22 +1,14 @@
 package com.github.betterbuiltfool.network;
 
 import com.github.betterbuiltfool.client.ClientLocalNodes;
-import com.github.betterbuiltfool.data.FramedStructureStorage;
 import dev.architectury.networking.NetworkManager;
 import it.unimi.dsi.fastutil.longs.*;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.server.level.ServerPlayer;
-
-import java.util.Map;
-import java.util.Set;
 import java.util.function.Supplier;
 
 public class ChunkNodeDataPacket {
     private final Long2ObjectMap<LongSet> nodePositions = new Long2ObjectOpenHashMap<>();
     
-//    public ChunkNodeDataPacket(long... nodePos) {
-//        nodePositions.addAll(LongArrayList.wrap(nodePos));
-//    }
     public ChunkNodeDataPacket(Long2ObjectMap<LongSet> nodePos) {
         this.nodePositions.putAll(nodePos);
     }
@@ -41,7 +33,6 @@ public class ChunkNodeDataPacket {
             buffer.writeLong(key);
             buffer.writeLongArray(value.toLongArray());
         }
-//        buffer.writeLongArray(nodePositions.toLongArray());
     }
     
     public void handle(Supplier<NetworkManager.PacketContext> contextSupplier) {

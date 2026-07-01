@@ -18,12 +18,9 @@ public class ClientLocalNodes {
     }
     
     public static void handleNodeDataSync(Long2ObjectMap<LongSet> nodeData) {
-        EnvExecutor.runInEnv(Env.CLIENT, () -> new Runnable() {
-            @Override
-            public void run() {
-                clear();
-                addNodes(nodeData);
-            }
+        EnvExecutor.runInEnv(Env.CLIENT, () -> (Runnable) () -> {
+            clear();
+            addNodes(nodeData);
         });
     }
     

@@ -61,8 +61,6 @@ public class ChunkNodeRequestPacket {
     
     public void handle(Supplier<NetworkManager.PacketContext> contextSupplier) {
         var context = contextSupplier.get();
-        context.queue(() -> {
-            FramedStructureStorage.sendChunkDataToPlayer((ServerPlayer) context.getPlayer(), this.dimensionKey, this.chunkPos.toLongArray());
-        });
+        context.queue(() -> FramedStructureStorage.sendChunkDataToPlayer((ServerPlayer) context.getPlayer(), this.dimensionKey, this.chunkPos.toLongArray()));
     }
 }

@@ -16,6 +16,10 @@ public class ChunkNodeDataPacket {
         this(nodePos.toLongArray());
     }
     
+    public static ChunkNodeDataPacket decode(FriendlyByteBuf buffer) {
+        return new ChunkNodeDataPacket(new LongOpenHashSet(buffer.readLongArray()));
+    }
+    
     public void encode(FriendlyByteBuf buffer) {
         buffer.writeLongArray(nodePositions.toLongArray());
     }

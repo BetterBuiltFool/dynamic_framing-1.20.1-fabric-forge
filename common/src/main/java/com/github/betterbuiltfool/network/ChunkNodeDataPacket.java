@@ -17,7 +17,6 @@ public class ChunkNodeDataPacket {
     }
     
     public void encode(FriendlyByteBuf buffer) {
-        buffer.writeInt(nodePositions.size());
         buffer.writeLongArray(nodePositions.toLongArray());
     }
 }

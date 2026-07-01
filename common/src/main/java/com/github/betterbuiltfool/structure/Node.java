@@ -53,6 +53,15 @@ public class Node {
     }
     //endregion
     
+    
+    public long getPos() {
+        return pos;
+    }
+    
+    public BlockPos getBlockPos() {
+        return BlockPos.of(pos);
+    }
+    
     //region Serialization
     public CompoundTag serialize(CompoundTag nbt) {
         nbt.putLong("nodePos", this.pos);

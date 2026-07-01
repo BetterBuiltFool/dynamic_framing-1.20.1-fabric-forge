@@ -8,6 +8,7 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.world.level.ChunkPos;
 
 import java.util.Arrays;
+import java.util.stream.Collectors;
 
 public final class StructureGraph {
     private final ObjectArrayList<Node> levelNodes = new ObjectArrayList<>();
@@ -44,6 +45,27 @@ public final class StructureGraph {
                            .toArray();
         
         return getPackedNodesForChunk(pos);
+    }
+    
+    /**
+     * Creates a map of node positions and their connections from a set of packed positions
+     * @param nodePos A LongSet of packed positions whose connections we're after
+     * @return A fastutil map representing the nodes and their connections
+     */
+    public Long2ObjectMap<LongSet> getNodeMap(LongSet nodePos) {
+        var subMap = levelNodes.stream()
+                               .filter(x -> nodePos.contains(x.getPos()))
+                               .collect(Collectors.toMap(Node::getPos, Node::getConnections));
+        return new Long2ObjectOpenHashMap<>(subMap);
+    }
+    
+    /**
+     * Creates a map of node positions and their connections from an array of packed positions
+     * @param nodePos An array of packed positions whose connections we're after
+     * @return A fastutil map representing the nodes and their connections
+     */
+    public Long2ObjectMap<LongSet> getNodeMap(long... nodePos) {
+        return getNodeMap(new LongOpenHashSet(nodePos));
     }
     
     public void clearAll() {

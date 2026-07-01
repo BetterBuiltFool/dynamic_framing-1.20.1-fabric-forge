@@ -76,6 +76,10 @@ public class FramedStructureStorage extends SavedData {
         return dimensionGraphs.get(dimensionKey);
     }
     
+    public StructureGraph getOrCreateDimensionGraph(ResourceKey<Level> dimensionKey) {
+        return dimensionGraphs.computeIfAbsent(dimensionKey, key -> new StructureGraph());
+    }
+    
     public static void sendChunkDataToPlayer(ServerPlayer player, ResourceKey<Level> dimension, long... pos) {
         Level serverLevel = player.serverLevel();
         FramedStructureStorage storage = FramedStructureStorage.get(serverLevel);

@@ -11,8 +11,8 @@ public class ClientLocalNodes {
         LOCAL_NODES.clear();
     }
     
-    public static void updateNode(long position, LongSet connections) {
-        LOCAL_NODES.put(position, connections);
+    public static void addNodes(Long2ObjectMap<LongSet> nodeData) {
+        LOCAL_NODES.putAll(nodeData);
     }
     
     public static Long2ObjectMap<LongSet> getLocalNodes() {

@@ -4,6 +4,7 @@ import com.github.betterbuiltfool.DynamicFraming;
 import com.github.betterbuiltfool.network.ChunkNodeDataPacket;
 import com.github.betterbuiltfool.network.DynamicFramingNetworking;
 import com.github.betterbuiltfool.structure.StructureGraph;
+import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.LongSet;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
@@ -81,6 +82,7 @@ public class FramedStructureStorage extends SavedData {
         StructureGraph dimensionGraph = storage.getDimensionGraph(serverLevel.dimension());
         
         LongSet nodesPositions = dimensionGraph.getPackedNodesForChunk(pos);
-        DynamicFramingNetworking.CHANNEL.sendToPlayer(player, new ChunkNodeDataPacket(nodesPositions));
+        Long2ObjectMap<LongSet> nodeData = dimensionGraph.getNodeMap(nodesPositions);
+        DynamicFramingNetworking.CHANNEL.sendToPlayer(player, new ChunkNodeDataPacket(nodeData));
     }
 }

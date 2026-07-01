@@ -10,7 +10,8 @@ public class DynamicFramingNetworking {
     public static final NetworkChannel CHANNEL = NetworkChannel.create(CHANNEL_ID);
     
     public static void init() {
-        // TODO: Initialize the network sync classes
-        // Format: CHANNEL.register(CLASSNAME.class, CLASSNAME::encode, CLASSNAME::new, CLASSNAME::handle);
+        // Format: CHANNEL.register(CLASSNAME.class, CLASSNAME::encode, CLASSNAME::decode, CLASSNAME::handle);
+        CHANNEL.register(ChunkNodeRequestPacket.class, ChunkNodeRequestPacket::encode, ChunkNodeRequestPacket::decode, ChunkNodeRequestPacket::handle);
+        CHANNEL.register(ChunkNodeDataPacket.class, ChunkNodeDataPacket::encode, ChunkNodeDataPacket::decode, ChunkNodeDataPacket::handle);
     }
 }

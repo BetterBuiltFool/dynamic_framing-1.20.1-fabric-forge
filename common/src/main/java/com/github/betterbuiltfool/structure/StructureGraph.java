@@ -1,7 +1,7 @@
 package com.github.betterbuiltfool.structure;
 
 import it.unimi.dsi.fastutil.longs.*;
-import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
@@ -11,8 +11,8 @@ import java.util.Arrays;
 import java.util.stream.Collectors;
 
 public final class StructureGraph {
-    private final ObjectArrayList<Node> levelNodes = new ObjectArrayList<>();
     private final Long2ObjectMap<LongSet> chunkMap = new Long2ObjectOpenHashMap<>();
+    private final Long2ObjectMap<Node> posToNodeMap = new Long2ObjectOpenHashMap<>();
     
     /**
      * Finds the set of packed node positions that exist within the provided chunks. They will be collected into a
@@ -53,9 +53,10 @@ public final class StructureGraph {
      * @return A fastutil map representing the nodes and their connections
      */
     public Long2ObjectMap<LongSet> getNodeMap(LongSet nodePos) {
-        var subMap = levelNodes.stream()
-                               .filter(x -> nodePos.contains(x.getPos()))
-                               .collect(Collectors.toMap(Node::getPos, Node::getConnections));
+        var subMap = posToNodeMap.values()
+                                 .stream()
+                                 .filter(x -> nodePos.contains(x.getPos()))
+                                 .collect(Collectors.toMap(Node::getPos, Node::getConnections));
         return new Long2ObjectOpenHashMap<>(subMap);
     }
     
@@ -69,14 +70,33 @@ public final class StructureGraph {
     }
     
     public void clearAll() {
-        levelNodes.clear();
+        posToNodeMap.clear();
         chunkMap.clear();
+    }
+    
+    public void connect(long first, long second) {
+        Node start = getOrCreateNode(first);
+        Node end = getOrCreateNode(second);
+        start.connect(end);
+        end.connect(start);
+    }
+    
+    public Node getOrCreateNode(long position) {
+        Node fetchedNode = posToNodeMap.get(position);
+        if (fetchedNode == null) {
+            fetchedNode = new Node(position);
+            posToNodeMap.put(position, fetchedNode);
+            ChunkPos chunkPos = new ChunkPos(BlockPos.of(position));
+            LongSet chunkNodes = chunkMap.computeIfAbsent(chunkPos.toLong(), chunk -> new LongOpenHashSet());
+            chunkNodes.add(position);
+        }
+        return fetchedNode;
     }
     
     //region Serialization
     public CompoundTag serialize(CompoundTag nbt) {
         var nodes = new ListTag();
-        for (var node:levelNodes) {
+        for (var node:posToNodeMap.values()) {
             nodes.add(node.serialize(new CompoundTag()));
         }
         nbt.put("nodes", nodes);
@@ -88,7 +108,8 @@ public final class StructureGraph {
         clearAll();
         var nodes = nbt.getList("nodes", Tag.TAG_COMPOUND);
         for (var nodeData:nodes) {
-            this.levelNodes.add(Node.deserialize((CompoundTag) nodeData));
+            var node = Node.deserialize((CompoundTag) nodeData);
+            this.posToNodeMap.put(node.getPos(), node);
         }
     }
     

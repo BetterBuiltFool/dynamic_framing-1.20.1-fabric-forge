@@ -53,6 +53,7 @@ public class FramedStructureStorage extends SavedData {
         CompoundTag structureData = compoundTag.getCompound(DATA_ID);
         
         for (String key:structureData.getAllKeys()) {
+            // TODO: Add error handling for tryParse failing, this could cause issues if a dimension mod is removed after using.
             ResourceLocation dimensionLocation = ResourceLocation.tryParse(key);
             ResourceKey<Level> dimensionKey = ResourceKey.create(Registries.DIMENSION, dimensionLocation);
             
@@ -82,6 +83,11 @@ public class FramedStructureStorage extends SavedData {
     
     public StructureGraph getOrCreateDimensionGraph(ResourceKey<Level> dimensionKey) {
         return dimensionGraphs.computeIfAbsent(dimensionKey, key -> new StructureGraph());
+    }
+    
+    public static StructureGraph getOrCreateDimensionGraph(Level level) {
+        var storage = FramedStructureStorage.get(level);
+        return storage.getOrCreateDimensionGraph(level.dimension());
     }
     
     public static void sendChunkDataToPlayer(ServerPlayer player, ResourceKey<Level> dimension, long... pos) {

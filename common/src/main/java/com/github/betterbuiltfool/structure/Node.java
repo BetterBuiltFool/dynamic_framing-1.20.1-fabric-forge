@@ -7,6 +7,8 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 
 public class Node {
+    public static final String NODE_POS_LABEL = "nodePos";
+    public static final String CONNECTIONS_LABEL = "connections";
     private final long pos;
     private final LongSet connections = new LongOpenHashSet();
     
@@ -20,8 +22,8 @@ public class Node {
     }
     
     public static Node deserialize(CompoundTag nbt) {
-        Node node = new Node(nbt.getLong("pos"));
-        long[] longConnections = nbt.getLongArray("connections");
+        Node node = new Node(nbt.getLong(NODE_POS_LABEL));
+        long[] longConnections = nbt.getLongArray(CONNECTIONS_LABEL);
         for (long connection:longConnections) {
             node.connect(connection);
         }
@@ -64,8 +66,8 @@ public class Node {
     
     //region Serialization
     public CompoundTag serialize(CompoundTag nbt) {
-        nbt.putLong("nodePos", this.pos);
-        nbt.putLongArray("connections", connections.toLongArray());
+        nbt.putLong(NODE_POS_LABEL, this.pos);
+        nbt.putLongArray(CONNECTIONS_LABEL, connections.toLongArray());
         
         return nbt;
     }

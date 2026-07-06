@@ -20,11 +20,15 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class FramedStructureStorage extends SavedData {
-    private final Map<ResourceKey<Level>, StructureGraph> dimensionGraphs = new HashMap<>();
+    private final Map<ResourceKey<Level>, StructureGraph> dimensionGraphs;
     private static final String DATA_ID;
     
     static {
         DATA_ID = DynamicFraming.MOD_ID + "_data";
+    }
+    
+    public FramedStructureStorage() {
+        dimensionGraphs = new HashMap<>();
     }
     
     @Override

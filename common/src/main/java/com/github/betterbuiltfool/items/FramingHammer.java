@@ -5,6 +5,7 @@ import com.github.betterbuiltfool.DynamicFraming;
 import java.util.HashSet;
 import java.util.List;
 
+import com.github.betterbuiltfool.data.FramedStructureStorage;
 import com.github.betterbuiltfool.structure.JointNode;
 import com.github.betterbuiltfool.ui.overlays.FramingHammerOverlay;
 import com.github.betterbuiltfool.validation.ItemValidator;
@@ -117,6 +118,14 @@ public class FramingHammer extends Item implements RendersOverlay{
         if (!ItemValidator.validateStructureItem(offhandItem)) {
             DynamicFraming.LOGGER.info("Invalid offhand item {}", offhandItem.getDisplayName());
             return InteractionResultHolder.consume(hammerTool);
+        }
+        
+        if (!level.isClientSide) {
+            var storage = FramedStructureStorage.get(level);
+            var structureGraph = FramedStructureStorage.getOrCreateDimensionGraph(level);
+            
+            structureGraph.connect(firstPos.asLong(), secondPos.asLong());
+            storage.setDirty();
         }
         
         int materialCost = edge.getMaterialCost(level);

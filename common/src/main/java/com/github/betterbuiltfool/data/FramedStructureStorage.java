@@ -90,6 +90,12 @@ public class FramedStructureStorage extends SavedData {
         return storage.getOrCreateDimensionGraph(level.dimension());
     }
     
+    public static void clearAll(Level level) {
+        var storage = FramedStructureStorage.get(level);
+        storage.dimensionGraphs.clear();
+        storage.setDirty();
+    }
+    
     public static void sendChunkDataToPlayer(ServerPlayer player, ResourceKey<Level> dimension, long... pos) {
         Level serverLevel = player.serverLevel();
         FramedStructureStorage storage = FramedStructureStorage.get(serverLevel);

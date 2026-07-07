@@ -17,7 +17,7 @@ public class ClearAllCommand extends Command {
         
         FramedStructureStorage.clearAll(level);
         if (source.getPlayer() != null) {
-            source.sendSuccess(() -> Component.literal("Cleared all structure nodes"), false);
+            source.sendSuccess(() -> Component.literal("Cleared all structure nodes"), true);
         }
         
         return 1;

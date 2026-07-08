@@ -39,14 +39,6 @@ public class ChunkNodeRequestPacket {
         );
     }
     
-    public ChunkNodeRequestPacket(long... chunkPos) {
-        this(OVERWORLD, chunkPos);
-    }
-    
-    public ChunkNodeRequestPacket(ChunkPos... chunkPos) {
-        this(OVERWORLD, chunkPos);
-    }
-    
     public static ChunkNodeRequestPacket decode(FriendlyByteBuf buffer) {
         return new ChunkNodeRequestPacket(
                 ResourceKey.create(Registries.DIMENSION, buffer.readResourceLocation()),

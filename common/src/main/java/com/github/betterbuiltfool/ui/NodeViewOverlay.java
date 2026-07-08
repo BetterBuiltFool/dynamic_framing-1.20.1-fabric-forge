@@ -1,16 +1,8 @@
 package com.github.betterbuiltfool.ui;
 
-import com.github.betterbuiltfool.DynamicFraming;
 import com.github.betterbuiltfool.items.RendersOverlay;
-import com.github.betterbuiltfool.structure.JointNode;
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.*;
-import net.minecraft.client.Camera;
+import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.GameRenderer;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.phys.Vec3;
-import org.joml.*;
 
 public class NodeViewOverlay {
     

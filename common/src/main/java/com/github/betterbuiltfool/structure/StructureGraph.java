@@ -109,6 +109,9 @@ public final class StructureGraph {
         var nodes = nbt.getList("nodes", Tag.TAG_COMPOUND);
         for (var nodeData:nodes) {
             var node = Node.deserialize((CompoundTag) nodeData);
+            ChunkPos chunkPos = new ChunkPos(node.getBlockPos());
+            LongSet chunkNodes = chunkMap.computeIfAbsent(chunkPos.toLong(), key -> new LongOpenHashSet());
+            chunkNodes.add(node.getPos());
             this.posToNodeMap.put(node.getPos(), node);
         }
     }

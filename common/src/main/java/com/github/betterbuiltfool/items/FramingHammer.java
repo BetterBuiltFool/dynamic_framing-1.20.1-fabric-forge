@@ -5,13 +5,18 @@ import com.github.betterbuiltfool.DynamicFraming;
 import java.util.HashSet;
 import java.util.List;
 
+import com.github.betterbuiltfool.client.ClientLocalNodes;
 import com.github.betterbuiltfool.data.FramedStructureStorage;
+import com.github.betterbuiltfool.network.ChunkNodeRequestPacket;
+import com.github.betterbuiltfool.network.DynamicFramingNetworking;
 import com.github.betterbuiltfool.structure.JointNode;
 import com.github.betterbuiltfool.ui.overlays.FramingHammerOverlay;
 import com.github.betterbuiltfool.validation.ItemValidator;
 import com.mojang.blaze3d.vertex.PoseStack;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
+import it.unimi.dsi.fastutil.longs.LongSet;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
@@ -24,6 +29,7 @@ import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
+import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
@@ -261,11 +267,15 @@ public class FramingHammer extends Item implements RendersOverlay{
                               PoseStack poseStack,
                               @NotNull ItemStack itemStack
     ) {
+        ClientLocalNodes.requestRefresh(client);
+        
         LongOpenHashSet nodes = new LongOpenHashSet();
         BlockPos firstPos = getFirstPos(itemStack);
         if (firstPos != null) {
             nodes.add(firstPos.asLong());
         }
+        nodes.addAll(ClientLocalNodes.getLocalNodes().values().stream().flatMapToLong(LongSet::longStream).boxed()
+                                     .toList());
         FramingHammerOverlay.renderOverlay(client, poseStack, nodes);
     }
     

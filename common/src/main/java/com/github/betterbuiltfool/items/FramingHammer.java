@@ -5,6 +5,7 @@ import com.github.betterbuiltfool.client.ClientLocalNodes;
 import com.github.betterbuiltfool.data.FramedStructureStorage;
 import com.github.betterbuiltfool.structure.JointNode;
 import com.github.betterbuiltfool.ui.overlays.FramingHammerOverlay;
+import com.github.betterbuiltfool.ui.overlays.NodeOverlayContextBuilder;
 import com.github.betterbuiltfool.validation.ItemValidator;
 import com.mojang.blaze3d.vertex.PoseStack;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
@@ -264,14 +265,19 @@ public class FramingHammer extends Item implements RendersOverlay{
     ) {
         ClientLocalNodes.requestRefresh(client);
         
-        LongOpenHashSet nodes = new LongOpenHashSet();
         BlockPos firstPos = getFirstPos(itemStack);
-        if (firstPos != null) {
-            nodes.add(firstPos.asLong());
-        }
-        nodes.addAll(ClientLocalNodes.getLocalNodes().values().stream().flatMapToLong(LongSet::longStream).boxed()
-                                     .toList());
-        FramingHammerOverlay.renderOverlay(client, poseStack, nodes);
+        var highlightNodes = new LongOpenHashSet(
+                ClientLocalNodes.getLocalNodes()
+                                .values()
+                                .stream()
+                                .flatMapToLong(LongSet::longStream)
+                                .toArray()
+        );
+        var contextBuilder =
+                new NodeOverlayContextBuilder(client, poseStack).addNodeMap(ClientLocalNodes.getLocalNodes())
+                                                                .addHighlightPos(highlightNodes);
+        contextBuilder = (firstPos != null) ? contextBuilder.addFirstPos(firstPos.asLong()) : contextBuilder;
+        FramingHammerOverlay.renderOverlay(contextBuilder.build());
     }
     
     public @NotNull Iterable<JointNode> getNodes(@NotNull ItemStack itemStack) {

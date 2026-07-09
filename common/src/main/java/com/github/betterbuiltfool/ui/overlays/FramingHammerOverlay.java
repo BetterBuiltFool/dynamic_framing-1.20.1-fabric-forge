@@ -1,15 +1,16 @@
 package com.github.betterbuiltfool.ui.overlays;
 
 import com.github.betterbuiltfool.ui.NodeMarkerRenderer;
-import com.mojang.blaze3d.vertex.PoseStack;
-import it.unimi.dsi.fastutil.longs.LongSet;
+import com.github.betterbuiltfool.ui.NodeOverlayContext;
 import net.minecraft.client.Camera;
-import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.phys.Vec3;
 
 public class FramingHammerOverlay {
-    public static void renderOverlay(Minecraft client, PoseStack poseStack, LongSet positions) {
+    public static void renderOverlay(NodeOverlayContext context) {
+        var client = context.client;
+        var poseStack = context.poseStack;
+        var positions = context.highlightNodes;
         
         Camera camera = client.getEntityRenderDispatcher().camera;
         

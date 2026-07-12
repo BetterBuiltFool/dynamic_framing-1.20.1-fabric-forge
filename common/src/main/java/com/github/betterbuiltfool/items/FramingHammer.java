@@ -256,6 +256,42 @@ public class FramingHammer extends Item implements RendersOverlay{
         hammerTool.removeTagKey(FIRST_POS_DATA);
     }
     
+    @Nullable
+    public static Long getPos(
+            @NotNull ItemStack hammerTool,
+            String nbtKey
+    ) {
+        CompoundTag posTag = hammerTool.getTagElement(nbtKey);
+        
+        if (posTag == null) {
+            return null;
+        }
+        
+        return posTag.getLong("PosData");
+        
+    }
+    
+    public static void setPos(
+            @NotNull ItemStack hammerTool,
+            String nbtKey,
+            long pos
+    ) {
+        CompoundTag posTag = hammerTool.getOrCreateTag();
+        
+        CompoundTag posData = new CompoundTag();
+        posData.putLong("PosData", pos);
+        
+        posTag.put(nbtKey, posData);
+        
+    }
+    
+    public static void clearPos(
+            @NotNull ItemStack hammerTool,
+            String nbtKey
+    ) {
+        hammerTool.removeTagKey(nbtKey);
+    }
+    
     @Override
     public void renderOverlay(Minecraft client,
                               PoseStack poseStack,

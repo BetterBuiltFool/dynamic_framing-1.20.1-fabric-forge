@@ -28,7 +28,6 @@ import net.minecraft.world.level.block.Block;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.HashSet;
 import java.util.List;
 
 /**
@@ -271,16 +270,5 @@ public class FramingHammer extends Item implements RendersOverlay{
                                                                 .addHighlightPos(highlightNodes);
         contextBuilder = (firstPos != null) ? contextBuilder.addFirstPos(firstPos.asLong()) : contextBuilder;
         FramingHammerOverlay.renderOverlay(contextBuilder.build());
-    }
-    
-    public @NotNull Iterable<JointNode> getNodes(@NotNull ItemStack itemStack) {
-        HashSet<JointNode> nodes = new HashSet<>();
-        
-        BlockPos firstPos = FramingHammer.getFirstPos(itemStack);
-        if (firstPos != null) {
-            nodes.add(new JointNode(firstPos));
-        }
-        
-        return nodes;
     }
 }

@@ -9,7 +9,6 @@ import com.github.betterbuiltfool.ui.overlays.NodeOverlayContextBuilder;
 import com.github.betterbuiltfool.validation.ItemValidator;
 import com.mojang.blaze3d.vertex.PoseStack;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
-import it.unimi.dsi.fastutil.longs.LongSet;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -266,13 +265,7 @@ public class FramingHammer extends Item implements RendersOverlay{
         ClientLocalNodes.requestRefresh(client);
         
         BlockPos firstPos = getFirstPos(itemStack);
-        var highlightNodes = new LongOpenHashSet(
-                ClientLocalNodes.getLocalNodes()
-                                .values()
-                                .stream()
-                                .flatMapToLong(LongSet::longStream)
-                                .toArray()
-        );
+        var highlightNodes = new LongOpenHashSet();
         var contextBuilder =
                 new NodeOverlayContextBuilder(client, poseStack).addNodeMap(ClientLocalNodes.getLocalNodes())
                                                                 .addHighlightPos(highlightNodes);

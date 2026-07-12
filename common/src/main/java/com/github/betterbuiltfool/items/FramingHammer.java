@@ -5,10 +5,10 @@ import com.github.betterbuiltfool.client.ClientLocalNodes;
 import com.github.betterbuiltfool.data.FramedStructureStorage;
 import com.github.betterbuiltfool.structure.JointNode;
 import com.github.betterbuiltfool.ui.overlays.FramingHammerOverlay;
+import com.github.betterbuiltfool.ui.overlays.NodeOverlayContextBuilder;
 import com.github.betterbuiltfool.validation.ItemValidator;
 import com.mojang.blaze3d.vertex.PoseStack;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
-import it.unimi.dsi.fastutil.longs.LongSet;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -28,7 +28,6 @@ import net.minecraft.world.level.block.Block;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.HashSet;
 import java.util.List;
 
 /**
@@ -264,24 +263,12 @@ public class FramingHammer extends Item implements RendersOverlay{
     ) {
         ClientLocalNodes.requestRefresh(client);
         
-        LongOpenHashSet nodes = new LongOpenHashSet();
         BlockPos firstPos = getFirstPos(itemStack);
-        if (firstPos != null) {
-            nodes.add(firstPos.asLong());
-        }
-        nodes.addAll(ClientLocalNodes.getLocalNodes().values().stream().flatMapToLong(LongSet::longStream).boxed()
-                                     .toList());
-        FramingHammerOverlay.renderOverlay(client, poseStack, nodes);
-    }
-    
-    public @NotNull Iterable<JointNode> getNodes(@NotNull ItemStack itemStack) {
-        HashSet<JointNode> nodes = new HashSet<>();
-        
-        BlockPos firstPos = FramingHammer.getFirstPos(itemStack);
-        if (firstPos != null) {
-            nodes.add(new JointNode(firstPos));
-        }
-        
-        return nodes;
+        var highlightNodes = new LongOpenHashSet();
+        var contextBuilder =
+                new NodeOverlayContextBuilder(client, poseStack).addNodeMap(ClientLocalNodes.getLocalNodes())
+                                                                .addHighlightPos(highlightNodes);
+        contextBuilder = (firstPos != null) ? contextBuilder.addFirstPos(firstPos.asLong()) : contextBuilder;
+        FramingHammerOverlay.renderOverlay(contextBuilder.build());
     }
 }

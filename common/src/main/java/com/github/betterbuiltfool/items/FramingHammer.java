@@ -16,6 +16,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.BlockItem;
@@ -38,9 +39,36 @@ public class FramingHammer extends Item implements RendersOverlay{
     public static final String ITEM_ID = "framing_hammer";
     
     public static final String FIRST_POS_DATA = "FirstPosData";
+    public static final String SECOND_POS_DATA = "SecondPosData";
     
     public FramingHammer(Properties properties) {
         super(properties);
+    }
+    
+    @Override
+    public void inventoryTick(ItemStack stack,
+                              Level level,
+                              Entity entity,
+                              int slotId,
+                              boolean isSelected
+    ) {
+        if (!isSelected || !(entity instanceof Player player)) {
+            return;
+        }
+        
+        DynamicFraming.LOGGER.info("Ticking Framing Mallet");
+        
+        Long firstPos = getPos(stack, FIRST_POS_DATA);
+        if (firstPos == null) {
+            return;
+        }
+        
+        DynamicFraming.LOGGER.info("FirstPos found");
+        
+        var ray = getPlayerPOVHitResult(level, player, ClipContext.Fluid.NONE);
+        var lookPos = ray.getBlockPos();
+        
+        setPos(stack, SECOND_POS_DATA, calcSecondPos(BlockPos.of(firstPos), lookPos));
     }
     
     @Override
@@ -53,6 +81,7 @@ public class FramingHammer extends Item implements RendersOverlay{
         
         if (player.isShiftKeyDown()) {
             clearPos(hammerTool, FIRST_POS_DATA);
+            clearPos(hammerTool, SECOND_POS_DATA);
             return InteractionResultHolder.consume(hammerTool);
         }
         
@@ -64,7 +93,7 @@ public class FramingHammer extends Item implements RendersOverlay{
             return firstUse(hammerTool, lookPos);
         }
         
-        return secondUse(level, player, BlockPos.of(firstPos), lookPos, hammerTool);
+        return secondUse(level, player, BlockPos.of(firstPos), hammerTool);
     }
     
     @Override
@@ -99,15 +128,19 @@ public class FramingHammer extends Item implements RendersOverlay{
             Level level,
             Player player,
             BlockPos firstPos,
-            BlockPos lookPos,
             ItemStack hammerTool
     ) {
-        var secondPos = calcSecondPos(firstPos, lookPos);
+        var secondPos = getPos(hammerTool, SECOND_POS_DATA);
+        
+        if (secondPos == null) {
+            return InteractionResultHolder.consume(hammerTool);
+        }
         
         var offhandItem = player.getOffhandItem();
         
+        // TODO: remove edge generation and add to Froe tool
         var startNode = new JointNode(firstPos);
-        var endNode = new JointNode(secondPos);
+        var endNode = new JointNode(BlockPos.of(secondPos));
         
         if (!(offhandItem.getItem() instanceof BlockItem offhandBlock)) {
             DynamicFraming.LOGGER.info("Invalid offhand item {}", offhandItem.getDisplayName());
@@ -126,7 +159,7 @@ public class FramingHammer extends Item implements RendersOverlay{
             var storage = FramedStructureStorage.get(level);
             var structureGraph = FramedStructureStorage.getOrCreateDimensionGraph(level);
             
-            structureGraph.connect(firstPos.asLong(), secondPos.asLong());
+            structureGraph.connect(firstPos.asLong(), secondPos);
             storage.setDirty();
         }
         
@@ -137,6 +170,7 @@ public class FramingHammer extends Item implements RendersOverlay{
         if (inventory.countItem(offhandItem.getItem()) < materialCost) {
             DynamicFraming.LOGGER.info("Not enough {} for edge length of {}", offhandItem.getDisplayName().getString(), materialCost);
             clearPos(hammerTool, FIRST_POS_DATA);
+            clearPos(hammerTool, SECOND_POS_DATA);
             return InteractionResultHolder.consume(hammerTool);
         }
         
@@ -144,6 +178,7 @@ public class FramingHammer extends Item implements RendersOverlay{
         removeMaterialCost(inventory, offhandItem, materialCost);
         
         clearPos(hammerTool, FIRST_POS_DATA);
+        clearPos(hammerTool, SECOND_POS_DATA);
         return InteractionResultHolder.success(hammerTool);
     }
     
@@ -333,6 +368,7 @@ public class FramingHammer extends Item implements RendersOverlay{
         ClientLocalNodes.requestRefresh(client);
         
         var firstPos = getPos(itemStack, FIRST_POS_DATA);
+        var secondPos = getPos(itemStack, SECOND_POS_DATA);
         var highlightNodes = new LongOpenHashSet();
         var contextBuilder =
                 new NodeOverlayContextBuilder(client, poseStack).addNodeMap(ClientLocalNodes.getLocalNodes())
@@ -340,6 +376,9 @@ public class FramingHammer extends Item implements RendersOverlay{
         contextBuilder = (firstPos != null) ? contextBuilder.addHighlightPos(firstPos)
                                             : contextBuilder;  // TODO: remove debug line
         contextBuilder = (firstPos != null) ? contextBuilder.addFirstPos(firstPos) : contextBuilder;
+        contextBuilder = (secondPos != null) ? contextBuilder.addHighlightPos(secondPos)
+                                             : contextBuilder;  // TODO: remove debug line
+        contextBuilder = (secondPos != null) ? contextBuilder.addSecondPos(secondPos) : contextBuilder;
         FramingHammerOverlay.renderOverlay(contextBuilder.build());
     }
 }

@@ -91,8 +91,14 @@ public class FramingHammer extends Item implements RendersOverlay{
     private @NotNull InteractionResultHolder<ItemStack> firstUse(ItemStack hammerTool,
                                                                  BlockPos lookPos
     ) {
-        setPos(hammerTool, FIRST_POS_DATA, lookPos.asLong());
-        return InteractionResultHolder.success(hammerTool);
+        CompoundTag posTag = hammerTool.getTagElement(nbtKey);
+        
+        if (posTag == null) {
+            return null;
+        }
+        
+        return posTag.getLong("PosData");
+        
     }
     
     private @NotNull InteractionResultHolder<ItemStack> secondUse(
@@ -285,13 +291,6 @@ public class FramingHammer extends Item implements RendersOverlay{
         
         posTag.put(nbtKey, posData);
         
-    }
-    
-    public static void clearPos(
-            @NotNull ItemStack hammerTool,
-            String nbtKey
-    ) {
-        hammerTool.removeTagKey(nbtKey);
     }
     
     @Override

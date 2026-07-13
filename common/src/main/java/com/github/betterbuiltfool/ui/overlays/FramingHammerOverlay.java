@@ -53,12 +53,15 @@ public class FramingHammerOverlay {
                 if (node < connection || !nodeMap.containsKey(connection)) {
                     var lineColor = defaultColor;
                     if (hasHighlightEdge && node == firstHighlightPoint && connection == secondHighlightPoint) {
-                        lineColor = highlightColor;
+                        // TODO: remove all of this rigamarole b/c it will never be true. However, we want this logic
+                        // for rendering with the froe, where it can be true.
+                        continue;
                     }
                     lineRenderer.renderLine(node, connection, lineColor);
                 }
             }
         }
+        lineRenderer.renderLine(firstHighlightPoint, secondHighlightPoint, highlightColor);
         
         lineRenderer.finishBatch();
     }

@@ -240,60 +240,6 @@ public class FramingHammer extends Item implements RendersOverlay{
     }
     
     /**
-     * Extracts the first set pos from the itemstack tags.
-     * If null, first pos is unset.
-     *
-     * @param hammerTool The ItemStack version of the tool
-     * @return BlockPos of first set point or null if none.
-     */
-    public static @Nullable BlockPos getFirstPos(@NotNull ItemStack hammerTool) {
-        // TODO: Extract this to common class for use by other tools
-        CompoundTag firstPosTag = hammerTool.getTagElement(FIRST_POS_DATA);
-        
-        if (firstPosTag == null) {
-            return null;
-        }
-        
-        return new BlockPos(
-                firstPosTag.getInt("X"),
-                firstPosTag.getInt("Y"),
-                firstPosTag.getInt("Z")
-        );
-        
-    }
-    
-    /**
-     * Creates or modifies a tag on the tool with the first set position.
-     *
-     * @param hammerTool The ItemStack version of the tool
-     * @param lookPos The BlockPos to be stored as the first position
-     */
-    private void setFirstPos(
-            @NotNull ItemStack hammerTool,
-            @NotNull BlockPos lookPos
-    ) {
-        // TODO: Extract this to common class for use by other tools
-        CompoundTag firstPosTag = hammerTool.getOrCreateTag();
-        
-        CompoundTag posTag = new CompoundTag();
-        posTag.putInt("X", lookPos.getX());
-        posTag.putInt("Y", lookPos.getY());
-        posTag.putInt("Z", lookPos.getZ());
-        
-        firstPosTag.put(FIRST_POS_DATA, posTag);
-    }
-    
-    /**
-     * Clears the FirstPos tag from the tool item.
-     *
-     * @param hammerTool The ItemStack version of the tool
-     */
-    private void clearFirstPos( @NotNull ItemStack hammerTool) {
-        // TODO: Extract this to common class for use by other tools
-        hammerTool.removeTagKey(FIRST_POS_DATA);
-    }
-    
-    /**
      * Extracts the set pos from the itemstack tags.
      * If null, the position is unset.
      *

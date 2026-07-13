@@ -91,14 +91,8 @@ public class FramingHammer extends Item implements RendersOverlay{
     private @NotNull InteractionResultHolder<ItemStack> firstUse(ItemStack hammerTool,
                                                                  BlockPos lookPos
     ) {
-        CompoundTag posTag = hammerTool.getTagElement(nbtKey);
-        
-        if (posTag == null) {
-            return null;
-        }
-        
-        return posTag.getLong("PosData");
-        
+        setPos(hammerTool, FIRST_POS_DATA, lookPos);
+        return InteractionResultHolder.success(hammerTool);
     }
     
     private @NotNull InteractionResultHolder<ItemStack> secondUse(
@@ -264,6 +258,15 @@ public class FramingHammer extends Item implements RendersOverlay{
         hammerTool.removeTagKey(FIRST_POS_DATA);
     }
     
+    /**
+     * Extracts the set pos from the itemstack tags.
+     * If null, the position is unset.
+     *
+     * @param hammerTool The ItemStack version of the tool
+     * @param nbtKey     The name of the position tag to try and get
+     *
+     * @return packed value of set point or null if none.
+     */
     @Nullable
     public static Long getPos(
             @NotNull ItemStack hammerTool,
@@ -279,6 +282,35 @@ public class FramingHammer extends Item implements RendersOverlay{
         
     }
     
+    /**
+     * Clears the given position tag from the tool item.
+     *
+     * @param hammerTool The ItemStack version of the tool
+     * @param nbtKey     The tag name to be removed
+     */
+    public static void clearPos(
+            @NotNull ItemStack hammerTool,
+            String nbtKey
+    ) {
+        hammerTool.removeTagKey(nbtKey);
+    }
+    
+    public static void setPos(
+            @NotNull ItemStack hammerTool,
+            String nbtKey,
+            BlockPos pos
+    ) {
+        setPos(hammerTool, nbtKey, pos.asLong());
+        
+    }
+    
+    /**
+     * Creates or modifies a tag on the tool with a block position.
+     *
+     * @param hammerTool The ItemStack version of the tool
+     * @param nbtKey     The name of the position tag to set
+     * @param pos        A long representing the BlockPos to be stored
+     */
     public static void setPos(
             @NotNull ItemStack hammerTool,
             String nbtKey,

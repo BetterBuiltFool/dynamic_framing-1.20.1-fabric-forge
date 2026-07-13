@@ -44,25 +44,6 @@ public class FramingHammer extends Item implements RendersOverlay{
     }
     
     @Override
-    public void appendHoverText(
-            ItemStack stack,
-            @Nullable Level level,
-            List<Component> tooltipComponents,
-            TooltipFlag isAdvanced
-    ) {
-        var firstPos = getFirstPos(stack);
-        
-        if (firstPos != null) {
-            tooltipComponents.add(
-                    Component.translatable(
-                            "tooltip.dynamic_framing.framing_hammer.firstpos"
-                    ).append(firstPos.toShortString())
-            );
-        }
-        super.appendHoverText(stack, level, tooltipComponents, isAdvanced);
-    }
-    
-    @Override
     public @NotNull InteractionResultHolder<ItemStack> use(
             Level level,
             Player player,
@@ -71,11 +52,11 @@ public class FramingHammer extends Item implements RendersOverlay{
         var hammerTool = player.getMainHandItem();
         
         if (player.isShiftKeyDown()) {
-            clearFirstPos(hammerTool);
+            clearPos(hammerTool, FIRST_POS_DATA);
             return InteractionResultHolder.consume(hammerTool);
         }
         
-        var firstPos = getFirstPos(hammerTool);
+        var firstPos = getPos(hammerTool, FIRST_POS_DATA);
         var ray = getPlayerPOVHitResult(level, player, ClipContext.Fluid.NONE);
         var lookPos = ray.getBlockPos();
         
@@ -83,13 +64,34 @@ public class FramingHammer extends Item implements RendersOverlay{
             return firstUse(hammerTool, lookPos);
         }
         
-        return secondUse(level, player, firstPos, lookPos, hammerTool);
+        return secondUse(level, player, BlockPos.of(firstPos), lookPos, hammerTool);
+    }
+    
+    @Override
+    public void appendHoverText(
+            ItemStack stack,
+            @Nullable Level level,
+            List<Component> tooltipComponents,
+            TooltipFlag isAdvanced
+    ) {
+        var firstPos = getPos(stack, FIRST_POS_DATA);
+        
+        if (firstPos != null) {
+            tooltipComponents.add(
+                    Component.translatable(
+                            "tooltip.dynamic_framing.framing_hammer.firstpos"
+                             )
+                             .append(BlockPos.of(firstPos)
+                                             .toShortString())
+            );
+        }
+        super.appendHoverText(stack, level, tooltipComponents, isAdvanced);
     }
     
     private @NotNull InteractionResultHolder<ItemStack> firstUse(ItemStack hammerTool,
                                                                  BlockPos lookPos
     ) {
-        setFirstPos(hammerTool, lookPos);
+        setPos(hammerTool, FIRST_POS_DATA, lookPos.asLong());
         return InteractionResultHolder.success(hammerTool);
     }
     
@@ -134,14 +136,14 @@ public class FramingHammer extends Item implements RendersOverlay{
         
         if (inventory.countItem(offhandItem.getItem()) < materialCost) {
             DynamicFraming.LOGGER.info("Not enough {} for edge length of {}", offhandItem.getDisplayName().getString(), materialCost);
-            clearFirstPos(hammerTool);
+            clearPos(hammerTool, FIRST_POS_DATA);
             return InteractionResultHolder.consume(hammerTool);
         }
         
         edge.generateFill(level, fillBlock);
         removeMaterialCost(inventory, offhandItem, materialCost);
         
-        clearFirstPos(hammerTool);
+        clearPos(hammerTool, FIRST_POS_DATA);
         return InteractionResultHolder.success(hammerTool);
     }
     
@@ -299,12 +301,14 @@ public class FramingHammer extends Item implements RendersOverlay{
     ) {
         ClientLocalNodes.requestRefresh(client);
         
-        BlockPos firstPos = getFirstPos(itemStack);
+        var firstPos = getPos(itemStack, FIRST_POS_DATA);
         var highlightNodes = new LongOpenHashSet();
         var contextBuilder =
                 new NodeOverlayContextBuilder(client, poseStack).addNodeMap(ClientLocalNodes.getLocalNodes())
                                                                 .addHighlightPos(highlightNodes);
-        contextBuilder = (firstPos != null) ? contextBuilder.addFirstPos(firstPos.asLong()) : contextBuilder;
+        contextBuilder = (firstPos != null) ? contextBuilder.addHighlightPos(firstPos)
+                                            : contextBuilder;  // TODO: remove debug line
+        contextBuilder = (firstPos != null) ? contextBuilder.addFirstPos(firstPos) : contextBuilder;
         FramingHammerOverlay.renderOverlay(contextBuilder.build());
     }
 }

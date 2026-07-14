@@ -26,7 +26,7 @@ public class StructureEdge extends Edge{
                 BlockPos.betweenClosedStream(
                         getStartNode().getPosition(),
                         getEndNode().getPosition())
-                .filter(blockPos -> BlockPosValidator.validateEdgePlacement(level, blockPos))
+                        .filter(blockPos -> BlockPosValidator.validate(level, blockPos))
                 .count());
     }
     
@@ -35,7 +35,7 @@ public class StructureEdge extends Edge{
         var firstPos = getStartNode().getPosition();
         var secondPos = getEndNode().getPosition();
         BlockPos.betweenClosedStream(firstPos, secondPos)
-            .filter(blockPos -> BlockPosValidator.validateEdgePlacement(level, blockPos))
+                .filter(blockPos -> BlockPosValidator.validate(level, blockPos))
             .forEach(pos -> {
             var currentBlockState = level.getBlockState(pos);
             if (!currentBlockState.isAir()){

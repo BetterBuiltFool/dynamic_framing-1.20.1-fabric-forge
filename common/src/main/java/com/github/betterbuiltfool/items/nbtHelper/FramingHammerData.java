@@ -20,11 +20,11 @@ public class FramingHammerData {
     }
     
     //region Public Fields
-    public @Nullable Long getFirstPos() {
+    public long getFirstPos() {
         return firstPos;
     }
     
-    public @Nullable Long getSecondPos() {
+    public long getSecondPos() {
         return secondPos;
     }
     

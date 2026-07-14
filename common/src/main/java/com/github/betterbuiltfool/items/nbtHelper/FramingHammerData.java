@@ -9,7 +9,7 @@ public class FramingHammerData {
     public static final String FIRST_POS_DATA = "FirstPosData";
     public static final String SECOND_POS_DATA = "SecondPosData";
     
-    private final ItemStack wrapped;
+    public final ItemStack wrapped;
     private Long firstPos;
     private Long secondPos;
     

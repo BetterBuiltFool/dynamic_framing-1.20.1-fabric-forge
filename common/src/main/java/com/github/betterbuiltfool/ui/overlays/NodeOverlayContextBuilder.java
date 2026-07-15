@@ -11,12 +11,15 @@ import it.unimi.dsi.fastutil.objects.Object2LongOpenHashMap;
 import net.minecraft.client.Minecraft;
 import org.jetbrains.annotations.Nullable;
 
+import java.awt.*;
+
 public class NodeOverlayContextBuilder {
     public final Long2ObjectMap<LongSet> nodeMap = new Long2ObjectOpenHashMap<>();
     private final Minecraft client;
     private final PoseStack poseStack;
     private final Object2LongMap<String> highlightEdgePositions = new Object2LongOpenHashMap<>();
     private final LongSet highlightNodes = new LongOpenHashSet();
+    private Color highlightColor = new Color(0, 255, 0);
     
     public NodeOverlayContextBuilder(Minecraft client,
                                      PoseStack poseStack
@@ -50,13 +53,19 @@ public class NodeOverlayContextBuilder {
         return this;
     }
     
+    public NodeOverlayContextBuilder setHighlightColor(Color color) {
+        this.highlightColor = color;
+        return this;
+    }
+    
     public NodeOverlayContext build() {
         return new NodeOverlayContext(
                 this.client,
                 this.poseStack,
                 this.nodeMap,
                 this.getHighlightEdge(),
-                this.highlightNodes
+                this.highlightNodes,
+                this.highlightColor
         );
     }
     

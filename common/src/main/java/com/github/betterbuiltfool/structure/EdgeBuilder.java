@@ -10,10 +10,11 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 
 public class EdgeBuilder {
     
-    public static void build(Level level,
-                             long firstPos,
-                             long secondPos,
-                             Block edgeMaterial
+    public static void build(
+            Level level,
+            long firstPos,
+            long secondPos,
+            Block edgeMaterial
     ) {
         var startPos = BlockPos.of(firstPos);
         var endPos = BlockPos.of(secondPos);
@@ -32,5 +33,17 @@ public class EdgeBuilder {
                 .filter(blockPos -> BlockPosValidator.validate(level, blockPos))
                 .forEach(pos -> level.setBlockAndUpdate(pos, blockState));
         
+    }
+    
+    public static int getMaterialCost(
+            Level level,
+            long firstPos,
+            long secondPos
+    ) {
+        return Math.toIntExact(
+                BlockPos.betweenClosedStream(BlockPos.of(firstPos), BlockPos.of(secondPos))
+                        .filter(blockPos -> BlockPosValidator.validate(level, blockPos))
+                        .count()
+        );
     }
 }

@@ -7,6 +7,7 @@ import com.github.betterbuiltfool.items.nbtHelper.FramingHammerData;
 import com.github.betterbuiltfool.structure.JointNode;
 import com.github.betterbuiltfool.ui.overlays.FramingHammerOverlay;
 import com.github.betterbuiltfool.ui.overlays.NodeOverlayContextBuilder;
+import com.github.betterbuiltfool.validation.EdgeValidator;
 import com.github.betterbuiltfool.validation.ItemValidator;
 import com.mojang.blaze3d.vertex.PoseStack;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
@@ -87,7 +88,7 @@ public class FramingHammer extends Item implements RendersOverlay{
             return firstUse(hammerTool, lookPos);
         }
         
-        return secondUse(level, player, BlockPos.of(hammerTool.getFirstPos()), hammerTool);
+        return secondUse(level, player, hammerTool);
     }
     
     @Override
@@ -122,7 +123,6 @@ public class FramingHammer extends Item implements RendersOverlay{
     private @NotNull InteractionResultHolder<ItemStack> secondUse(
             Level level,
             Player player,
-            BlockPos firstPos,
             FramingHammerData hammerTool
     ) {
         if (!hammerTool.hasSecondPos()) {
@@ -130,12 +130,19 @@ public class FramingHammer extends Item implements RendersOverlay{
             hammerTool.clear();
             return InteractionResultHolder.consume(hammerTool.wrapped);
         }
-        
+        var firstPos = hammerTool.getFirstPos();
         var secondPos = hammerTool.getSecondPos();
+        
+        if (!EdgeValidator.validate(level, firstPos, secondPos)) {
+            DynamicFraming.LOGGER.info("New edge obstructed!");
+            hammerTool.clear();
+            return InteractionResultHolder.consume(hammerTool.wrapped);
+        }
+        
         var offhandItem = player.getOffhandItem();
         
         // TODO: remove edge generation and add to Froe tool
-        var startNode = new JointNode(firstPos);
+        var startNode = new JointNode(BlockPos.of(firstPos));
         var endNode = new JointNode(BlockPos.of(secondPos));
         
         if (!(offhandItem.getItem() instanceof BlockItem offhandBlock)) {
@@ -155,7 +162,7 @@ public class FramingHammer extends Item implements RendersOverlay{
             var storage = FramedStructureStorage.get(level);
             var structureGraph = FramedStructureStorage.getOrCreateDimensionGraph(level);
             
-            structureGraph.connect(firstPos.asLong(), secondPos);
+            structureGraph.connect(firstPos, secondPos);
             storage.setDirty();
         }
         

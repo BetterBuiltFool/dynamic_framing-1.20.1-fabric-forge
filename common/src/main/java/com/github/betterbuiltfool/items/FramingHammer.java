@@ -30,6 +30,7 @@ import net.minecraft.world.level.block.Block;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.awt.*;
 import java.util.List;
 
 /**
@@ -254,14 +255,17 @@ public class FramingHammer extends Item implements RendersOverlay{
                 new NodeOverlayContextBuilder(client, poseStack).addNodeMap(ClientLocalNodes.getLocalNodes())
                                                                 .addHighlightPos(highlightNodes);
         // TODO: This is a mess, clean it up.
-        contextBuilder = hammerTool.hasFirstPos() ? contextBuilder.addHighlightPos(hammerTool.getFirstPos())
-                                                  : contextBuilder;  // TODO: remove debug line
-        contextBuilder = hammerTool.hasFirstPos() ? contextBuilder.addFirstPos(hammerTool.getFirstPos())
-                                                  : contextBuilder;
-        contextBuilder = hammerTool.hasSecondPos() ? contextBuilder.addHighlightPos(hammerTool.getSecondPos())
-                                                   : contextBuilder;  // TODO: remove debug line
-        contextBuilder = hammerTool.hasSecondPos() ? contextBuilder.addSecondPos(hammerTool.getSecondPos())
-                                                   : contextBuilder;
+        if (hammerTool.hasFirstPos() && hammerTool.hasSecondPos()) {
+            var firstPos = hammerTool.getFirstPos();
+            var secondPos = hammerTool.getSecondPos();
+            if (!EdgeValidator.validate(client.level, firstPos, secondPos)) {
+                contextBuilder = contextBuilder.setHighlightColor(new Color(255, 0, 0));
+            }
+            contextBuilder = contextBuilder.addHighlightPos(firstPos)
+                                           .addFirstPos(firstPos)
+                                           .addHighlightPos(secondPos)
+                                           .addSecondPos(secondPos);
+        }
         FramingHammerOverlay.renderOverlay(contextBuilder.build());
     }
 }

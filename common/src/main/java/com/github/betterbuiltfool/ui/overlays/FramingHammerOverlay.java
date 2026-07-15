@@ -11,7 +11,6 @@ import java.awt.*;
 
 public class FramingHammerOverlay {
     private static Color defaultColor = new Color(0, 0, 255);
-    private static Color highlightColor = new Color(0, 255, 0);
     
     public static void renderOverlay(NodeOverlayContext context) {
         renderEdges(context);
@@ -61,7 +60,7 @@ public class FramingHammerOverlay {
                 }
             }
         }
-        lineRenderer.renderLine(firstHighlightPoint, secondHighlightPoint, highlightColor);
+        lineRenderer.renderLine(firstHighlightPoint, secondHighlightPoint, context.highlightColor);
         
         lineRenderer.finishBatch();
     }

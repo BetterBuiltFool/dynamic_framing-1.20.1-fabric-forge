@@ -85,7 +85,7 @@ public class FramingHammer extends Item implements RendersOverlay{
             return firstUse(hammerTool, lookPos);
         }
         
-        return secondUse(level, player, hammerTool);
+        return secondUse(level, hammerTool);
     }
     
     @Override
@@ -119,7 +119,6 @@ public class FramingHammer extends Item implements RendersOverlay{
     
     private @NotNull InteractionResultHolder<ItemStack> secondUse(
             Level level,
-            Player player,
             FramingHammerData hammerTool
     ) {
         if (!hammerTool.hasSecondPos()) {

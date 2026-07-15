@@ -134,12 +134,6 @@ public class FramingHammer extends Item implements RendersOverlay{
         var firstPos = hammerTool.getFirstPos();
         var secondPos = hammerTool.getSecondPos();
         
-        if (!EdgeValidator.validate(level, firstPos, secondPos)) {
-            DynamicFraming.LOGGER.info("New edge obstructed!");
-            hammerTool.clear();
-            return InteractionResultHolder.consume(hammerTool.wrapped);
-        }
-        
         var offhandItem = player.getOffhandItem();
         
         // TODO: remove edge generation and add to Froe tool

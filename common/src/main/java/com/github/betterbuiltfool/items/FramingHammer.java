@@ -4,11 +4,9 @@ import com.github.betterbuiltfool.DynamicFraming;
 import com.github.betterbuiltfool.client.ClientLocalNodes;
 import com.github.betterbuiltfool.data.FramedStructureStorage;
 import com.github.betterbuiltfool.items.nbtHelper.FramingHammerData;
-import com.github.betterbuiltfool.structure.JointNode;
 import com.github.betterbuiltfool.ui.overlays.FramingHammerOverlay;
 import com.github.betterbuiltfool.ui.overlays.NodeOverlayContextBuilder;
 import com.github.betterbuiltfool.validation.EdgeValidator;
-import com.github.betterbuiltfool.validation.ItemValidator;
 import com.mojang.blaze3d.vertex.PoseStack;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import net.minecraft.client.Minecraft;
@@ -20,13 +18,11 @@ import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Block;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -134,46 +130,12 @@ public class FramingHammer extends Item implements RendersOverlay{
         var firstPos = hammerTool.getFirstPos();
         var secondPos = hammerTool.getSecondPos();
         
-        var offhandItem = player.getOffhandItem();
-        
-        // TODO: remove edge generation and add to Froe tool
-        var startNode = new JointNode(BlockPos.of(firstPos));
-        var endNode = new JointNode(BlockPos.of(secondPos));
-        
-        if (!(offhandItem.getItem() instanceof BlockItem offhandBlock)) {
-            DynamicFraming.LOGGER.info("Invalid offhand item {}", offhandItem.getDisplayName());
-            return InteractionResultHolder.consume(hammerTool.wrapped);
-        }
-        
-        Block fillBlock = offhandBlock.getBlock();
-        var edge = startNode.connectTo(endNode);
-        
-        if (!ItemValidator.validateStructureItem(offhandItem)) {
-            DynamicFraming.LOGGER.info("Invalid offhand item {}", offhandItem.getDisplayName());
-            return InteractionResultHolder.consume(hammerTool.wrapped);
-        }
-        
         if (!level.isClientSide) {
             var storage = FramedStructureStorage.get(level);
             var structureGraph = FramedStructureStorage.getOrCreateDimensionGraph(level);
             
             structureGraph.connect(firstPos, secondPos);
             storage.setDirty();
-        }
-        
-        int materialCost = edge.getMaterialCost(level);
-        
-        Inventory inventory = player.getInventory();
-        
-        if (inventory.countItem(offhandItem.getItem()) < materialCost) {
-            DynamicFraming.LOGGER.info("Not enough {} for edge length of {}", offhandItem.getDisplayName().getString(), materialCost);
-            hammerTool.clear();
-            return InteractionResultHolder.consume(hammerTool.wrapped);
-        }
-        
-        if (!level.isClientSide) {
-            edge.generateFill(level, fillBlock);
-            removeMaterialCost(inventory, offhandItem, materialCost);
         }
         hammerTool.clear();
         return InteractionResultHolder.success(hammerTool.wrapped);

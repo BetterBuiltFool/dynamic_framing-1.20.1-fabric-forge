@@ -3,31 +3,29 @@ package com.github.betterbuiltfool.items;
 import com.github.betterbuiltfool.DynamicFraming;
 import com.github.betterbuiltfool.client.ClientLocalNodes;
 import com.github.betterbuiltfool.data.FramedStructureStorage;
-import com.github.betterbuiltfool.structure.JointNode;
+import com.github.betterbuiltfool.items.nbtHelper.FramingHammerData;
 import com.github.betterbuiltfool.ui.overlays.FramingHammerOverlay;
 import com.github.betterbuiltfool.ui.overlays.NodeOverlayContextBuilder;
-import com.github.betterbuiltfool.validation.ItemValidator;
+import com.github.betterbuiltfool.validation.EdgeValidator;
 import com.mojang.blaze3d.vertex.PoseStack;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
-import net.minecraft.world.entity.player.Inventory;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.Block;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.awt.*;
 import java.util.List;
 
 /**
@@ -37,10 +35,56 @@ public class FramingHammer extends Item implements RendersOverlay{
     
     public static final String ITEM_ID = "framing_hammer";
     
-    public static final String FIRST_POS_DATA = "FirstPosData";
-    
     public FramingHammer(Properties properties) {
         super(properties);
+    }
+    
+    @Override
+    public void inventoryTick(ItemStack stack,
+                              Level level,
+                              Entity entity,
+                              int slotId,
+                              boolean isSelected
+    ) {
+        if (!isSelected || !(entity instanceof Player player) || level.isClientSide()) {
+            return;
+        }
+        
+        var hammerTool = new FramingHammerData(stack);
+        
+        if (!hammerTool.hasFirstPos()) {
+            return;
+        }
+        
+        long firstPos = hammerTool.getFirstPos();
+        
+        var ray = getPlayerPOVHitResult(level, player, ClipContext.Fluid.NONE);
+        var lookPos = ray.getBlockPos();
+        
+        hammerTool.setSecondPos(calcSecondPos(BlockPos.of(firstPos), lookPos).asLong());
+    }
+    
+    @Override
+    public @NotNull InteractionResultHolder<ItemStack> use(
+            Level level,
+            Player player,
+            InteractionHand usedHand
+    ) {
+        var hammerTool = new FramingHammerData(player.getMainHandItem());
+        
+        if (player.isShiftKeyDown()) {
+            hammerTool.clear();
+            return InteractionResultHolder.consume(hammerTool.wrapped);
+        }
+        
+        var ray = getPlayerPOVHitResult(level, player, ClipContext.Fluid.NONE);
+        var lookPos = ray.getBlockPos();
+        
+        if (!hammerTool.hasFirstPos()) {
+            return firstUse(hammerTool, lookPos);
+        }
+        
+        return secondUse(level, hammerTool);
     }
     
     @Override
@@ -50,137 +94,49 @@ public class FramingHammer extends Item implements RendersOverlay{
             List<Component> tooltipComponents,
             TooltipFlag isAdvanced
     ) {
-        var firstPos = getFirstPos(stack);
+        var tool = new FramingHammerData(stack);
         
-        if (firstPos != null) {
+        if (tool.hasFirstPos()) {
             tooltipComponents.add(
                     Component.translatable(
                             "tooltip.dynamic_framing.framing_hammer.firstpos"
-                    ).append(firstPos.toShortString())
+                             )
+                             .append(BlockPos.of(tool.getFirstPos())
+                                             .toShortString())
             );
         }
         super.appendHoverText(stack, level, tooltipComponents, isAdvanced);
     }
     
-    @Override
-    public @NotNull InteractionResultHolder<ItemStack> use(
-            Level level,
-            Player player,
-            InteractionHand usedHand
+    private @NotNull InteractionResultHolder<ItemStack> firstUse(
+            FramingHammerData hammerTool,
+            BlockPos lookPos
     ) {
-        var hammerTool = player.getMainHandItem();
-        
-        if (player.isShiftKeyDown()) {
-            clearFirstPos(hammerTool);
-            return InteractionResultHolder.consume(hammerTool);
-        }
-        
-        var firstPos = getFirstPos(hammerTool);
-        var ray = getPlayerPOVHitResult(level, player, ClipContext.Fluid.NONE);
-        var lookPos = ray.getBlockPos();
-        
-        if (firstPos == null) {
-            return firstUse(hammerTool, lookPos);
-        }
-        
-        return secondUse(level, player, firstPos, lookPos, hammerTool);
-    }
-    
-    private @NotNull InteractionResultHolder<ItemStack> firstUse(ItemStack hammerTool,
-                                                                 BlockPos lookPos
-    ) {
-        setFirstPos(hammerTool, lookPos);
-        return InteractionResultHolder.success(hammerTool);
+        hammerTool.setFirstPos(lookPos.asLong());
+        return InteractionResultHolder.success(hammerTool.wrapped);
     }
     
     private @NotNull InteractionResultHolder<ItemStack> secondUse(
             Level level,
-            Player player,
-            BlockPos firstPos,
-            BlockPos lookPos,
-            ItemStack hammerTool
+            FramingHammerData hammerTool
     ) {
-        var secondPos = calcSecondPos(firstPos, lookPos);
-        
-        var offhandItem = player.getOffhandItem();
-        
-        var startNode = new JointNode(firstPos);
-        var endNode = new JointNode(secondPos);
-        
-        if (!(offhandItem.getItem() instanceof BlockItem offhandBlock)) {
-            DynamicFraming.LOGGER.info("Invalid offhand item {}", offhandItem.getDisplayName());
-            return InteractionResultHolder.consume(hammerTool);
+        if (!hammerTool.hasSecondPos()) {
+            DynamicFraming.LOGGER.info("No second node detected. This shouldn't be happening.");
+            hammerTool.clear();
+            return InteractionResultHolder.consume(hammerTool.wrapped);
         }
-        
-        Block fillBlock = offhandBlock.getBlock();
-        var edge = startNode.connectTo(endNode);
-        
-        if (!ItemValidator.validateStructureItem(offhandItem)) {
-            DynamicFraming.LOGGER.info("Invalid offhand item {}", offhandItem.getDisplayName());
-            return InteractionResultHolder.consume(hammerTool);
-        }
+        var firstPos = hammerTool.getFirstPos();
+        var secondPos = hammerTool.getSecondPos();
         
         if (!level.isClientSide) {
             var storage = FramedStructureStorage.get(level);
             var structureGraph = FramedStructureStorage.getOrCreateDimensionGraph(level);
             
-            structureGraph.connect(firstPos.asLong(), secondPos.asLong());
+            structureGraph.connect(firstPos, secondPos);
             storage.setDirty();
         }
-        
-        int materialCost = edge.getMaterialCost(level);
-        
-        Inventory inventory = player.getInventory();
-        
-        if (inventory.countItem(offhandItem.getItem()) < materialCost) {
-            DynamicFraming.LOGGER.info("Not enough {} for edge length of {}", offhandItem.getDisplayName().getString(), materialCost);
-            clearFirstPos(hammerTool);
-            return InteractionResultHolder.consume(hammerTool);
-        }
-        
-        edge.generateFill(level, fillBlock);
-        removeMaterialCost(inventory, offhandItem, materialCost);
-        
-        clearFirstPos(hammerTool);
-        return InteractionResultHolder.success(hammerTool);
-    }
-    
-    /**
-     * Extracts the material cost from the given inventory, preferentially removing first from the inventory, and
-     * removing the remainder from the offhand stack.
-     * <p>
-     * Note this will not fail if the inventory does not have enough items.
-     *
-     * @param inventory The source inventory that supplies raw materials.
-     * @param offhandItem The item type to be removed, and secondary source of raw materials
-     * @param materialCost The total amount of materials to be extracted.
-     */
-    private void removeMaterialCost(
-            @NotNull Inventory inventory,
-            @NotNull ItemStack offhandItem,
-            int materialCost
-    ) {
-        int amountRemoved = 0;
-        for (ItemStack slotItem: inventory.items){
-            if (slotItem.getItem() != offhandItem.getItem()) {
-                continue;
-            }
-            int slotCount = slotItem.getCount();
-            amountRemoved += slotCount;
-            
-            if (amountRemoved >= materialCost) {
-                int amountUsed = amountRemoved - materialCost;
-                slotItem.setCount(amountUsed);
-                break;
-            } else {
-                slotItem.setCount(0);
-            }
-        }
-        if (amountRemoved < materialCost) {
-            int amountUsed = materialCost - amountRemoved;
-            offhandItem.setCount(offhandItem.getCount()-amountUsed);
-        }
-    
+        hammerTool.clear();
+        return InteractionResultHolder.success(hammerTool.wrapped);
     }
     
     /**
@@ -202,73 +158,30 @@ public class FramingHammer extends Item implements RendersOverlay{
         return firstPos.relative(axis, delta.get(axis));
     }
     
-    /**
-     * Extracts the first set pos from the itemstack tags.
-     * If null, first pos is unset.
-     *
-     * @param hammerTool The ItemStack version of the tool
-     * @return BlockPos of first set point or null if none.
-     */
-    public static @Nullable BlockPos getFirstPos(@NotNull ItemStack hammerTool) {
-        // TODO: Extract this to common class for use by other tools
-        CompoundTag firstPosTag = hammerTool.getTagElement(FIRST_POS_DATA);
-        
-        if (firstPosTag == null) {
-            return null;
-        }
-        
-        return new BlockPos(
-                firstPosTag.getInt("X"),
-                firstPosTag.getInt("Y"),
-                firstPosTag.getInt("Z")
-        );
-        
-    }
-    
-    /**
-     * Creates or modifies a tag on the tool with the first set position.
-     *
-     * @param hammerTool The ItemStack version of the tool
-     * @param lookPos The BlockPos to be stored as the first position
-     */
-    private void setFirstPos(
-            @NotNull ItemStack hammerTool,
-            @NotNull BlockPos lookPos
-    ) {
-        // TODO: Extract this to common class for use by other tools
-        CompoundTag firstPosTag = hammerTool.getOrCreateTag();
-        
-        CompoundTag posTag = new CompoundTag();
-        posTag.putInt("X", lookPos.getX());
-        posTag.putInt("Y", lookPos.getY());
-        posTag.putInt("Z", lookPos.getZ());
-        
-        firstPosTag.put(FIRST_POS_DATA, posTag);
-    }
-    
-    /**
-     * Clears the FirstPos tag from the tool item.
-     *
-     * @param hammerTool The ItemStack version of the tool
-     */
-    private void clearFirstPos( @NotNull ItemStack hammerTool) {
-        // TODO: Extract this to common class for use by other tools
-        hammerTool.removeTagKey(FIRST_POS_DATA);
-    }
-    
     @Override
     public void renderOverlay(Minecraft client,
                               PoseStack poseStack,
                               @NotNull ItemStack itemStack
     ) {
         ClientLocalNodes.requestRefresh(client);
+        var hammerTool = new FramingHammerData(itemStack);
         
-        BlockPos firstPos = getFirstPos(itemStack);
         var highlightNodes = new LongOpenHashSet();
         var contextBuilder =
                 new NodeOverlayContextBuilder(client, poseStack).addNodeMap(ClientLocalNodes.getLocalNodes())
                                                                 .addHighlightPos(highlightNodes);
-        contextBuilder = (firstPos != null) ? contextBuilder.addFirstPos(firstPos.asLong()) : contextBuilder;
+        // TODO: This is a mess, clean it up.
+        if (hammerTool.hasFirstPos() && hammerTool.hasSecondPos()) {
+            var firstPos = hammerTool.getFirstPos();
+            var secondPos = hammerTool.getSecondPos();
+            if (!EdgeValidator.validate(client.level, firstPos, secondPos)) {
+                contextBuilder = contextBuilder.setHighlightColor(new Color(255, 0, 0));
+            }
+            contextBuilder = contextBuilder.addHighlightPos(firstPos)
+                                           .addFirstPos(firstPos)
+                                           .addHighlightPos(secondPos)
+                                           .addSecondPos(secondPos);
+        }
         FramingHammerOverlay.renderOverlay(contextBuilder.build());
     }
 }

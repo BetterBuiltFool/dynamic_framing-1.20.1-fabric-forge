@@ -11,7 +11,6 @@ import java.awt.*;
 
 public class FramingHammerOverlay {
     private static Color defaultColor = new Color(0, 0, 255);
-    private static Color highlightColor = new Color(0, 255, 0);
     
     public static void renderOverlay(NodeOverlayContext context) {
         renderEdges(context);
@@ -53,12 +52,15 @@ public class FramingHammerOverlay {
                 if (node < connection || !nodeMap.containsKey(connection)) {
                     var lineColor = defaultColor;
                     if (hasHighlightEdge && node == firstHighlightPoint && connection == secondHighlightPoint) {
-                        lineColor = highlightColor;
+                        // TODO: remove all of this rigamarole b/c it will never be true. However, we want this logic
+                        // for rendering with the froe, where it can be true.
+                        continue;
                     }
                     lineRenderer.renderLine(node, connection, lineColor);
                 }
             }
         }
+        lineRenderer.renderLine(firstHighlightPoint, secondHighlightPoint, context.highlightColor);
         
         lineRenderer.finishBatch();
     }

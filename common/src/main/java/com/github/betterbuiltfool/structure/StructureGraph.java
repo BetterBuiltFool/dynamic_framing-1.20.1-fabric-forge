@@ -74,6 +74,22 @@ public final class StructureGraph {
         chunkMap.clear();
     }
     
+    public void remove(long pos) {
+        var node = posToNodeMap.getOrDefault(pos, null);
+        if (node == null) {
+            return;
+        }
+        for (long connection : node.getConnections()) {
+            var connectedNode = posToNodeMap.getOrDefault(connection, null);
+            if (connectedNode == null) {
+                return;
+            }
+            connectedNode.getConnections()
+                         .remove(pos);
+        }
+        posToNodeMap.remove(pos);
+    }
+    
     public void connect(long first, long second) {
         Node start = getOrCreateNode(first);
         Node end = getOrCreateNode(second);

@@ -1,12 +1,17 @@
 package com.github.betterbuiltfool.structure;
 
+import com.github.betterbuiltfool.data.FramedStructureStorage;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.LongSet;
 import net.minecraft.core.BlockPos;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.ChunkPos;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Arrays;
 import java.util.Optional;
 
 public class RaycastService {
@@ -113,13 +118,45 @@ public class RaycastService {
             return new GraphTarget.EdgeTarget(closestStart, closestEnd, closestDist);
         }
     }
-
-//    public static GraphTarget getClosest(
-//            Player player
-//    ) {
-//        Vec3 origin = player.getEyePosition(1.0f);
-//        Vec3 direction = player.getViewVector(1.0f).normalize();
-//    }
+    
+    private static double calcReach(Player player) {
+        return player.isCreative() ? 5 : 4.5;
+    }
+    
+    @Nullable
+    public static GraphTarget getClosest(
+            Player player
+    ) {
+        Vec3 origin = player.getEyePosition(1.0f);
+        Vec3 direction = player.getViewVector(1.0f)
+                               .normalize();
+        
+        Level level = player.level();
+        
+        long[] chunks = Arrays.stream(
+                                      FramedStructureStorage.getSurroundingChunks(new ChunkPos(BlockPos.containing(player.position()))))
+                              .mapToLong(ChunkPos::toLong)
+                              .toArray();
+        
+        Long2ObjectMap<LongSet> nodeMap = FramedStructureStorage.get(level)
+                                                                .getDimensionGraph(level.dimension())
+                                                                .getNodeMap(chunks);
+        
+        GraphTarget.NodeTarget nodeTarget = getClosestNode(origin, direction, calcReach(player), nodeMap);
+        GraphTarget.EdgeTarget edgeTarget = getClosestEdge(origin, direction, calcReach(player), nodeMap);
+        
+        if (nodeTarget == null && edgeTarget == null) {
+            return null;
+        }
+        if (nodeTarget == null) {
+            return edgeTarget;
+        }
+        if (edgeTarget == null) {
+            return nodeTarget;
+        }
+        
+        return nodeTarget.distance <= edgeTarget.distance ? nodeTarget : edgeTarget;
+    }
     
     
     public sealed interface GraphTarget {

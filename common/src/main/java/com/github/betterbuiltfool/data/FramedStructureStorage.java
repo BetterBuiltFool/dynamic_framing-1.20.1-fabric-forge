@@ -12,6 +12,7 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.saveddata.SavedData;
 import org.jetbrains.annotations.NotNull;
@@ -104,5 +105,13 @@ public class FramedStructureStorage extends SavedData {
         LongSet nodesPositions = dimensionGraph.getPackedNodesForChunk(pos);
         Long2ObjectMap<LongSet> nodeData = dimensionGraph.getNodeMap(nodesPositions);
         DynamicFramingNetworking.CHANNEL.sendToPlayer(player, new ChunkNodeDataPacket(nodeData));
+    }
+    
+    public static ChunkPos[] getSurroundingChunks(ChunkPos center) {
+        return ChunkPos.rangeClosed(
+                               center,
+                               1
+                       )
+                       .toArray(ChunkPos[]::new);
     }
 }

@@ -12,10 +12,10 @@ public class FramingHammerData {
     private static final String CONTAINER_KEY;
     
     public final ItemStack wrapped;
-    private Long firstPos;
-    private Long secondPos;
     @NotNull
     private final CompoundTag containerTag;
+    private Long firstPos;
+    private Long secondPos;
     
     static {
         FIRST_POS_DATA = DynamicFraming.MOD_ID + ":first_pos";

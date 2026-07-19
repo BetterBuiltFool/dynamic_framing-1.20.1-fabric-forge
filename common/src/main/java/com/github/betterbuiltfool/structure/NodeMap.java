@@ -6,11 +6,17 @@ import it.unimi.dsi.fastutil.longs.LongSet;
 import it.unimi.dsi.fastutil.objects.ObjectSet;
 import net.minecraft.network.FriendlyByteBuf;
 
+import java.util.Map;
+
 public class NodeMap {
     private final Long2ObjectMap<LongSet> graph;
     
-    private NodeMap() {
+    public NodeMap() {
         this.graph = new Long2ObjectOpenHashMap<>();
+    }
+    
+    public NodeMap(Map<? extends Long, ? extends LongSet> nodeMap) {
+        this.graph = new Long2ObjectOpenHashMap<>(nodeMap);
     }
     
     public static NodeMap decode(FriendlyByteBuf buffer) {
@@ -42,7 +48,15 @@ public class NodeMap {
         return graph;
     }
     
-    public ObjectSet<Long2ObjectMap.Entry<LongSet>> getEntrySet() {
+    public ObjectSet<Long2ObjectMap.Entry<LongSet>> entrySet() {
         return graph.long2ObjectEntrySet();
+    }
+    
+    public LongSet nodes() {
+        return graph.keySet();
+    }
+    
+    public boolean containsNode(long nodePos) {
+        return this.graph.containsKey(nodePos);
     }
 }

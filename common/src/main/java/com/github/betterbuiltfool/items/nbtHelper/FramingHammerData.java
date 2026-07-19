@@ -11,7 +11,7 @@ import org.jetbrains.annotations.Nullable;
 public class FramingHammerData {
     public static final String FIRST_POS_DATA;
     public static final String SECOND_POS_DATA;
-    private static final String CONTAINER_KEY;
+    public static final String CONTAINER_KEY;
     
     public final ItemStack wrapped;
     @NotNull

@@ -52,12 +52,12 @@ public final class StructureGraph {
      * @param nodePos A LongSet of packed positions whose connections we're after
      * @return A fastutil map representing the nodes and their connections
      */
-    public Long2ObjectMap<LongSet> getNodeMap(LongSet nodePos) {
+    public NodeMap getNodeMap(LongSet nodePos) {
         var subMap = posToNodeMap.values()
                                  .stream()
                                  .filter(x -> nodePos.contains(x.getPos()))
                                  .collect(Collectors.toMap(Node::getPos, Node::getConnections));
-        return new Long2ObjectOpenHashMap<>(subMap);
+        return new NodeMap(subMap);
     }
     
     /**
@@ -65,7 +65,7 @@ public final class StructureGraph {
      * @param nodePos An array of packed positions whose connections we're after
      * @return A fastutil map representing the nodes and their connections
      */
-    public Long2ObjectMap<LongSet> getNodeMap(long... nodePos) {
+    public NodeMap getNodeMap(long... nodePos) {
         return getNodeMap(new LongOpenHashSet(nodePos));
     }
     

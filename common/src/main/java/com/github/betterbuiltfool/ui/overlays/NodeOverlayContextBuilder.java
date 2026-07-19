@@ -1,9 +1,8 @@
 package com.github.betterbuiltfool.ui.overlays;
 
+import com.github.betterbuiltfool.structure.NodeMap;
 import com.github.betterbuiltfool.ui.NodeOverlayContext;
 import com.mojang.blaze3d.vertex.PoseStack;
-import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
-import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import it.unimi.dsi.fastutil.longs.LongSet;
 import it.unimi.dsi.fastutil.objects.Object2LongMap;
@@ -14,7 +13,7 @@ import org.jetbrains.annotations.Nullable;
 import java.awt.*;
 
 public class NodeOverlayContextBuilder {
-    public final Long2ObjectMap<LongSet> nodeMap = new Long2ObjectOpenHashMap<>();
+    public NodeMap nodeMap = new NodeMap();
     private final Minecraft client;
     private final PoseStack poseStack;
     private final Object2LongMap<String> highlightEdgePositions = new Object2LongOpenHashMap<>();
@@ -48,8 +47,8 @@ public class NodeOverlayContextBuilder {
         return this;
     }
     
-    public NodeOverlayContextBuilder addNodeMap(Long2ObjectMap<LongSet> nodeMap) {
-        this.nodeMap.putAll(nodeMap);
+    public NodeOverlayContextBuilder addNodeMap(NodeMap nodeMap) {
+        this.nodeMap = nodeMap;
         return this;
     }
     

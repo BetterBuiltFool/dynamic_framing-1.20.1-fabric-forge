@@ -1,8 +1,6 @@
 package com.github.betterbuiltfool.structure;
 
 import com.github.betterbuiltfool.data.FramedStructureStorage;
-import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
-import it.unimi.dsi.fastutil.longs.LongSet;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.ChunkPos;
@@ -42,14 +40,14 @@ public class RaycastService {
             Vec3 origin,
             Vec3 direction,
             double reach,
-            Long2ObjectMap<LongSet> nodeMap
+            NodeMap nodeMap
     ) {
         long closestPos = -1;
         double closestDist = Double.MAX_VALUE;
         
         Vec3 rayEnd = origin.add(direction.scale(reach));
         
-        for (var nodePos : nodeMap.keySet()) {
+        for (var nodePos : nodeMap.nodes()) {
             Vec3 center = Vec3.atCenterOf(BlockPos.of(nodePos));
             var hitResult = getBoundingBoxHitPoint(origin, rayEnd, center, center, NODE_THICKNESS);
             
@@ -79,7 +77,7 @@ public class RaycastService {
             Vec3 origin,
             Vec3 direction,
             double reach,
-            Long2ObjectMap<LongSet> nodeMap
+            NodeMap nodeMap
     ) {
         long closestStart = -1;
         long closestEnd = -1;
@@ -87,7 +85,7 @@ public class RaycastService {
         
         Vec3 rayEnd = origin.add(direction.scale(reach));
         
-        for (var entry : nodeMap.long2ObjectEntrySet()) {
+        for (var entry : nodeMap.entrySet()) {
             long startPos = entry.getLongKey();
             Vec3 startCenter = Vec3.atCenterOf(BlockPos.of(startPos));
             
@@ -138,7 +136,7 @@ public class RaycastService {
                               .mapToLong(ChunkPos::toLong)
                               .toArray();
         
-        Long2ObjectMap<LongSet> nodeMap = FramedStructureStorage.get(level)
+        NodeMap nodeMap = FramedStructureStorage.get(level)
                                                                 .getDimensionGraph(level.dimension())
                                                                 .getNodeMap(chunks);
         

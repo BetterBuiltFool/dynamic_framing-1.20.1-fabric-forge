@@ -36,7 +36,7 @@ public class RaycastService {
     }
     
     @Nullable
-    public static RaycastService.GraphHit.NodeHit getClosestNode(
+    public static GraphHit.NodeHit getClosestNode(
             Vec3 origin,
             Vec3 direction,
             double reach,
@@ -73,7 +73,7 @@ public class RaycastService {
     }
     
     @Nullable
-    public static RaycastService.GraphHit.EdgeHit getClosestEdge(
+    public static GraphHit.EdgeHit getClosestEdge(
             Vec3 origin,
             Vec3 direction,
             double reach,
@@ -122,7 +122,7 @@ public class RaycastService {
     }
     
     @Nullable
-    public static RaycastService.GraphHit getClosest(
+    public static GraphHit getClosest(
             Player player
     ) {
         Vec3 origin = player.getEyePosition(1.0f);
@@ -153,14 +153,7 @@ public class RaycastService {
             return nodeTarget;
         }
         
-        return nodeTarget.distance <= edgeTarget.distance ? nodeTarget : edgeTarget;
-    }
-    
-    
-    public sealed interface GraphHit {
-        record NodeHit(long packedPos, double distance) implements GraphHit {}
-        
-        record EdgeHit(long posA, long posB, double distance) implements GraphHit {}
+        return nodeTarget.distance() <= edgeTarget.distance() ? nodeTarget : edgeTarget;
     }
     
     

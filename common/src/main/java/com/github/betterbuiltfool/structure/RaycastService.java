@@ -137,7 +137,7 @@ public class RaycastService {
                               .toArray();
         
         NodeMap nodeMap = FramedStructureStorage.get(level)
-                                                                .getDimensionGraph(level.dimension())
+                                                .getOrCreateDimensionGraph(level.dimension())
                                                                 .getNodeMap(chunks);
         
         GraphHit.NodeHit nodeTarget = getClosestNode(origin, direction, calcReach(player), nodeMap);

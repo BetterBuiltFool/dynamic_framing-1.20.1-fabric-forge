@@ -36,7 +36,7 @@ public class RaycastService {
     }
     
     @Nullable
-    public static GraphTarget.NodeTarget getClosestNode(
+    public static RaycastService.GraphHit.NodeHit getClosestNode(
             Vec3 origin,
             Vec3 direction,
             double reach,
@@ -68,12 +68,12 @@ public class RaycastService {
         if (closestPos == -1) {
             return null;
         } else {
-            return new GraphTarget.NodeTarget(closestPos, closestDist);
+            return new GraphHit.NodeHit(closestPos, closestDist);
         }
     }
     
     @Nullable
-    public static GraphTarget.EdgeTarget getClosestEdge(
+    public static RaycastService.GraphHit.EdgeHit getClosestEdge(
             Vec3 origin,
             Vec3 direction,
             double reach,
@@ -113,7 +113,7 @@ public class RaycastService {
         if (closestStart == -1) {
             return null;
         } else {
-            return new GraphTarget.EdgeTarget(closestStart, closestEnd, closestDist);
+            return new GraphHit.EdgeHit(closestStart, closestEnd, closestDist);
         }
     }
     
@@ -122,7 +122,7 @@ public class RaycastService {
     }
     
     @Nullable
-    public static GraphTarget getClosest(
+    public static RaycastService.GraphHit getClosest(
             Player player
     ) {
         Vec3 origin = player.getEyePosition(1.0f);
@@ -140,8 +140,8 @@ public class RaycastService {
                                                                 .getDimensionGraph(level.dimension())
                                                                 .getNodeMap(chunks);
         
-        GraphTarget.NodeTarget nodeTarget = getClosestNode(origin, direction, calcReach(player), nodeMap);
-        GraphTarget.EdgeTarget edgeTarget = getClosestEdge(origin, direction, calcReach(player), nodeMap);
+        GraphHit.NodeHit nodeTarget = getClosestNode(origin, direction, calcReach(player), nodeMap);
+        GraphHit.EdgeHit edgeTarget = getClosestEdge(origin, direction, calcReach(player), nodeMap);
         
         if (nodeTarget == null && edgeTarget == null) {
             return null;
@@ -157,10 +157,10 @@ public class RaycastService {
     }
     
     
-    public sealed interface GraphTarget {
-        record NodeTarget(long packedPos, double distance) implements GraphTarget {}
+    public sealed interface GraphHit {
+        record NodeHit(long packedPos, double distance) implements GraphHit {}
         
-        record EdgeTarget(long posA, long posB, double distance) implements GraphTarget {}
+        record EdgeHit(long posA, long posB, double distance) implements GraphHit {}
     }
     
     

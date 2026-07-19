@@ -4,6 +4,7 @@ import com.github.betterbuiltfool.DynamicFraming;
 import com.github.betterbuiltfool.client.ClientLocalNodes;
 import com.github.betterbuiltfool.data.FramedStructureStorage;
 import com.github.betterbuiltfool.items.nbtHelper.FramingHammerData;
+import com.github.betterbuiltfool.structure.RaycastService;
 import com.github.betterbuiltfool.ui.overlays.FramingHammerOverlay;
 import com.github.betterbuiltfool.ui.overlays.NodeOverlayContextBuilder;
 import com.github.betterbuiltfool.validation.EdgeValidator;
@@ -53,6 +54,8 @@ public class FramingHammer extends Item implements RendersOverlay{
         var hammerTool = new FramingHammerData(stack);
         
         if (!hammerTool.hasFirstPos()) {
+            var selection = RaycastService.getClosest(player);
+            hammerTool.setSelection(selection);
             return;
         }
         
@@ -95,6 +98,16 @@ public class FramingHammer extends Item implements RendersOverlay{
             TooltipFlag isAdvanced
     ) {
         var tool = new FramingHammerData(stack);
+        
+        if (tool.hasSelection()) {
+            tooltipComponents.add(
+                    Component.translatable(
+                                     "tooltip.dynamic_framing.framing_hammer.selection"
+                             )
+                             .append(tool.getSelection()
+                                         .toString())
+            );
+        }
         
         if (tool.hasFirstPos()) {
             tooltipComponents.add(

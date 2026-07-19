@@ -4,7 +4,7 @@ import com.github.betterbuiltfool.DynamicFraming;
 import net.minecraft.nbt.CompoundTag;
 import org.jetbrains.annotations.Nullable;
 
-public class GraphTargetNbtData {
+public class GraphHitNbtData {
     private static final String DATA_KEY;
     private static final String DIST_KEY;
     

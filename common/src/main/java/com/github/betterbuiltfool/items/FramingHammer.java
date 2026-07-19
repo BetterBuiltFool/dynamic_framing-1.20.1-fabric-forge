@@ -32,7 +32,7 @@ import java.util.List;
 /**
  * A Framing tool for establishing the shape of a structure by placing nodes.
  */
-public class FramingHammer extends Item implements RendersOverlay{
+public class FramingHammer extends Item implements RendersOverlay, SuppressesEquipAnimation {
     
     public static final String ITEM_ID = "framing_hammer";
     
@@ -103,6 +103,22 @@ public class FramingHammer extends Item implements RendersOverlay{
         addFirstPosText(tooltipComponents, tool);
         
         super.appendHoverText(stack, level, tooltipComponents, isAdvanced);
+    }
+    
+    public boolean shouldCauseReequipAnimation(
+            ItemStack oldStack,
+            ItemStack newStack,
+            boolean slotChanged
+    ) {
+        if (slotChanged) {
+            return true;
+        }
+        
+        if (this.shouldSuppressReequip(oldStack, newStack)) {
+            return false;
+        }
+        
+        return oldStack.getItem() != newStack.getItem();
     }
     
     private static void addSelectionText(List<Component> tooltipComponents,

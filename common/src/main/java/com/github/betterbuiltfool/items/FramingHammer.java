@@ -99,6 +99,15 @@ public class FramingHammer extends Item implements RendersOverlay{
     ) {
         var tool = new FramingHammerData(stack);
         
+        addSelectionText(tooltipComponents, tool);
+        addFirstPosText(tooltipComponents, tool);
+        
+        super.appendHoverText(stack, level, tooltipComponents, isAdvanced);
+    }
+    
+    private static void addSelectionText(List<Component> tooltipComponents,
+                                         FramingHammerData tool
+    ) {
         if (tool.hasSelection()) {
             tooltipComponents.add(
                     Component.translatable(
@@ -108,7 +117,11 @@ public class FramingHammer extends Item implements RendersOverlay{
                                          .toString())
             );
         }
-        
+    }
+    
+    private static void addFirstPosText(List<Component> tooltipComponents,
+                                        FramingHammerData tool
+    ) {
         if (tool.hasFirstPos()) {
             tooltipComponents.add(
                     Component.translatable(
@@ -118,7 +131,6 @@ public class FramingHammer extends Item implements RendersOverlay{
                                              .toShortString())
             );
         }
-        super.appendHoverText(stack, level, tooltipComponents, isAdvanced);
     }
     
     private @NotNull InteractionResultHolder<ItemStack> firstUse(

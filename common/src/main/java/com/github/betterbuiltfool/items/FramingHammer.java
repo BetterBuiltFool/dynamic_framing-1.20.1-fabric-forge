@@ -15,6 +15,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
@@ -32,12 +33,39 @@ import java.util.List;
 /**
  * A Framing tool for establishing the shape of a structure by placing nodes.
  */
-public class FramingHammer extends Item implements RendersOverlay, SuppressesEquipAnimation {
+public class FramingHammer extends Item implements RendersOverlay, SuppressesEquipAnimation, HasLeftClickUse {
     
     public static final String ITEM_ID = "framing_hammer";
     
     public FramingHammer(Properties properties) {
         super(properties);
+    }
+    
+    @Override
+    public InteractionResult useLeftClick(Level level,
+                                          Player player,
+                                          InteractionHand interactionHand
+    ) {
+        var itemStack = player.getItemInHand(interactionHand);
+        
+        if (!shouldBlockMining(player, itemStack)) {
+            return InteractionResult.PASS;
+        }
+        
+        if (!level.isClientSide()) {
+        
+        }
+        
+        DynamicFraming.LOGGER.info("Successfully intercepted attack!");
+        
+        return InteractionResult.SUCCESS;
+    }
+    
+    @Override
+    public boolean shouldBlockMining(Player player,
+                                     ItemStack itemStack
+    ) {
+        return new FramingHammerData(itemStack).hasSelection();
     }
     
     @Override

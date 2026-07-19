@@ -1,6 +1,7 @@
 package com.github.betterbuiltfool.structure;
 
 import com.github.betterbuiltfool.data.FramedStructureStorage;
+import it.unimi.dsi.fastutil.longs.LongSet;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.ChunkPos;
@@ -9,7 +10,6 @@ import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Arrays;
 import java.util.Optional;
 
 public class RaycastService {
@@ -131,14 +131,15 @@ public class RaycastService {
         
         Level level = player.level();
         
-        long[] chunks = Arrays.stream(
-                                      FramedStructureStorage.getSurroundingChunks(new ChunkPos(BlockPos.containing(player.position()))))
-                              .mapToLong(ChunkPos::toLong)
-                              .toArray();
+        var graph = FramedStructureStorage.get(level)
+                                          .getOrCreateDimensionGraph(level.dimension());
         
-        NodeMap nodeMap = FramedStructureStorage.get(level)
-                                                .getOrCreateDimensionGraph(level.dimension())
-                                                                .getNodeMap(chunks);
+        ChunkPos[] chunks =
+                FramedStructureStorage.getSurroundingChunks(new ChunkPos(BlockPos.containing(player.position())));
+        
+        LongSet packedPos = graph.getPackedNodesForChunk(chunks);
+        
+        NodeMap nodeMap = graph.getNodeMap(packedPos);
         
         GraphHit.NodeHit nodeTarget = getClosestNode(origin, direction, calcReach(player), nodeMap);
         GraphHit.EdgeHit edgeTarget = getClosestEdge(origin, direction, calcReach(player), nodeMap);

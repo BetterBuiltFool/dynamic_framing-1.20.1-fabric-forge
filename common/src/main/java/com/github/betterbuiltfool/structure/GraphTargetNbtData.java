@@ -1,7 +1,7 @@
 package com.github.betterbuiltfool.structure;
 
 import com.github.betterbuiltfool.DynamicFraming;
-import net.minecraft.world.item.ItemStack;
+import net.minecraft.nbt.CompoundTag;
 import org.jetbrains.annotations.Nullable;
 
 public class GraphTargetNbtData {
@@ -14,11 +14,9 @@ public class GraphTargetNbtData {
     }
     
     public static void saveGraphHit(
-            ItemStack stack,
+            CompoundTag nbt,
             @Nullable GraphHit graphHit
     ) {
-        var nbt = stack.getOrCreateTag();
-        
         if (graphHit == null) {
             nbt.remove(DATA_KEY);
             nbt.remove(DIST_KEY);
@@ -41,12 +39,8 @@ public class GraphTargetNbtData {
     
     @Nullable
     public static GraphHit loadGraphHit(
-            ItemStack stack
+            CompoundTag nbt
     ) {
-        if (!stack.hasTag()) {
-            return null;
-        }
-        var nbt = stack.getTag();
         if (nbt == null || !nbt.contains(DATA_KEY)) {
             return null;
         }

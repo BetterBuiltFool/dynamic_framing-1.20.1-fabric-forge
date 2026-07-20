@@ -37,6 +37,7 @@ import java.util.List;
 public class FramingHammer extends Item implements RendersOverlay, SuppressesEquipAnimation, HasLeftClickUse {
     
     public static final String ITEM_ID = "framing_hammer";
+    public static final Color INVALID_EDGE_COLOR = new Color(255, 0, 0);
     
     public FramingHammer(Properties properties) {
         super(properties);
@@ -250,11 +251,20 @@ public class FramingHammer extends Item implements RendersOverlay, SuppressesEqu
                 new NodeOverlayContextBuilder(client, poseStack).addNodeMap(ClientLocalNodes.getLocalNodes())
                                                                 .addHighlightPos(highlightNodes);
         // TODO: This is a mess, clean it up.
-        if (hammerTool.hasFirstPos() && hammerTool.hasSecondPos()) {
+        if (hammerTool.hasSelection()) {
+            var selection = hammerTool.getSelection();
+            if (selection instanceof GraphHit.NodeHit nodeHit) {
+                contextBuilder = contextBuilder.addHighlightPos(nodeHit.packedPos());
+            } else if (selection instanceof GraphHit.EdgeHit edgeHit) {
+                contextBuilder = contextBuilder.addFirstPos(edgeHit.posA())
+                                               .addSecondPos(edgeHit.posB())
+                                               .setHighlightColor(new Color(255, 127, 0));
+            }
+        } else if (hammerTool.hasFirstPos() && hammerTool.hasSecondPos()) {
             var firstPos = hammerTool.getFirstPos();
             var secondPos = hammerTool.getSecondPos();
             if (!EdgeValidator.validate(client.level, firstPos, secondPos)) {
-                contextBuilder = contextBuilder.setHighlightColor(new Color(255, 0, 0));
+                contextBuilder = contextBuilder.setHighlightColor(INVALID_EDGE_COLOR);
             }
             contextBuilder = contextBuilder.addHighlightPos(firstPos)
                                            .addFirstPos(firstPos)

@@ -3,6 +3,7 @@
   "item.dynamic_framing.framing_hammer": "Framing Mallet",
 
   "tooltip.dynamic_framing.framing_hammer.firstpos": "First selected position: ",
+  "tooltip.dynamic_framing.framing_hammer.selection": "Selected: ",
 
   "category.framing_tools_tab": "Framing Tools"
 }

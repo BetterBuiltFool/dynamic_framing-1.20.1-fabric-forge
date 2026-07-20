@@ -23,7 +23,11 @@
     ]
   },
   "mixins": [
-    "dynamic_framing.mixins.json"
+    "dynamic_framing.mixins.json",
+    {
+      "config": "dynamic_framing-fabric.client.mixins.json",
+      "environment": "client"
+    }
   ],
   "depends": {
     "fabricloader": ">=0.19.2",

@@ -6,6 +6,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.world.level.ChunkPos;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
 import java.util.stream.Collectors;
@@ -52,12 +53,12 @@ public final class StructureGraph {
      * @param nodePos A LongSet of packed positions whose connections we're after
      * @return A fastutil map representing the nodes and their connections
      */
-    public Long2ObjectMap<LongSet> getNodeMap(LongSet nodePos) {
+    public NodeMap getNodeMap(LongSet nodePos) {
         var subMap = posToNodeMap.values()
                                  .stream()
                                  .filter(x -> nodePos.contains(x.getPos()))
                                  .collect(Collectors.toMap(Node::getPos, Node::getConnections));
-        return new Long2ObjectOpenHashMap<>(subMap);
+        return new NodeMap(subMap);
     }
     
     /**
@@ -65,13 +66,58 @@ public final class StructureGraph {
      * @param nodePos An array of packed positions whose connections we're after
      * @return A fastutil map representing the nodes and their connections
      */
-    public Long2ObjectMap<LongSet> getNodeMap(long... nodePos) {
+    public NodeMap getNodeMap(long... nodePos) {
         return getNodeMap(new LongOpenHashSet(nodePos));
     }
     
     public void clearAll() {
         posToNodeMap.clear();
         chunkMap.clear();
+    }
+    
+    public void remove(long pos) {
+        var node = posToNodeMap.getOrDefault(pos, null);
+        if (node == null) {
+            return;
+        }
+        for (long connection : node.getConnections()) {
+            var connectedNode = posToNodeMap.getOrDefault(connection, null);
+            if (connectedNode == null) {
+                return;
+            }
+            connectedNode.getConnections()
+                         .remove(pos);
+        }
+        removeNode(node);
+    }
+    
+    public void remove(long posA,
+                       long posB
+    ) {
+        var nodeA = posToNodeMap.get(posA);
+        if (nodeA != null) {
+            removeConnection(nodeA, posB);
+        }
+        var nodeB = posToNodeMap.get(posB);
+        if (nodeB != null) {
+            removeConnection(nodeB, posA);
+        }
+    }
+    
+    public void removeNode(@NotNull Node node) {
+        posToNodeMap.remove(node.getPos());
+        var chunkNodes = chunkMap.getOrDefault(new ChunkPos(node.getBlockPos()).toLong(), LongSets.EMPTY_SET);
+        chunkNodes.remove(node.getPos());
+    }
+    
+    private void removeConnection(@NotNull Node node,
+                                  long connectedPos
+    ) {
+        var connections = node.getConnections();
+        connections.remove(connectedPos);
+        if (connections.isEmpty()) {
+            removeNode(node);
+        }
     }
     
     public void connect(long first, long second) {

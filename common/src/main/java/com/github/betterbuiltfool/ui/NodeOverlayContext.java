@@ -1,7 +1,7 @@
 package com.github.betterbuiltfool.ui;
 
+import com.github.betterbuiltfool.structure.NodeMap;
 import com.mojang.blaze3d.vertex.PoseStack;
-import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.LongSet;
 import net.minecraft.client.Minecraft;
 import org.jetbrains.annotations.Nullable;
@@ -12,14 +12,14 @@ public class NodeOverlayContext {
     public Minecraft client;
     public PoseStack poseStack;
     public @Nullable NodeOverlayContext.Edge highlightEdge;
-    public Long2ObjectMap<LongSet> nodeMap;
+    public NodeMap nodeMap;
     public LongSet highlightNodes;
     public Color highlightColor;
     
     public NodeOverlayContext(
             Minecraft client,
             PoseStack poseStack,
-            Long2ObjectMap<LongSet> nodeMap,
+            NodeMap nodeMap,
             @Nullable NodeOverlayContext.Edge highlightEdge,
             LongSet highlightNodes,
             Color highlightColor

@@ -4,6 +4,8 @@ import com.github.betterbuiltfool.DynamicFraming;
 import com.github.betterbuiltfool.client.ClientLocalNodes;
 import com.github.betterbuiltfool.data.FramedStructureStorage;
 import com.github.betterbuiltfool.items.nbtHelper.FramingHammerData;
+import com.github.betterbuiltfool.structure.GraphHit;
+import com.github.betterbuiltfool.structure.RaycastService;
 import com.github.betterbuiltfool.ui.overlays.FramingHammerOverlay;
 import com.github.betterbuiltfool.ui.overlays.NodeOverlayContextBuilder;
 import com.github.betterbuiltfool.validation.EdgeValidator;
@@ -14,6 +16,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
 import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
@@ -31,12 +34,49 @@ import java.util.List;
 /**
  * A Framing tool for establishing the shape of a structure by placing nodes.
  */
-public class FramingHammer extends Item implements RendersOverlay{
+public class FramingHammer extends Item implements RendersOverlay, SuppressesEquipAnimation, HasLeftClickUse {
     
     public static final String ITEM_ID = "framing_hammer";
+    public static final Color INVALID_EDGE_COLOR = new Color(255, 0, 0);
     
     public FramingHammer(Properties properties) {
         super(properties);
+    }
+    
+    @Override
+    public InteractionResult useLeftClick(Level level,
+                                          Player player,
+                                          InteractionHand interactionHand
+    ) {
+        var itemStack = player.getItemInHand(interactionHand);
+        
+        if (!shouldBlockMining(player, itemStack)) {
+            return InteractionResult.PASS;
+        }
+        var hammerTool = new FramingHammerData(itemStack);
+        
+        if (!level.isClientSide() && !hammerTool.hasSecondPos()) {
+            var selection = hammerTool.getSelection();
+            
+            var storage = FramedStructureStorage.get(level);
+            var graph = storage.getDimensionGraph(level.dimension());
+            
+            if (selection instanceof GraphHit.NodeHit nodeHit) {
+                graph.remove(nodeHit.packedPos());
+            } else if (selection instanceof GraphHit.EdgeHit edgeHit) {
+                graph.remove(edgeHit.posA(), edgeHit.posB());
+            }
+            hammerTool.clearSelection();
+        }
+        
+        return InteractionResult.SUCCESS;
+    }
+    
+    @Override
+    public boolean shouldBlockMining(Player player,
+                                     ItemStack itemStack
+    ) {
+        return new FramingHammerData(itemStack).hasSelection();
     }
     
     @Override
@@ -53,6 +93,8 @@ public class FramingHammer extends Item implements RendersOverlay{
         var hammerTool = new FramingHammerData(stack);
         
         if (!hammerTool.hasFirstPos()) {
+            var selection = RaycastService.getClosest(player);
+            hammerTool.setSelection(selection);
             return;
         }
         
@@ -96,6 +138,45 @@ public class FramingHammer extends Item implements RendersOverlay{
     ) {
         var tool = new FramingHammerData(stack);
         
+        addSelectionText(tooltipComponents, tool);
+        addFirstPosText(tooltipComponents, tool);
+        
+        super.appendHoverText(stack, level, tooltipComponents, isAdvanced);
+    }
+    
+    public boolean shouldCauseReequipAnimation(
+            ItemStack oldStack,
+            ItemStack newStack,
+            boolean slotChanged
+    ) {
+        if (slotChanged) {
+            return true;
+        }
+        
+        if (this.shouldSuppressReequip(oldStack, newStack)) {
+            return false;
+        }
+        
+        return oldStack.getItem() != newStack.getItem();
+    }
+    
+    private static void addSelectionText(List<Component> tooltipComponents,
+                                         FramingHammerData tool
+    ) {
+        if (tool.hasSelection()) {
+            tooltipComponents.add(
+                    Component.translatable(
+                                     "tooltip.dynamic_framing.framing_hammer.selection"
+                             )
+                             .append(tool.getSelection()
+                                         .toString())
+            );
+        }
+    }
+    
+    private static void addFirstPosText(List<Component> tooltipComponents,
+                                        FramingHammerData tool
+    ) {
         if (tool.hasFirstPos()) {
             tooltipComponents.add(
                     Component.translatable(
@@ -105,7 +186,6 @@ public class FramingHammer extends Item implements RendersOverlay{
                                              .toShortString())
             );
         }
-        super.appendHoverText(stack, level, tooltipComponents, isAdvanced);
     }
     
     private @NotNull InteractionResultHolder<ItemStack> firstUse(
@@ -175,12 +255,21 @@ public class FramingHammer extends Item implements RendersOverlay{
             var firstPos = hammerTool.getFirstPos();
             var secondPos = hammerTool.getSecondPos();
             if (!EdgeValidator.validate(client.level, firstPos, secondPos)) {
-                contextBuilder = contextBuilder.setHighlightColor(new Color(255, 0, 0));
+                contextBuilder = contextBuilder.setHighlightColor(INVALID_EDGE_COLOR);
             }
             contextBuilder = contextBuilder.addHighlightPos(firstPos)
                                            .addFirstPos(firstPos)
                                            .addHighlightPos(secondPos)
                                            .addSecondPos(secondPos);
+        } else if (hammerTool.hasSelection()) {
+            var selection = hammerTool.getSelection();
+            if (selection instanceof GraphHit.NodeHit nodeHit) {
+                contextBuilder = contextBuilder.addHighlightPos(nodeHit.packedPos());
+            } else if (selection instanceof GraphHit.EdgeHit edgeHit) {
+                contextBuilder = contextBuilder.addFirstPos(edgeHit.posA())
+                                               .addSecondPos(edgeHit.posB())
+                                               .setHighlightColor(new Color(255, 127, 0));
+            }
         }
         FramingHammerOverlay.renderOverlay(contextBuilder.build());
     }

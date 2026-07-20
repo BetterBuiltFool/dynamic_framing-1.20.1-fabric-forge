@@ -3,8 +3,8 @@ package com.github.betterbuiltfool.data;
 import com.github.betterbuiltfool.DynamicFraming;
 import com.github.betterbuiltfool.network.ChunkNodeDataPacket;
 import com.github.betterbuiltfool.network.DynamicFramingNetworking;
+import com.github.betterbuiltfool.structure.NodeMap;
 import com.github.betterbuiltfool.structure.StructureGraph;
-import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.LongSet;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
@@ -12,6 +12,7 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.saveddata.SavedData;
 import org.jetbrains.annotations.NotNull;
@@ -102,7 +103,15 @@ public class FramedStructureStorage extends SavedData {
         StructureGraph dimensionGraph = storage.getDimensionGraph(serverLevel.dimension());
         
         LongSet nodesPositions = dimensionGraph.getPackedNodesForChunk(pos);
-        Long2ObjectMap<LongSet> nodeData = dimensionGraph.getNodeMap(nodesPositions);
+        NodeMap nodeData = dimensionGraph.getNodeMap(nodesPositions);
         DynamicFramingNetworking.CHANNEL.sendToPlayer(player, new ChunkNodeDataPacket(nodeData));
+    }
+    
+    public static ChunkPos[] getSurroundingChunks(ChunkPos center) {
+        return ChunkPos.rangeClosed(
+                               center,
+                               1
+                       )
+                       .toArray(ChunkPos[]::new);
     }
 }

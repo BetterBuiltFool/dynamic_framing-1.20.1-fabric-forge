@@ -5,7 +5,6 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
-import net.minecraft.util.FastColor;
 import net.minecraft.world.phys.Vec3;
 
 import java.awt.*;
@@ -23,12 +22,7 @@ public class LineRenderer extends UIRenderer {
                            Color lineColor
     ) {
         bufferBuilder.begin(VertexFormat.Mode.DEBUG_LINES, DefaultVertexFormat.POSITION_COLOR);
-        int packedColor = FastColor.ABGR32.color(
-                lineColor.getAlpha(),
-                lineColor.getRed(),
-                lineColor.getGreen(),
-                lineColor.getBlue()
-        );
+        int packedColor = getPackedColor(lineColor);
         
         Vec3 start = BlockPos.of(startPos)
                              .getCenter();

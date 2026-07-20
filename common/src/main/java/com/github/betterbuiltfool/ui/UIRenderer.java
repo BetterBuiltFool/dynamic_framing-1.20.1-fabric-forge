@@ -7,8 +7,11 @@ import com.mojang.blaze3d.vertex.Tesselator;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.util.FastColor;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Matrix4f;
+
+import java.awt.*;
 
 abstract class UIRenderer {
     
@@ -48,5 +51,14 @@ abstract class UIRenderer {
         
         RenderSystem.disableBlend();
         poseStack.popPose();
+    }
+    
+    public int getPackedColor(Color color) {
+        return FastColor.ABGR32.color(
+                color.getAlpha(),
+                color.getRed(),
+                color.getGreen(),
+                color.getBlue()
+        );
     }
 }

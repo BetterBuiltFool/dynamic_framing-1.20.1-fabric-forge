@@ -1,53 +1,21 @@
 package com.github.betterbuiltfool.ui;
 
-import com.mojang.blaze3d.systems.RenderSystem;
-import com.mojang.blaze3d.vertex.*;
-import net.minecraft.client.Camera;
+import com.mojang.blaze3d.vertex.DefaultVertexFormat;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexFormat;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.util.FastColor;
 import net.minecraft.world.phys.Vec3;
-import org.joml.Matrix4f;
 
 import java.awt.*;
 
-public class LineRenderer {
-    private final PoseStack poseStack;
-    private final Camera camera;
-    private final Tesselator tesselator;
-    private final BufferBuilder bufferBuilder;
-    private Matrix4f poseMatrix;
+public class LineRenderer extends UIRenderer {
     
     public LineRenderer(Minecraft client,
                         PoseStack poseStack
     ) {
-        this.poseStack = poseStack;
-        this.camera = client.getEntityRenderDispatcher().camera;
-        this.tesselator = Tesselator.getInstance();
-        this.bufferBuilder = tesselator.getBuilder();
-    }
-    
-    public void startBatch() {
-        Vec3 cameraPos = camera.getPosition();
-        poseStack.pushPose();
-        poseStack.translate(-cameraPos.x, -cameraPos.y, -cameraPos.z);
-        poseMatrix = poseStack.last()
-                              .pose();
-        
-        RenderSystem.setShader(GameRenderer::getPositionColorShader);
-        RenderSystem.disableCull();
-        RenderSystem.enableBlend();
-        RenderSystem.defaultBlendFunc();
-        RenderSystem.disableDepthTest();
-    }
-    
-    public void finishBatch() {
-        RenderSystem.enableCull();
-        RenderSystem.enableDepthTest();
-        ;
-        RenderSystem.disableBlend();
-        poseStack.popPose();
+        super(client, poseStack);
     }
     
     public void renderLine(long startPos,

@@ -56,8 +56,6 @@ public class FramingHammer extends Item implements RendersOverlay, SuppressesEqu
         
         }
         
-        DynamicFraming.LOGGER.info("Successfully intercepted attack!");
-        
         return InteractionResult.SUCCESS;
     }
     

@@ -53,9 +53,9 @@ public class FramingHammer extends Item implements RendersOverlay, SuppressesEqu
         if (!shouldBlockMining(player, itemStack)) {
             return InteractionResult.PASS;
         }
+        var hammerTool = new FramingHammerData(itemStack);
         
-        if (!level.isClientSide()) {
-            var hammerTool = new FramingHammerData(itemStack);
+        if (!level.isClientSide() && !hammerTool.hasSecondPos()) {
             var selection = hammerTool.getSelection();
             
             var storage = FramedStructureStorage.get(level);

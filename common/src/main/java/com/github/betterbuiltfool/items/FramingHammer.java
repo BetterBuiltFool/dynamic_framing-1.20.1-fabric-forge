@@ -4,6 +4,7 @@ import com.github.betterbuiltfool.DynamicFraming;
 import com.github.betterbuiltfool.client.ClientLocalNodes;
 import com.github.betterbuiltfool.data.FramedStructureStorage;
 import com.github.betterbuiltfool.items.nbtHelper.FramingHammerData;
+import com.github.betterbuiltfool.structure.GraphHit;
 import com.github.betterbuiltfool.structure.RaycastService;
 import com.github.betterbuiltfool.ui.overlays.FramingHammerOverlay;
 import com.github.betterbuiltfool.ui.overlays.NodeOverlayContextBuilder;
@@ -53,7 +54,18 @@ public class FramingHammer extends Item implements RendersOverlay, SuppressesEqu
         }
         
         if (!level.isClientSide()) {
-        
+            var hammerTool = new FramingHammerData(itemStack);
+            var selection = hammerTool.getSelection();
+            
+            var storage = FramedStructureStorage.get(level);
+            var graph = storage.getDimensionGraph(level.dimension());
+            
+            if (selection instanceof GraphHit.NodeHit nodeHit) {
+                graph.remove(nodeHit.packedPos());
+            } else if (selection instanceof GraphHit.EdgeHit edgeHit) {
+                graph.remove(edgeHit.posA(), edgeHit.posB());
+            }
+            hammerTool.clearSelection();
         }
         
         return InteractionResult.SUCCESS;

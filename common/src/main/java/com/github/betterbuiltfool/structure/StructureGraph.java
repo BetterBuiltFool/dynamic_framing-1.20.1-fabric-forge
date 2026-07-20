@@ -6,6 +6,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.world.level.ChunkPos;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
 import java.util.stream.Collectors;
@@ -87,7 +88,36 @@ public final class StructureGraph {
             connectedNode.getConnections()
                          .remove(pos);
         }
-        posToNodeMap.remove(pos);
+        removeNode(node);
+    }
+    
+    public void remove(long posA,
+                       long posB
+    ) {
+        var nodeA = posToNodeMap.get(posA);
+        if (nodeA != null) {
+            removeConnection(nodeA, posB);
+        }
+        var nodeB = posToNodeMap.get(posB);
+        if (nodeB != null) {
+            removeConnection(nodeB, posA);
+        }
+    }
+    
+    public void removeNode(@NotNull Node node) {
+        posToNodeMap.remove(node.getPos());
+        var chunkNodes = chunkMap.getOrDefault(new ChunkPos(node.getBlockPos()).toLong(), LongSets.EMPTY_SET);
+        chunkNodes.remove(node.getPos());
+    }
+    
+    private void removeConnection(@NotNull Node node,
+                                  long connectedPos
+    ) {
+        var connections = node.getConnections();
+        connections.remove(connectedPos);
+        if (connections.isEmpty()) {
+            removeNode(node);
+        }
     }
     
     public void connect(long first, long second) {

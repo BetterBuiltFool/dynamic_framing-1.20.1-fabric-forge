@@ -4,6 +4,7 @@ import com.mojang.blaze3d.vertex.DefaultVertexFormat;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexFormat;
 import net.minecraft.client.Minecraft;
+import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.phys.Vec3;
 
@@ -15,6 +16,10 @@ public class LineRenderer extends UIRenderer {
                         PoseStack poseStack
     ) {
         super(client, poseStack);
+    }
+    
+    public void startBatch() {
+        super.startBatch(GameRenderer::getPositionColorShader);
     }
     
     public void renderLine(long startPos,

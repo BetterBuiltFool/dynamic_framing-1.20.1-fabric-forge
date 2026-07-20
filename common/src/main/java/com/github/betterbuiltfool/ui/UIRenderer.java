@@ -6,12 +6,13 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.Tesselator;
 import net.minecraft.client.Camera;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.renderer.GameRenderer;
+import net.minecraft.client.renderer.ShaderInstance;
 import net.minecraft.util.FastColor;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Matrix4f;
 
 import java.awt.*;
+import java.util.function.Supplier;
 
 abstract class UIRenderer {
     
@@ -31,14 +32,14 @@ abstract class UIRenderer {
         this.bufferBuilder = tesselator.getBuilder();
     }
     
-    public void startBatch() {
+    public void startBatch(Supplier<ShaderInstance> shaderSupplier) {
         Vec3 cameraPos = camera.getPosition();
         poseStack.pushPose();
         poseStack.translate(-cameraPos.x, -cameraPos.y, -cameraPos.z);
         poseMatrix = poseStack.last()
                               .pose();
         
-        RenderSystem.setShader(GameRenderer::getPositionColorShader);
+        RenderSystem.setShader(shaderSupplier);
         RenderSystem.disableCull();
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();

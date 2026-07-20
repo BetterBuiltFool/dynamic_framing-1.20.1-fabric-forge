@@ -1,6 +1,8 @@
 package com.github.betterbuiltfool.client;
 
 import com.github.betterbuiltfool.items.HasLeftClickUse;
+import com.github.betterbuiltfool.network.DynamicFramingNetworking;
+import com.github.betterbuiltfool.network.LeftClickActionPacket;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.InteractionHand;
 
@@ -25,7 +27,7 @@ public class ClientLeftClickInterception {
             return false;
         }
         
-        // Packet here
+        DynamicFramingNetworking.CHANNEL.sendToServer(new LeftClickActionPacket());
         player.swing(InteractionHand.MAIN_HAND);
         return true;
     }

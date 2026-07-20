@@ -13,5 +13,8 @@ public class DynamicFramingNetworking {
         // Format: CHANNEL.register(CLASSNAME.class, CLASSNAME::encode, CLASSNAME::decode, CLASSNAME::handle);
         CHANNEL.register(ChunkNodeRequestPacket.class, ChunkNodeRequestPacket::encode, ChunkNodeRequestPacket::decode, ChunkNodeRequestPacket::handle);
         CHANNEL.register(ChunkNodeDataPacket.class, ChunkNodeDataPacket::encode, ChunkNodeDataPacket::decode, ChunkNodeDataPacket::handle);
+        CHANNEL.register(LeftClickActionPacket.class, LeftClickActionPacket::encode, LeftClickActionPacket::decode,
+                         LeftClickActionPacket::handle
+        );
     }
 }

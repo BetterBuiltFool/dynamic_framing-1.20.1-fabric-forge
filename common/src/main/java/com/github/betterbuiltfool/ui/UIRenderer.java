@@ -18,7 +18,7 @@ import java.util.function.Supplier;
 abstract class UIRenderer {
     
     private final PoseStack poseStack;
-    private final Camera camera;
+    protected final Camera camera;
     protected final Tesselator tesselator;
     protected final BufferBuilder bufferBuilder;
     protected Matrix4f poseMatrix;

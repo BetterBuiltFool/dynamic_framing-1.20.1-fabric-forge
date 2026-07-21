@@ -7,7 +7,7 @@ import com.github.betterbuiltfool.ui.NodeOverlayContext;
 import java.awt.*;
 
 public class FramingHammerOverlay {
-    private static Color defaultColor = new Color(0, 0, 255);
+    private static final Color defaultColor = new Color(0, 0, 255);
     
     public static void renderOverlay(NodeOverlayContext context) {
         renderEdges(context);

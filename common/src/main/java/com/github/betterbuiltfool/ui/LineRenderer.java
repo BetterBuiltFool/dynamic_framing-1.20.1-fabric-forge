@@ -19,14 +19,17 @@ public class LineRenderer extends UIRenderer {
     }
     
     public void startBatch() {
-        super.startBatch(GameRenderer::getPositionColorShader);
+        super.startBatch(
+                GameRenderer::getPositionColorShader,
+                VertexFormat.Mode.DEBUG_LINES,
+                DefaultVertexFormat.POSITION_COLOR
+        );
     }
     
     public void renderLine(long startPos,
                            long endPos,
                            Color lineColor
     ) {
-        bufferBuilder.begin(VertexFormat.Mode.DEBUG_LINES, DefaultVertexFormat.POSITION_COLOR);
         int packedColor = getPackedColor(lineColor);
         
         Vec3 start = BlockPos.of(startPos)
@@ -39,6 +42,5 @@ public class LineRenderer extends UIRenderer {
         bufferBuilder.vertex(poseMatrix, (float) end.x, (float) end.y, (float) end.z)
                      .color(packedColor)
                      .endVertex();
-        tesselator.end();
     }
 }

@@ -13,9 +13,10 @@ import net.minecraft.world.phys.Vec3;
 import org.joml.Matrix4f;
 
 import java.awt.*;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-abstract class UIRenderer {
+abstract class UIRenderer <T extends UIRenderer<T>> {
     
     private final PoseStack poseStack;
     protected final Camera camera;
@@ -31,6 +32,17 @@ abstract class UIRenderer {
         this.camera = client.getEntityRenderDispatcher().camera;
         this.tesselator = Tesselator.getInstance();
         this.bufferBuilder = tesselator.getBuilder();
+    }
+    
+    @SuppressWarnings("unchecked")
+    public void drawBatch(Consumer<T> batchAction) {
+        try {
+            startBatch();
+            batchAction.accept((T) this);
+        }
+        finally {
+            finishBatch();
+        }
     }
     
     abstract void startBatch();
@@ -54,7 +66,7 @@ abstract class UIRenderer {
         bufferBuilder.begin(mode, vertexFormat);
     }
     
-    public void finishBatch() {
+    private void finishBatch() {
         tesselator.end();
         RenderSystem.enableCull();
         RenderSystem.enableDepthTest();
@@ -63,7 +75,7 @@ abstract class UIRenderer {
         poseStack.popPose();
     }
     
-    public int getPackedColor(Color color) {
+    protected int getPackedColor(Color color) {
         return FastColor.ABGR32.color(
                 color.getAlpha(),
                 color.getRed(),

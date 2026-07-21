@@ -13,7 +13,7 @@ import net.minecraft.world.phys.Vec3;
 
 import java.awt.*;
 
-public class NodeMarkerRenderer extends UIRenderer {
+public class NodeMarkerRenderer extends UIRenderer<NodeMarkerRenderer> {
     
     private static final ResourceLocation NODE_MARKER = new ResourceLocation(
             DynamicFraming.MOD_ID, "textures/ui/node_marker.png"
@@ -35,7 +35,8 @@ public class NodeMarkerRenderer extends UIRenderer {
         super(client, poseStack);
     }
     
-    public void startBatch() {
+    @Override
+    protected void startBatch() {
         super.startBatch(
                 GameRenderer::getPositionTexColorShader,
                 VertexFormat.Mode.QUADS,

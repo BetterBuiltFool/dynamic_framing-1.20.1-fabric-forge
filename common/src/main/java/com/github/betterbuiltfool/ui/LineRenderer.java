@@ -10,7 +10,7 @@ import net.minecraft.world.phys.Vec3;
 
 import java.awt.*;
 
-public class LineRenderer extends UIRenderer {
+public class LineRenderer extends UIRenderer<LineRenderer> {
     
     public LineRenderer(Minecraft client,
                         PoseStack poseStack
@@ -18,7 +18,8 @@ public class LineRenderer extends UIRenderer {
         super(client, poseStack);
     }
     
-    public void startBatch() {
+    @Override
+    protected void startBatch() {
         super.startBatch(
                 GameRenderer::getPositionColorShader,
                 VertexFormat.Mode.DEBUG_LINES,

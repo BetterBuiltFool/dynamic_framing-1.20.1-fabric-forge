@@ -18,13 +18,11 @@ public class FramingHammerOverlay {
         var positions = context.highlightNodes;
         var nodeRenderer = new NodeMarkerRenderer(context.client, context.poseStack);
         
-        nodeRenderer.startBatch();
-        
-        for(long node: positions) {
-            nodeRenderer.renderNode(node);
-        }
-        
-        nodeRenderer.finishBatch();
+        nodeRenderer.drawBatch(renderer -> {
+            for (long node : positions) {
+                renderer.renderNode(node);
+            }
+        });
     }
     
     public static void renderEdges(NodeOverlayContext context) {
@@ -33,33 +31,34 @@ public class FramingHammerOverlay {
         var lineRenderer = new LineRenderer(context.client, context.poseStack);
         
         boolean hasHighlightEdge = (highlightEdge != null);
-        long firstHighlightPoint = 0;
-        long secondHighlightPoint = 0;
+        long firstHighlightPoint;
+        long secondHighlightPoint;
         
         if (hasHighlightEdge) {
             firstHighlightPoint = Math.min(highlightEdge.firstPos(), highlightEdge.secondPos());
             secondHighlightPoint = Math.max(highlightEdge.firstPos(), highlightEdge.secondPos());
+        } else {
+            secondHighlightPoint = 0;
+            firstHighlightPoint = 0;
         }
         
-        lineRenderer.startBatch();
-        
-        if (nodeMap != null) {
-            for (var entry : nodeMap.entrySet()) {
-                long node = entry.getLongKey();
-                
-                for (long connection : entry.getValue()) {
-                    if (node < connection || !nodeMap.containsNode(connection)) {
-                        var lineColor = defaultColor;
-                        if (hasHighlightEdge && node == firstHighlightPoint && connection == secondHighlightPoint) {
-                            continue;
+        lineRenderer.drawBatch(renderer -> {
+            if (nodeMap != null) {
+                for (var entry : nodeMap.entrySet()) {
+                    long node = entry.getLongKey();
+                    
+                    for (long connection : entry.getValue()) {
+                        if (node < connection || !nodeMap.containsNode(connection)) {
+                            var lineColor = defaultColor;
+                            if (hasHighlightEdge && node == firstHighlightPoint && connection == secondHighlightPoint) {
+                                continue;
+                            }
+                            lineRenderer.renderLine(node, connection, lineColor);
                         }
-                        lineRenderer.renderLine(node, connection, lineColor);
                     }
                 }
             }
-        }
-        lineRenderer.renderLine(firstHighlightPoint, secondHighlightPoint, context.highlightColor);
-        
-        lineRenderer.finishBatch();
+            lineRenderer.renderLine(firstHighlightPoint, secondHighlightPoint, context.highlightColor);
+        });
     }
 }

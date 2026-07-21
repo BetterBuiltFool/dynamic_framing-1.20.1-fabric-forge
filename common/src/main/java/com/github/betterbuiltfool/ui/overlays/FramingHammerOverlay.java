@@ -12,9 +12,6 @@ public class FramingHammerOverlay {
     public static void renderOverlay(NodeOverlayContext context) {
         renderEdges(context);
         renderNodes(context);
-        
-        renderEdges(context);
-        
     }
     
     private static void renderNodes(NodeOverlayContext context) {

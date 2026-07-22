@@ -302,7 +302,13 @@ public class FramingHammer extends Item implements RendersOverlay, SuppressesEqu
                                            .addHighlightPos(secondPos)
                                            .addSecondPos(secondPos);
         } else if (hammerTool.hasSelection()) {
-            contextBuilder = contextBuilder.setHighlightColor(new Color(255, 127, 0));
+            var player = client.player;
+            assert player != null;
+            if (!player.isShiftKeyDown()) {
+                contextBuilder = contextBuilder.setHighlightColor(new Color(0, 127, 255));
+            } else {
+                contextBuilder = contextBuilder.setHighlightColor(new Color(255, 127, 0));
+            }
             var selection = hammerTool.getSelection();
             if (selection instanceof GraphHit.NodeHit nodeHit) {
                 contextBuilder = contextBuilder.addHighlightPos(nodeHit.packedPos());

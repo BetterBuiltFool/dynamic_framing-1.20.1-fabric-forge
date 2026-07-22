@@ -1,5 +1,6 @@
 package com.github.betterbuiltfool.ui;
 
+import com.github.betterbuiltfool.structure.Edge;
 import com.github.betterbuiltfool.structure.NodeMap;
 import com.mojang.blaze3d.vertex.PoseStack;
 import it.unimi.dsi.fastutil.longs.LongSet;
@@ -11,7 +12,7 @@ import java.awt.*;
 public class NodeOverlayContext {
     public Minecraft client;
     public PoseStack poseStack;
-    public @Nullable NodeOverlayContext.Edge highlightEdge;
+    public @Nullable Edge highlightEdge;
     public NodeMap nodeMap;
     public LongSet highlightNodes;
     public Color highlightColor;
@@ -20,7 +21,7 @@ public class NodeOverlayContext {
             Minecraft client,
             PoseStack poseStack,
             NodeMap nodeMap,
-            @Nullable NodeOverlayContext.Edge highlightEdge,
+            @Nullable Edge highlightEdge,
             LongSet highlightNodes,
             Color highlightColor
     ) {
@@ -31,6 +32,4 @@ public class NodeOverlayContext {
         this.highlightNodes = highlightNodes;
         this.highlightColor = highlightColor;
     }
-    
-    public record Edge(long firstPos, long secondPos) {}
 }

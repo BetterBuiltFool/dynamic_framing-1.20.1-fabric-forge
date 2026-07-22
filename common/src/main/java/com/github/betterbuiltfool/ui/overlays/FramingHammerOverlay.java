@@ -20,7 +20,7 @@ public class FramingHammerOverlay {
         
         nodeRenderer.drawBatch(renderer -> {
             for (long node : positions) {
-                renderer.renderNode(node);
+                renderer.renderNode(node, context.highlightColor);
             }
         });
     }

@@ -31,8 +31,8 @@ public class FramingHammerOverlay {
         var lineRenderer = new LineRenderer(context.client, context.poseStack);
         
         boolean hasHighlightEdge = (highlightEdge != null);
-        long firstHighlightPoint;
-        long secondHighlightPoint;
+        final long firstHighlightPoint;
+        final long secondHighlightPoint;
         
         if (hasHighlightEdge) {
             firstHighlightPoint = Math.min(highlightEdge.firstPos(), highlightEdge.secondPos());
@@ -43,22 +43,25 @@ public class FramingHammerOverlay {
         }
         
         lineRenderer.drawBatch(renderer -> {
-            if (nodeMap != null) {
-                for (var entry : nodeMap.entrySet()) {
-                    long node = entry.getLongKey();
-                    
-                    for (long connection : entry.getValue()) {
-                        if (node < connection || !nodeMap.containsNode(connection)) {
-                            var lineColor = defaultColor;
-                            if (hasHighlightEdge && node == firstHighlightPoint && connection == secondHighlightPoint) {
-                                continue;
-                            }
-                            lineRenderer.renderLine(node, connection, lineColor);
-                        }
+            if (nodeMap == null) {
+                return;
+            }
+            
+            for (var entry : nodeMap.entrySet()) {
+                long node = entry.getLongKey();
+                
+                for (long connection : entry.getValue()) {
+                    if (node >= connection && nodeMap.containsNode(connection)) {
+                        continue;
                     }
+                    ;
+                    if (hasHighlightEdge && node == firstHighlightPoint && connection == secondHighlightPoint) {
+                        continue;
+                    }
+                    renderer.renderLine(node, connection, defaultColor);
                 }
             }
-            lineRenderer.renderLine(firstHighlightPoint, secondHighlightPoint, context.highlightColor);
+            renderer.renderLine(firstHighlightPoint, secondHighlightPoint, context.highlightColor);
         });
     }
 }

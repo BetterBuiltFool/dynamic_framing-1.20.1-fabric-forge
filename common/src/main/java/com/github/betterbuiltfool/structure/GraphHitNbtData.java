@@ -28,7 +28,7 @@ public class GraphHitNbtData {
         if (graphHit instanceof GraphHit.NodeHit nodeHit) {
             data = new long[]{nodeHit.packedPos()};
         } else if (graphHit instanceof GraphHit.EdgeHit edgeHit) {
-            data = new long[]{edgeHit.posA(), edgeHit.posB()};
+            data = new long[]{edgeHit.posA(), edgeHit.posB(), edgeHit.hitPos()};
         } else {
             throw new IllegalArgumentException("Invalid GraphHit type!");
         }
@@ -51,7 +51,7 @@ public class GraphHitNbtData {
         if (data.length == 1) {
             return new GraphHit.NodeHit(data[0], dist);
         } else {
-            return new GraphHit.EdgeHit(data[0], data[1], dist);
+            return new GraphHit.EdgeHit(data[0], data[1], data[2], dist);
         }
     }
 }

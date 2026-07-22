@@ -227,7 +227,7 @@ public class FramingHammer extends Item implements RendersOverlay, SuppressesEqu
             return nodeHit.packedPos();
         } else if (selection instanceof GraphHit.EdgeHit edgeHit) {
             // TODO: temp, make EdgeHit contain collision position
-            return edgeHit.posA();
+            return edgeHit.hitPos();
         } else {
             throw new IllegalArgumentException();
         }

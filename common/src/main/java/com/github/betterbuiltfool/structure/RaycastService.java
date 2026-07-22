@@ -85,6 +85,7 @@ public class RaycastService {
         
         BlockPos.MutableBlockPos firstPos = new BlockPos.MutableBlockPos();
         BlockPos.MutableBlockPos secondPos = new BlockPos.MutableBlockPos();
+        BlockPos.MutableBlockPos hitPos = new BlockPos.MutableBlockPos();
         
         nodeMap.applyToEachEdge(edge -> {
             firstPos.set(edge.firstPos());
@@ -97,17 +98,18 @@ public class RaycastService {
             if (hitResult.isEmpty()) {
                 return;
             }
+            var hit = hitResult.get();
+            hitPos.set(hit.x, hit.y, hit.z);
+            var dist = origin.distanceToSqr(hit);
             
-            var dist = origin.distanceToSqr(hitResult.get());
-            
-            tracker.update(edge.firstPos(), edge.secondPos(), dist);
+            tracker.update(edge.firstPos(), edge.secondPos(), hitPos.asLong(), dist);
         });
         
         if (tracker.start == -1) {
             return null;
         }
         
-        return new GraphHit.EdgeHit(tracker.start, tracker.end, tracker.minDistance);
+        return new GraphHit.EdgeHit(tracker.start, tracker.end, tracker.hit, tracker.minDistance);
     }
     
     private static double calcReach(Player player) {
@@ -153,10 +155,12 @@ public class RaycastService {
     private static class RaycastTracker {
         public long start = -1;
         public long end = -1;
+        public long hit = -1;
         public double minDistance = Double.MAX_VALUE;
         
         public void update(long firstPos,
                            long secondPos,
+                           long hitPos,
                            double dist
         ) {
             if (dist >= minDistance) {
@@ -164,6 +168,7 @@ public class RaycastService {
             }
             start = firstPos;
             end = secondPos;
+            hit = hitPos;
             minDistance = dist;
         }
     }

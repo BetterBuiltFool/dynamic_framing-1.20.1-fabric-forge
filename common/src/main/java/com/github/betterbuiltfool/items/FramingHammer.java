@@ -142,7 +142,8 @@ public class FramingHammer extends Item implements RendersOverlay, SuppressesEqu
         }
         
         var ray = getPlayerPOVHitResult(level, player, ClipContext.Fluid.NONE);
-        var lookPos = ray.getBlockPos();
+        var hitPos = ray.getBlockPos();
+        var lookPos = hitPos.relative(ray.getDirection());
         
         if (!hammerTool.hasFirstPos()) {
             return firstUse(hammerTool, lookPos);

@@ -47,20 +47,14 @@ public class FramingHammerOverlay {
                 return;
             }
             
-            for (var entry : nodeMap.entrySet()) {
-                long node = entry.getLongKey();
-                
-                for (long connection : entry.getValue()) {
-                    if (node >= connection && nodeMap.containsNode(connection)) {
-                        continue;
-                    }
-                    ;
-                    if (hasHighlightEdge && node == firstHighlightPoint && connection == secondHighlightPoint) {
-                        continue;
-                    }
-                    renderer.renderLine(node, connection, defaultColor);
+            nodeMap.applyToEachEdge(edge -> {
+                var node = edge.firstPos();
+                var connection = edge.secondPos();
+                if (hasHighlightEdge && node == firstHighlightPoint && connection == secondHighlightPoint) {
+                    return;
                 }
-            }
+                renderer.renderLine(node, connection, defaultColor);
+            });
             renderer.renderLine(firstHighlightPoint, secondHighlightPoint, context.highlightColor);
         });
     }

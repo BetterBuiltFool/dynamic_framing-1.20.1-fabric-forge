@@ -305,7 +305,8 @@ public class FramingHammer extends Item implements RendersOverlay, SuppressesEqu
                 contextBuilder = contextBuilder.addHighlightPos(nodeHit.packedPos());
             } else if (selection instanceof GraphHit.EdgeHit edgeHit) {
                 contextBuilder = contextBuilder.addFirstPos(edgeHit.posA())
-                                               .addSecondPos(edgeHit.posB());
+                                               .addSecondPos(edgeHit.posB())
+                                               .addHighlightPos(edgeHit.hitPos());
             }
         }
         FramingHammerOverlay.renderOverlay(contextBuilder.build());

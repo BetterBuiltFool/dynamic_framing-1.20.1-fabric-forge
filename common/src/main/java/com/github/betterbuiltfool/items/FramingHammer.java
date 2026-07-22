@@ -92,18 +92,37 @@ public class FramingHammer extends Item implements RendersOverlay, SuppressesEqu
         
         var hammerTool = new FramingHammerData(stack);
         
+        var selection = RaycastService.getClosest(player);
+        hammerTool.setSelection(selection);
+        
         if (!hammerTool.hasFirstPos()) {
-            var selection = RaycastService.getClosest(player);
-            hammerTool.setSelection(selection);
             return;
         }
         
         long firstPos = hammerTool.getFirstPos();
         
+        if (selection != null) {
+            long secondPos = getSelectedPos(hammerTool);
+            if (isCoaxial(firstPos, secondPos)) {
+                hammerTool.setSecondPos(secondPos);
+                return;
+            }
+        }
         var ray = getPlayerPOVHitResult(level, player, ClipContext.Fluid.NONE);
         var lookPos = ray.getBlockPos();
+        long secondPos = calcSecondPos(BlockPos.of(firstPos), lookPos).asLong();
         
-        hammerTool.setSecondPos(calcSecondPos(BlockPos.of(firstPos), lookPos).asLong());
+        hammerTool.setSecondPos(secondPos);
+    }
+    
+    private boolean isCoaxial(long firstPos,
+                              long secondPos
+    ) {
+        boolean xMatch = (BlockPos.getX(firstPos) == BlockPos.getX(secondPos));
+        boolean yMatch = (BlockPos.getY(firstPos) == BlockPos.getY(secondPos));
+        boolean zMatch = (BlockPos.getZ(firstPos) == BlockPos.getZ(secondPos));
+        
+        return ((xMatch && yMatch) || (xMatch && zMatch) || (yMatch && zMatch));
     }
     
     @Override
@@ -192,8 +211,26 @@ public class FramingHammer extends Item implements RendersOverlay, SuppressesEqu
             FramingHammerData hammerTool,
             BlockPos lookPos
     ) {
-        hammerTool.setFirstPos(lookPos.asLong());
+        long firstPos;
+        if (!hammerTool.hasSelection()) {
+            firstPos = lookPos.asLong();
+        } else {
+            firstPos = getSelectedPos(hammerTool);
+        }
+        hammerTool.setFirstPos(firstPos);
         return InteractionResultHolder.success(hammerTool.wrapped);
+    }
+    
+    private static long getSelectedPos(FramingHammerData hammerTool) {
+        var selection = hammerTool.getSelection();
+        if (selection instanceof GraphHit.NodeHit nodeHit) {
+            return nodeHit.packedPos();
+        } else if (selection instanceof GraphHit.EdgeHit edgeHit) {
+            // TODO: temp, make EdgeHit contain collision position
+            return edgeHit.posA();
+        } else {
+            throw new IllegalArgumentException();
+        }
     }
     
     private @NotNull InteractionResultHolder<ItemStack> secondUse(

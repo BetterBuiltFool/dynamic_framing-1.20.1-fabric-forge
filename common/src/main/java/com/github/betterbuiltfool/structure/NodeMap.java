@@ -7,6 +7,7 @@ import it.unimi.dsi.fastutil.objects.ObjectSet;
 import net.minecraft.network.FriendlyByteBuf;
 
 import java.util.Map;
+import java.util.function.Consumer;
 
 public class NodeMap {
     private final Long2ObjectMap<LongSet> graph;
@@ -58,5 +59,19 @@ public class NodeMap {
     
     public boolean containsNode(long nodePos) {
         return this.graph.containsKey(nodePos);
+    }
+    
+    public void applyToEachEdge(Consumer<Edge> edgeAction) {
+        for (var entry : this.entrySet()) {
+            long node = entry.getLongKey();
+            
+            for (long connection : entry.getValue()) {
+                if (node >= connection && this.containsNode(connection)) {
+                    continue;
+                }
+                
+                edgeAction.accept(new Edge(node, connection));
+            }
+        }
     }
 }

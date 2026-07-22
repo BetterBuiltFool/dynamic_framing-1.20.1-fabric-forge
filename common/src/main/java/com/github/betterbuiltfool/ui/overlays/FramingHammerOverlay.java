@@ -3,30 +3,26 @@ package com.github.betterbuiltfool.ui.overlays;
 import com.github.betterbuiltfool.ui.LineRenderer;
 import com.github.betterbuiltfool.ui.NodeMarkerRenderer;
 import com.github.betterbuiltfool.ui.NodeOverlayContext;
-import net.minecraft.client.Camera;
-import net.minecraft.core.BlockPos;
-import net.minecraft.world.phys.Vec3;
 
 import java.awt.*;
 
 public class FramingHammerOverlay {
-    private static Color defaultColor = new Color(0, 0, 255);
+    private static final Color defaultColor = new Color(0, 0, 255);
     
     public static void renderOverlay(NodeOverlayContext context) {
         renderEdges(context);
-        var client = context.client;
-        var poseStack = context.poseStack;
+        renderNodes(context);
+    }
+    
+    private static void renderNodes(NodeOverlayContext context) {
         var positions = context.highlightNodes;
+        var nodeRenderer = new NodeMarkerRenderer(context.client, context.poseStack);
         
-        Camera camera = client.getEntityRenderDispatcher().camera;
-        
-        for(long node: positions) {
-            Vec3 renderPos = BlockPos.of(node).getCenter().subtract(camera.getPosition());
-            NodeMarkerRenderer.renderNode(poseStack, renderPos, camera);
-        }
-        
-        renderEdges(context);
-        
+        nodeRenderer.drawBatch(renderer -> {
+            for (long node : positions) {
+                renderer.renderNode(node, context.highlightColor);
+            }
+        });
     }
     
     public static void renderEdges(NodeOverlayContext context) {
@@ -35,36 +31,37 @@ public class FramingHammerOverlay {
         var lineRenderer = new LineRenderer(context.client, context.poseStack);
         
         boolean hasHighlightEdge = (highlightEdge != null);
-        long firstHighlightPoint = 0;
-        long secondHighlightPoint = 0;
+        final long firstHighlightPoint;
+        final long secondHighlightPoint;
         
         if (hasHighlightEdge) {
             firstHighlightPoint = Math.min(highlightEdge.firstPos(), highlightEdge.secondPos());
             secondHighlightPoint = Math.max(highlightEdge.firstPos(), highlightEdge.secondPos());
+        } else {
+            secondHighlightPoint = 0;
+            firstHighlightPoint = 0;
         }
         
-        lineRenderer.startBatch();
-        
-        if (nodeMap != null) {
+        lineRenderer.drawBatch(renderer -> {
+            if (nodeMap == null) {
+                return;
+            }
+            
             for (var entry : nodeMap.entrySet()) {
                 long node = entry.getLongKey();
                 
                 for (long connection : entry.getValue()) {
-                    if (node < connection || !nodeMap.containsNode(connection)) {
-                        var lineColor = defaultColor;
-                        if (hasHighlightEdge && node == firstHighlightPoint && connection == secondHighlightPoint) {
-                            // TODO: remove all of this rigamarole b/c it will never be true. However, we want this
-                            //  logic
-                            // for rendering with the froe, where it can be true.
-                            continue;
-                        }
-                        lineRenderer.renderLine(node, connection, lineColor);
+                    if (node >= connection && nodeMap.containsNode(connection)) {
+                        continue;
                     }
+                    ;
+                    if (hasHighlightEdge && node == firstHighlightPoint && connection == secondHighlightPoint) {
+                        continue;
+                    }
+                    renderer.renderLine(node, connection, defaultColor);
                 }
             }
-        }
-        lineRenderer.renderLine(firstHighlightPoint, secondHighlightPoint, context.highlightColor);
-        
-        lineRenderer.finishBatch();
+            renderer.renderLine(firstHighlightPoint, secondHighlightPoint, context.highlightColor);
+        });
     }
 }

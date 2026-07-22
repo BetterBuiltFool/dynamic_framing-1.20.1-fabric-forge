@@ -262,13 +262,13 @@ public class FramingHammer extends Item implements RendersOverlay, SuppressesEqu
                                            .addHighlightPos(secondPos)
                                            .addSecondPos(secondPos);
         } else if (hammerTool.hasSelection()) {
+            contextBuilder = contextBuilder.setHighlightColor(new Color(255, 127, 0));
             var selection = hammerTool.getSelection();
             if (selection instanceof GraphHit.NodeHit nodeHit) {
                 contextBuilder = contextBuilder.addHighlightPos(nodeHit.packedPos());
             } else if (selection instanceof GraphHit.EdgeHit edgeHit) {
                 contextBuilder = contextBuilder.addFirstPos(edgeHit.posA())
-                                               .addSecondPos(edgeHit.posB())
-                                               .setHighlightColor(new Color(255, 127, 0));
+                                               .addSecondPos(edgeHit.posB());
             }
         }
         FramingHammerOverlay.renderOverlay(contextBuilder.build());

@@ -98,7 +98,7 @@ public class FramedStructureStorage extends SavedData {
     public static void sendChunkDataToPlayer(ServerPlayer player, ResourceKey<Level> dimension, long... pos) {
         Level serverLevel = player.serverLevel();
         FramedStructureStorage storage = FramedStructureStorage.get(serverLevel);
-        StructureGraph dimensionGraph = storage.getDimensionGraph(serverLevel.dimension());
+        StructureGraph dimensionGraph = storage.getDimensionGraph(dimension);
         
         LongSet nodesPositions = dimensionGraph.getPackedNodesForChunk(pos);
         NodeMap nodeData = dimensionGraph.getNodeMap(nodesPositions);

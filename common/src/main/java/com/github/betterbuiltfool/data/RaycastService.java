@@ -1,6 +1,7 @@
-package com.github.betterbuiltfool.structure;
+package com.github.betterbuiltfool.data;
 
-import com.github.betterbuiltfool.data.FramedStructureStorage;
+import com.github.betterbuiltfool.structure.GraphHit;
+import com.github.betterbuiltfool.structure.NodeMap;
 import it.unimi.dsi.fastutil.longs.LongSet;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.player.Player;

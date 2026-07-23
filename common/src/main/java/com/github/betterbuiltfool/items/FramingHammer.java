@@ -2,6 +2,7 @@ package com.github.betterbuiltfool.items;
 
 import com.github.betterbuiltfool.DynamicFraming;
 import com.github.betterbuiltfool.client.ClientLocalNodes;
+import com.github.betterbuiltfool.data.CoaxSelection;
 import com.github.betterbuiltfool.data.FramedStructureStorage;
 import com.github.betterbuiltfool.items.nbtHelper.FramingHammerData;
 import com.github.betterbuiltfool.structure.GraphHit;
@@ -13,7 +14,6 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -111,9 +111,11 @@ public class FramingHammer extends Item implements RendersOverlay, SuppressesEqu
                 return;
             }
         }
-        var ray = getPlayerPOVHitResult(level, player, ClipContext.Fluid.NONE);
-        var lookPos = ray.getBlockPos();
-        long secondPos = calcSecondPos(BlockPos.of(firstPos), lookPos).asLong();
+        long secondPos = CoaxSelection.getCoaxialPoint(
+                player.getEyePosition(1.0f),
+                player.getViewVector(1.0f),
+                BlockPos.of(firstPos)
+        );
         
         hammerTool.setSecondPos(secondPos);
     }
@@ -264,25 +266,6 @@ public class FramingHammer extends Item implements RendersOverlay, SuppressesEqu
         }
         hammerTool.clear();
         return InteractionResultHolder.success(hammerTool.wrapped);
-    }
-    
-    /**
-     * Calculates the second position of an edge based on where the player is looking.
-     *
-     * @param firstPos The starting position of the edge
-     * @param lookPos The position at which the player is looking
-     * @return A BlockPos that is coaxial to the firstPos
-     */
-    private @NotNull BlockPos calcSecondPos(
-            @NotNull BlockPos firstPos,
-            @NotNull BlockPos lookPos
-    ) {
-        
-        var delta = lookPos.subtract(firstPos);
-        var direction = Direction.getNearest(delta.getX(), delta.getY(), delta.getZ());
-        var axis = direction.getAxis();
-        
-        return firstPos.relative(axis, delta.get(axis));
     }
     
     @Override

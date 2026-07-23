@@ -38,6 +38,17 @@ public class CoaxSelection {
         );
     }
     
+    public static boolean isCoaxial(
+            long firstPos,
+            long secondPos
+    ) {
+        boolean xMatch = (BlockPos.getX(firstPos) == BlockPos.getX(secondPos));
+        boolean yMatch = (BlockPos.getY(firstPos) == BlockPos.getY(secondPos));
+        boolean zMatch = (BlockPos.getZ(firstPos) == BlockPos.getZ(secondPos));
+        
+        return ((xMatch && yMatch) || (xMatch && zMatch) || (yMatch && zMatch));
+    }
+    
     private static Vec3 getIntersection(
             Vec3 planeOrigin,
             Vec3 planeNormal,

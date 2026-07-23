@@ -106,7 +106,7 @@ public class FramingHammer extends Item implements RendersOverlay, SuppressesEqu
         
         if (selection != null) {
             long secondPos = getSelectedPos(hammerTool);
-            if (isCoaxial(firstPos, secondPos)) {
+            if (CoaxSelection.isCoaxial(firstPos, secondPos)) {
                 hammerTool.setSecondPos(secondPos);
                 return;
             }
@@ -118,16 +118,6 @@ public class FramingHammer extends Item implements RendersOverlay, SuppressesEqu
         );
         
         hammerTool.setSecondPos(secondPos);
-    }
-    
-    private boolean isCoaxial(long firstPos,
-                              long secondPos
-    ) {
-        boolean xMatch = (BlockPos.getX(firstPos) == BlockPos.getX(secondPos));
-        boolean yMatch = (BlockPos.getY(firstPos) == BlockPos.getY(secondPos));
-        boolean zMatch = (BlockPos.getZ(firstPos) == BlockPos.getZ(secondPos));
-        
-        return ((xMatch && yMatch) || (xMatch && zMatch) || (yMatch && zMatch));
     }
     
     @Override

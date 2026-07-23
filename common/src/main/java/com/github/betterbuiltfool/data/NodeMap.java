@@ -1,5 +1,6 @@
-package com.github.betterbuiltfool.structure;
+package com.github.betterbuiltfool.data;
 
+import com.github.betterbuiltfool.structure.Edge;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import it.unimi.dsi.fastutil.longs.LongSet;

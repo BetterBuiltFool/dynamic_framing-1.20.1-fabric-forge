@@ -1,6 +1,7 @@
-package com.github.betterbuiltfool.structure;
+package com.github.betterbuiltfool.data;
 
 import com.github.betterbuiltfool.DynamicFraming;
+import com.github.betterbuiltfool.structure.GraphHit;
 import net.minecraft.nbt.CompoundTag;
 import org.jetbrains.annotations.Nullable;
 

@@ -1,7 +1,7 @@
 package com.github.betterbuiltfool.network;
 
 import com.github.betterbuiltfool.client.ClientLocalNodes;
-import com.github.betterbuiltfool.structure.NodeMap;
+import com.github.betterbuiltfool.data.NodeMap;
 import dev.architectury.utils.Env;
 import dev.architectury.utils.EnvExecutor;
 import org.jetbrains.annotations.NotNull;

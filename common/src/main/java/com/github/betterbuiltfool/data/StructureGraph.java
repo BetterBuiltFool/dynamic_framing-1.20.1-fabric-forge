@@ -1,5 +1,6 @@
-package com.github.betterbuiltfool.structure;
+package com.github.betterbuiltfool.data;
 
+import com.github.betterbuiltfool.structure.Node;
 import it.unimi.dsi.fastutil.longs.*;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;

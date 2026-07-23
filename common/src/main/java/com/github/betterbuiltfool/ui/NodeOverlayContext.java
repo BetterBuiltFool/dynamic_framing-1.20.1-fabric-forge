@@ -1,7 +1,7 @@
 package com.github.betterbuiltfool.ui;
 
+import com.github.betterbuiltfool.data.NodeMap;
 import com.github.betterbuiltfool.structure.Edge;
-import com.github.betterbuiltfool.structure.NodeMap;
 import com.mojang.blaze3d.vertex.PoseStack;
 import it.unimi.dsi.fastutil.longs.LongSet;
 import net.minecraft.client.Minecraft;

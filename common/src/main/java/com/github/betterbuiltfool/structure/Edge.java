@@ -29,6 +29,30 @@ public record Edge(long firstPos, long secondPos) {
                tz >= Math.min(fz, sz) && tx <= Math.max(fz, sz);
     }
     
+    /**
+     * Returns the opposing end of the edge. Throws an exception if the end given is not actually an endpoint for the
+     * edge.
+     *
+     * @param endPos A position, as a packed long, known to be one end or another of the edge.
+     *
+     * @return A long representing the opposing end from endPos.
+     */
+    public long getOpposingEnd(long endPos) {
+        if (endPos == firstPos) {
+            return secondPos;
+        }
+        if (endPos == secondPos) {
+            return firstPos;
+        }
+        
+        throw new IllegalArgumentException(String.format(
+                "Invalid position for edge, %s. Valid positions are %s and %s",
+                BlockPos.of(endPos),
+                BlockPos.of(firstPos),
+                BlockPos.of(secondPos)
+        ));
+    }
+    
     public Edge.Split splitAt(long splitPos) {
         long firstPos = this.firstPos;
         long secondPos = this.secondPos;

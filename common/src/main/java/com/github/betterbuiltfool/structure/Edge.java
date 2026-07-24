@@ -1,5 +1,6 @@
 package com.github.betterbuiltfool.structure;
 
+import com.github.betterbuiltfool.data.CoaxSelection;
 import net.minecraft.core.BlockPos;
 
 public record Edge(long firstPos, long secondPos) {
@@ -51,6 +52,17 @@ public record Edge(long firstPos, long secondPos) {
                 BlockPos.of(firstPos),
                 BlockPos.of(secondPos)
         ));
+    }
+    
+    public boolean isCoaxialTo(long position) {
+        int px = BlockPos.getX(position);
+        int py = BlockPos.getY(position);
+        int pz = BlockPos.getZ(position);
+        
+        return (
+                CoaxSelection.isCoaxial(this.firstPos, px, py, pz) &&
+                CoaxSelection.isCoaxial(this.secondPos, px, py, pz)
+        );
     }
     
     public long getClosestEnd(long target) {

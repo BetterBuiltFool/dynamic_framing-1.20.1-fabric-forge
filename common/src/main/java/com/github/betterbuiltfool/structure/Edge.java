@@ -53,6 +53,28 @@ public record Edge(long firstPos, long secondPos) {
         ));
     }
     
+    public long getClosestEnd(long target) {
+        long tx = BlockPos.getX(target);
+        long ty = BlockPos.getY(target);
+        long tz = BlockPos.getZ(target);
+        
+        long dxf = BlockPos.getX(firstPos) - tx;
+        long dyf = BlockPos.getY(firstPos) - ty;
+        long dzf = BlockPos.getZ(firstPos) - tz;
+        
+        long dxs = BlockPos.getX(secondPos) - tx;
+        long dys = BlockPos.getY(secondPos) - ty;
+        long dzs = BlockPos.getZ(secondPos) - tz;
+        
+        long distFirstSqr = dxf * dxf + dyf * dyf + dzf * dzf;
+        long distSecondSqr = dxs * dxs + dys * dys + dzs * dzs;
+        
+        if (distFirstSqr <= distSecondSqr) {
+            return firstPos;
+        }
+        return secondPos;
+    }
+    
     public Edge.Split splitAt(long splitPos) {
         long firstPos = this.firstPos;
         long secondPos = this.secondPos;
@@ -64,4 +86,5 @@ public record Edge(long firstPos, long secondPos) {
     }
     
     public record Split(Edge upper, Edge lower) {}
+    
 }

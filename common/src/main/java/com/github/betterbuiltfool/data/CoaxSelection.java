@@ -42,9 +42,21 @@ public class CoaxSelection {
             long firstPos,
             long secondPos
     ) {
-        boolean xMatch = (BlockPos.getX(firstPos) == BlockPos.getX(secondPos));
-        boolean yMatch = (BlockPos.getY(firstPos) == BlockPos.getY(secondPos));
-        boolean zMatch = (BlockPos.getZ(firstPos) == BlockPos.getZ(secondPos));
+        int x = BlockPos.getX(secondPos);
+        int y = BlockPos.getY(secondPos);
+        int z = BlockPos.getZ(secondPos);
+        return isCoaxial(firstPos, x, y, z);
+    }
+    
+    public static boolean isCoaxial(
+            long position,
+            int x,
+            int y,
+            int z
+    ) {
+        boolean xMatch = BlockPos.getX(position) == x;
+        boolean yMatch = BlockPos.getY(position) == y;
+        boolean zMatch = BlockPos.getZ(position) == z;
         
         return ((xMatch && yMatch) || (xMatch && zMatch) || (yMatch && zMatch));
     }

@@ -28,4 +28,16 @@ public record Edge(long firstPos, long secondPos) {
                ty >= Math.min(fy, sy) && tx <= Math.max(fy, sy) &&
                tz >= Math.min(fz, sz) && tx <= Math.max(fz, sz);
     }
+    
+    public Edge.Split splitAt(long splitPos) {
+        long firstPos = this.firstPos;
+        long secondPos = this.secondPos;
+        
+        return new Edge.Split(
+                new Edge(firstPos, splitPos),
+                new Edge(splitPos, secondPos)
+        );
+    }
+    
+    public record Split(Edge first, Edge second) {}
 }

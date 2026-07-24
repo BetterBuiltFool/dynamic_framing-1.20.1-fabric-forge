@@ -63,5 +63,5 @@ public record Edge(long firstPos, long secondPos) {
         );
     }
     
-    public record Split(Edge first, Edge second) {}
+    public record Split(Edge upper, Edge lower) {}
 }

@@ -187,9 +187,8 @@ public final class StructureGraph {
         first = updateEdge(first, second, firstEdges);
         second = updateEdge(second, first, secondEdges);
         
-        Edge edge = new Edge(first, second);
-        // TODO: Handle overlaps
-        insertEdge(edge);
+        Edge newEdge = new Edge(first, second);
+        handleOverlaps(newEdge);
     }
     
     /**
@@ -249,6 +248,33 @@ public final class StructureGraph {
         }
         
         return firstPos;
+    }
+    
+    private void handleOverlaps(Edge newEdge) {
+        long[] intersections = activeEdges.stream()
+                                          .filter(edge -> edge.intersectedBy(newEdge))
+                                          .mapToLong(edge -> {
+                                              long intersection = newEdge.getIntersectionPos(edge);
+                                              if (intersection != edge.firstPos() && intersection != edge.secondPos()) {
+                                                  var split = edge.splitAt(intersection);
+                                                  removeEdge(edge);
+                                                  insertEdge(split.upper());
+                                                  insertEdge(split.lower());
+                                              }
+                                              return intersection;
+                                          })
+                                          .boxed()
+                                          .sorted(Comparator.comparingInt(newEdge::getCoordinate))
+                                          .mapToLong(Long::longValue)
+                                          .toArray();
+        
+        Edge activeEdge = newEdge;
+        for (long intersection : intersections) {
+            var splitEdges = activeEdge.splitAt(intersection);
+            insertEdge(splitEdges.upper());
+            activeEdge = splitEdges.lower();
+        }
+        insertEdge(activeEdge);
     }
     
     private void insertEdge(Edge edge) {

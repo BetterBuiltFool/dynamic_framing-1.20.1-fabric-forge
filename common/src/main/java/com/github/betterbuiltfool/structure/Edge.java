@@ -90,22 +90,23 @@ public record Edge(long firstPos, long secondPos) {
     public static long distanceSqr(long firstPos,
                                    long secondPos
     ) {
-        int x1 = BlockPos.getX(firstPos);
-        int y1 = BlockPos.getY(firstPos);
-        int z1 = BlockPos.getZ(firstPos);
-        int y2 = BlockPos.getY(secondPos);
-        int z2 = BlockPos.getZ(secondPos);
-        int x2 = BlockPos.getX(secondPos);
+        long x1 = BlockPos.getX(firstPos);
+        long y1 = BlockPos.getY(firstPos);
+        long z1 = BlockPos.getZ(firstPos);
+        long y2 = BlockPos.getY(secondPos);
+        long z2 = BlockPos.getZ(secondPos);
+        long x2 = BlockPos.getX(secondPos);
         
         return distanceSqr(x1, y1, z1, x2, y2, z2);
     }
     
-    public static long distanceSqr(int x1,
-                                   int y1,
-                                   int z1,
-                                   int x2,
-                                   int y2,
-                                   int z2
+    public static long distanceSqr(
+            long x1,
+            long y1,
+            long z1,
+            long x2,
+            long y2,
+            long z2
     ) {
         long dx = x1 - x2;
         long dy = y1 - y2;

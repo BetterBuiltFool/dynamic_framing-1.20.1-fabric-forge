@@ -66,25 +66,52 @@ public record Edge(long firstPos, long secondPos) {
     }
     
     public long getClosestEnd(long target) {
-        long tx = BlockPos.getX(target);
-        long ty = BlockPos.getY(target);
-        long tz = BlockPos.getZ(target);
+        int tx = BlockPos.getX(target);
+        int ty = BlockPos.getY(target);
+        int tz = BlockPos.getZ(target);
         
-        long dxf = BlockPos.getX(firstPos) - tx;
-        long dyf = BlockPos.getY(firstPos) - ty;
-        long dzf = BlockPos.getZ(firstPos) - tz;
+        int x1 = BlockPos.getX(firstPos);
+        int y1 = BlockPos.getY(firstPos);
+        int z1 = BlockPos.getZ(firstPos);
         
-        long dxs = BlockPos.getX(secondPos) - tx;
-        long dys = BlockPos.getY(secondPos) - ty;
-        long dzs = BlockPos.getZ(secondPos) - tz;
+        int y2 = BlockPos.getY(secondPos);
+        int z2 = BlockPos.getZ(secondPos);
+        int x2 = BlockPos.getX(secondPos);
         
-        long distFirstSqr = dxf * dxf + dyf * dyf + dzf * dzf;
-        long distSecondSqr = dxs * dxs + dys * dys + dzs * dzs;
+        long distFirstSqr = distanceSqr(x1, y1, z1, tx, ty, tz);
+        long distSecondSqr = distanceSqr(x2, y2, z2, tx, ty, tz);
         
         if (distFirstSqr <= distSecondSqr) {
             return firstPos;
         }
         return secondPos;
+    }
+    
+    public static long distanceSqr(long firstPos,
+                                   long secondPos
+    ) {
+        int x1 = BlockPos.getX(firstPos);
+        int y1 = BlockPos.getY(firstPos);
+        int z1 = BlockPos.getZ(firstPos);
+        int y2 = BlockPos.getY(secondPos);
+        int z2 = BlockPos.getZ(secondPos);
+        int x2 = BlockPos.getX(secondPos);
+        
+        return distanceSqr(x1, y1, z1, x2, y2, z2);
+    }
+    
+    public static long distanceSqr(int x1,
+                                   int y1,
+                                   int z1,
+                                   int x2,
+                                   int y2,
+                                   int z2
+    ) {
+        long dx = x1 - x2;
+        long dy = y1 - y2;
+        long dz = z1 - z2;
+        
+        return dx * dx + dy * dy + dz * dz;
     }
     
     public Edge.Split splitAt(long splitPos) {

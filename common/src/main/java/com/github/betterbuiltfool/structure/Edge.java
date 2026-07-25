@@ -28,7 +28,13 @@ public record Edge(long firstPos, long secondPos, Direction.Axis axis) {
     }
     
     private int getCoordinate(long position) {
-        return switch (this.axis) {
+        return getCoordinate(position, this.axis);
+    }
+    
+    private static int getCoordinate(long position,
+                                     Direction.Axis axis
+    ) {
+        return switch (axis) {
             case X -> BlockPos.getX(position);
             case Y -> BlockPos.getY(position);
             case Z -> BlockPos.getZ(position);

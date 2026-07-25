@@ -4,7 +4,8 @@ import com.github.betterbuiltfool.DynamicFraming;
 import com.github.betterbuiltfool.structure.Edge;
 import com.github.betterbuiltfool.structure.Node;
 import it.unimi.dsi.fastutil.longs.*;
-import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import it.unimi.dsi.fastutil.objects.ObjectOpenHashSet;
+import it.unimi.dsi.fastutil.objects.ObjectSet;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -21,7 +22,7 @@ import java.util.stream.Collectors;
 public final class StructureGraph {
     private final Long2ObjectMap<LongSet> chunkMap = new Long2ObjectOpenHashMap<>();
     private final Long2ObjectMap<Node> posToNodeMap = new Long2ObjectOpenHashMap<>();
-    private final ObjectArrayList<Edge> activeEdges = new ObjectArrayList<>();
+    private final ObjectSet<Edge> activeEdges = new ObjectOpenHashSet<>();
     
     /**
      * Finds the set of packed node positions that exist within the provided chunks. They will be collected into a

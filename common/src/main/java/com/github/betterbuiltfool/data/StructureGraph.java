@@ -112,10 +112,33 @@ public final class StructureGraph {
         }
     }
     
+    public void remove(Edge edge) {
+        remove(edge.firstPos(), edge.secondPos());
+    }
+    
     public void removeNode(@NotNull Node node) {
         posToNodeMap.remove(node.getPos());
         var chunkNodes = chunkMap.getOrDefault(new ChunkPos(node.getBlockPos()).toLong(), LongSets.EMPTY_SET);
         chunkNodes.remove(node.getPos());
+        activeEdges.removeIf(edge -> edge.firstPos() == node.getPos() || edge.secondPos() == node.getPos());
+    }
+    
+    public void removeEdge(@NotNull Edge edge) {
+        activeEdges.remove(edge);
+        
+        cleanupEdgeNodes(edge.firstPos(), edge.secondPos());
+        cleanupEdgeNodes(edge.secondPos(), edge.firstPos());
+    }
+    
+    private void cleanupEdgeNodes(long firstPos,
+                                  long secondPos
+    ) {
+        Node first = posToNodeMap.get(firstPos);
+        if (first == null) {
+            return;
+        }
+        var connections = first.getConnections();
+        connections.remove(secondPos);
     }
     
     private void removeConnection(@NotNull Node node,
@@ -125,7 +148,29 @@ public final class StructureGraph {
         connections.remove(connectedPos);
         if (connections.isEmpty()) {
             removeNode(node);
+        } else if (connections.size() == 2) {
+            if (tryMergeEdges(node.getEdges())) {
+                removeNode(node);
+            }
         }
+    }
+    
+    private boolean tryMergeEdges(Set<Edge> edges) {
+        var iterator = edges.iterator();
+        var edge1 = iterator.next();
+        var edge2 = iterator.next();
+        if (edge1.axis() != edge2.axis()) {
+            return false;
+        }
+        removeEdge(edge1);
+        removeEdge(edge2);
+        
+        var sharedPos = edge1.getSharedEnd(edge2);
+        long newStart = edge1.getOpposingEnd(sharedPos);
+        long newEnd = edge2.getOpposingEnd(sharedPos);
+        
+        insertEdge(new Edge(newStart, newEnd));
+        return true;
     }
     
     public void connect(long first, long second) {

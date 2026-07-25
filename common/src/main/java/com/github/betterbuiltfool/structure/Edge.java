@@ -2,6 +2,7 @@ package com.github.betterbuiltfool.structure;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import org.jetbrains.annotations.NotNull;
 
 public record Edge(long firstPos, long secondPos, Direction.Axis axis) {
     public Edge(long firstPos,
@@ -134,6 +135,16 @@ public record Edge(long firstPos, long secondPos, Direction.Axis axis) {
         return new Edge.Split(
                 new Edge(firstPos, splitPos),
                 new Edge(splitPos, secondPos)
+        );
+    }
+    
+    @Override
+    public @NotNull String toString() {
+        return String.format(
+                "Edge[%s](%s <-> %s)",
+                this.axis.name(),
+                BlockPos.of(this.firstPos),
+                BlockPos.of(this.secondPos)
         );
     }
     

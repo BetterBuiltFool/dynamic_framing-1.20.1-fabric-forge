@@ -1,33 +1,45 @@
 package com.github.betterbuiltfool.structure;
 
-import com.github.betterbuiltfool.data.CoaxSelection;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 
-public record Edge(long firstPos, long secondPos) {
-    public Edge {
-        if (firstPos > secondPos) {
-            var temp = firstPos;
-            firstPos = secondPos;
-            secondPos = temp;
+public record Edge(long firstPos, long secondPos, Direction.Axis axis) {
+    public Edge(long firstPos,
+                long secondPos
+    ) {
+        this(
+                Math.min(firstPos, secondPos),
+                Math.max(firstPos, secondPos),
+                calculateAxis(firstPos, secondPos)
+        );
+    }
+    
+    private static Direction.Axis calculateAxis(long start,
+                                                long end
+    ) {
+        if (BlockPos.getX(start) != BlockPos.getX(end)) {
+            return Direction.Axis.X;
         }
+        if (BlockPos.getY(start) != BlockPos.getY(end)) {
+            return Direction.Axis.Y;
+        }
+        return Direction.Axis.Z;
+    }
+    
+    private int getCoordinate(long position) {
+        return switch (this.axis) {
+            case X -> BlockPos.getX(position);
+            case Y -> BlockPos.getY(position);
+            case Z -> BlockPos.getZ(position);
+        };
     }
     
     public boolean intersectedBy(long targetPos) {
-        int tx = BlockPos.getX(targetPos);
-        int ty = BlockPos.getY(targetPos);
-        int tz = BlockPos.getZ(targetPos);
+        int targetCoord = getCoordinate(targetPos);
+        int firstCoord = getCoordinate(this.firstPos);
+        int secondCoord = getCoordinate(this.secondPos);
         
-        int fx = BlockPos.getX(firstPos);
-        int fy = BlockPos.getY(firstPos);
-        int fz = BlockPos.getZ(firstPos);
-        
-        int sx = BlockPos.getX(secondPos);
-        int sy = BlockPos.getY(secondPos);
-        int sz = BlockPos.getZ(secondPos);
-        
-        return tx >= Math.min(fx, sx) && tx <= Math.max(fx, sx) &&
-               ty >= Math.min(fy, sy) && tx <= Math.max(fy, sy) &&
-               tz >= Math.min(fz, sz) && tx <= Math.max(fz, sz);
+        return targetCoord >= firstCoord && targetCoord <= secondCoord;
     }
     
     /**
@@ -55,14 +67,14 @@ public record Edge(long firstPos, long secondPos) {
     }
     
     public boolean isCoaxialTo(long position) {
-        int px = BlockPos.getX(position);
-        int py = BlockPos.getY(position);
-        int pz = BlockPos.getZ(position);
-        
-        return (
-                CoaxSelection.isCoaxial(this.firstPos, px, py, pz) &&
-                CoaxSelection.isCoaxial(this.secondPos, px, py, pz)
-        );
+        return switch (this.axis) {
+            case X -> BlockPos.getY(position) == BlockPos.getY(this.firstPos) &&
+                      BlockPos.getZ(position) == BlockPos.getZ(this.firstPos);
+            case Y -> BlockPos.getX(position) == BlockPos.getX(this.firstPos) &&
+                      BlockPos.getZ(position) == BlockPos.getZ(this.firstPos);
+            case Z -> BlockPos.getY(position) == BlockPos.getY(this.firstPos) &&
+                      BlockPos.getX(position) == BlockPos.getX(this.firstPos);
+        };
     }
     
     public long getClosestEnd(long target) {

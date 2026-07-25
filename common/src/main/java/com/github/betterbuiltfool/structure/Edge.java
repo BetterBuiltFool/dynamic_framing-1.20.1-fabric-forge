@@ -63,13 +63,38 @@ public record Edge(long firstPos, long secondPos, Direction.Axis axis) {
         if (this.axis == other.axis) {
             return false;
         }
-        Direction.Axis normalAxis = Direction.Axis.values()[3 - this.axis.ordinal() - other.axis.ordinal()];
+        Direction.Axis normalAxis = getNormalAxis(other);
         if (getCoordinate(firstPos, normalAxis) != getCoordinate(other.firstPos(), normalAxis)) {
             return false;
         }
         
         return this.intersectedBy(other.firstPos()) && other.intersectedBy(this.firstPos);
         
+    }
+    
+    /**
+     * Calculates the intersection point between this edge and another.
+     * The edges *must* intersect, or else the resulting value will not be correct.
+     *
+     * @param other Another, intersecting edge.
+     *
+     * @return A packed long of the intersection point.
+     */
+    public long getIntersectionPos(Edge other) {
+        Direction.Axis normalAxis = getNormalAxis(other);
+        
+        int[] result = new int[3];
+        
+        result[this.axis.ordinal()] = this.getCoordinate(other.firstPos());
+        result[other.axis()
+                    .ordinal()] = other.getCoordinate(this.firstPos);
+        result[normalAxis.ordinal()] = Edge.getCoordinate(this.firstPos, normalAxis);
+        
+        return BlockPos.asLong(result[0], result[1], result[2]);
+    }
+    
+    private Direction.Axis getNormalAxis(Edge other) {
+        return Direction.Axis.values()[3 - this.axis.ordinal() - other.axis.ordinal()];
     }
     
     /**

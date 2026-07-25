@@ -27,7 +27,7 @@ public record Edge(long firstPos, long secondPos, Direction.Axis axis) {
         return Direction.Axis.Z;
     }
     
-    private int getCoordinate(long position) {
+    public int getCoordinate(long position) {
         return getCoordinate(position, this.axis);
     }
     

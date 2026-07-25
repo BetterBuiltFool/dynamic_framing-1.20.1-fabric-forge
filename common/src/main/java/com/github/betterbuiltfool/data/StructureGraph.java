@@ -174,10 +174,102 @@ public final class StructureGraph {
     }
     
     public void connect(long first, long second) {
-        Node start = getOrCreateNode(first);
-        Node end = getOrCreateNode(second);
-        start.connect(end);
-        end.connect(start);
+        var firstEdges = getLappingEdge(first);
+        var secondEdges = getLappingEdge(second);
+        
+        var overlap = new HashSet<>(firstEdges);
+        overlap.retainAll(secondEdges);
+        if (!overlap.isEmpty()) {
+            DynamicFraming.LOGGER.info("New edge would be a segment of existing edge, aborting.");
+            return;
+        }
+        first = updateEdge(first, second, firstEdges);
+        second = updateEdge(second, first, secondEdges);
+        
+        Edge edge = new Edge(first, second);
+        // TODO: Handle overlaps
+        insertEdge(edge);
+    }
+    
+    /**
+     * Handles any edges where the firstPos intersects. Coaxial edges are check for extendability, perpendicular edges
+     * for splitting needs.
+     * If an existing edge will be extended, the firstPos value will be adjusted to cover the new edge.
+     *
+     * @param firstPos  A packed position that rests on the edges.
+     * @param secondPos A packed position on the opposite end of the new edge from firstPos
+     * @param edges     The set of edges that intersect with firstPos
+     *
+     * @return An updated packed long where firstPos should be after modifying the grid.
+     */
+    private long updateEdge(long firstPos,
+                            long secondPos,
+                            Set<Edge> edges
+    ) {
+        var partitioned = edges.stream()
+                               .collect(Collectors.partitioningBy(
+                                       edge -> edge.isCoaxialTo(secondPos),
+                                       Collectors.toSet()
+                               ));
+        var coaxialEdges = partitioned.get(true);
+        var perpendicularEdges = partitioned.get(false);
+        
+        if (!coaxialEdges.isEmpty()) {
+            Edge extendingEdge;
+            if (coaxialEdges.size() == 1) {
+                extendingEdge = coaxialEdges.iterator()
+                                            .next();
+            } else {
+                extendingEdge = edges.stream()
+                                     .min(Comparator.comparingLong(
+                                             edge -> Edge.distanceSqr(edge.getClosestEnd(secondPos), secondPos)
+                                     ))
+                                     .orElseThrow();
+            }
+            long closestEnd = extendingEdge.getClosestEnd(secondPos);
+            if (posToNodeMap.get(closestEnd)
+                            .getConnections()
+                            .size() > 1) {
+                return closestEnd;
+            }
+            remove(extendingEdge);
+            
+            return extendingEdge.getOpposingEnd(closestEnd);
+        }
+        
+        for (var edge : perpendicularEdges) {
+            if (edge.firstPos() == firstPos || edge.secondPos() == firstPos) {
+                continue;
+            }
+            var split = edge.splitAt(firstPos);
+            remove(edge);
+            insertEdge(split.upper());
+            insertEdge(split.lower());
+        }
+        
+        return firstPos;
+    }
+    
+    private void insertEdge(Edge edge) {
+        
+        Node first = getOrCreateNode(edge.firstPos());
+        Node second = getOrCreateNode(edge.secondPos());
+        
+        first.connect(second);
+        second.connect(first);
+        activeEdges.add(edge);
+    }
+    
+    private Set<Edge> getLappingEdge(long position) {
+        if (posToNodeMap.containsKey(position)) {
+            return posToNodeMap.get(position)
+                               .getEdges();
+        }
+        
+        return activeEdges.stream()
+                          .filter(edge -> edge.isCoaxialTo(position))
+                          .filter(edge -> edge.intersectedBy(position))
+                          .collect(Collectors.toSet());
     }
     
     public Node getOrCreateNode(long position) {

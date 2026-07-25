@@ -35,6 +35,16 @@ public record Edge(long firstPos, long secondPos, Direction.Axis axis) {
         };
     }
     
+    public long getSharedEnd(Edge edge) {
+        if (this.firstPos == edge.firstPos || this.firstPos == edge.secondPos) {
+            return firstPos;
+        }
+        if (this.secondPos == edge.firstPos || this.secondPos == edge.secondPos) {
+            return secondPos;
+        }
+        throw new IllegalArgumentException(this + " does not share an end with " + edge);
+    }
+    
     public boolean intersectedBy(long targetPos) {
         int targetCoord = getCoordinate(targetPos);
         int firstCoord = getCoordinate(this.firstPos);

@@ -56,7 +56,20 @@ public record Edge(long firstPos, long secondPos, Direction.Axis axis) {
         int firstCoord = getCoordinate(this.firstPos);
         int secondCoord = getCoordinate(this.secondPos);
         
-        return targetCoord >= firstCoord && targetCoord <= secondCoord;
+        return targetCoord >= Math.min(firstCoord, secondCoord) && targetCoord <= Math.max(firstCoord, secondCoord);
+    }
+    
+    public boolean intersectedBy(Edge other) {
+        if (this.axis == other.axis) {
+            return false;
+        }
+        Direction.Axis normalAxis = Direction.Axis.values()[3 - this.axis.ordinal() - other.axis.ordinal()];
+        if (getCoordinate(firstPos, normalAxis) != getCoordinate(other.firstPos(), normalAxis)) {
+            return false;
+        }
+        
+        return this.intersectedBy(other.firstPos()) && other.intersectedBy(this.firstPos);
+        
     }
     
     /**

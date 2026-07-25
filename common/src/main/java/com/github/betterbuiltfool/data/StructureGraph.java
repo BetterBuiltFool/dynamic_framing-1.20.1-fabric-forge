@@ -1,7 +1,10 @@
 package com.github.betterbuiltfool.data;
 
+import com.github.betterbuiltfool.DynamicFraming;
+import com.github.betterbuiltfool.structure.Edge;
 import com.github.betterbuiltfool.structure.Node;
 import it.unimi.dsi.fastutil.longs.*;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -10,11 +13,15 @@ import net.minecraft.world.level.ChunkPos;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public final class StructureGraph {
     private final Long2ObjectMap<LongSet> chunkMap = new Long2ObjectOpenHashMap<>();
     private final Long2ObjectMap<Node> posToNodeMap = new Long2ObjectOpenHashMap<>();
+    private final ObjectArrayList<Edge> activeEdges = new ObjectArrayList<>();
     
     /**
      * Finds the set of packed node positions that exist within the provided chunks. They will be collected into a
@@ -160,6 +167,11 @@ public final class StructureGraph {
             LongSet chunkNodes = chunkMap.computeIfAbsent(chunkPos.toLong(), key -> new LongOpenHashSet());
             chunkNodes.add(node.getPos());
             this.posToNodeMap.put(node.getPos(), node);
+            for (var connection : node.getConnections()) {
+                if (node.getPos() < connection) {
+                    this.activeEdges.add(new Edge(node.getPos(), connection));
+                }
+            }
         }
     }
     

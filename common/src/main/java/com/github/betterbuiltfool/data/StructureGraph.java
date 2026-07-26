@@ -81,6 +81,7 @@ public final class StructureGraph {
     
     public void clearAll() {
         posToNodeMap.clear();
+        activeEdges.clear();
         chunkMap.clear();
     }
     

@@ -63,6 +63,11 @@ public record Edge(long firstPos, long secondPos, Direction.Axis axis) {
         if (this.axis == other.axis) {
             return false;
         }
+        return isCoplanarTo(other);
+        
+    }
+    
+    public boolean isCoplanarTo(Edge other) {
         Direction.Axis normalAxis = getNormalAxis(other);
         if (getCoordinate(firstPos, normalAxis) != getCoordinate(other.firstPos(), normalAxis)) {
             return false;

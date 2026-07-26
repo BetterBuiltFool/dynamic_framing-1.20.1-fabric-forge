@@ -79,12 +79,20 @@ public final class StructureGraph {
         return getNodeMap(new LongOpenHashSet(nodePos));
     }
     
+    /**
+     * Clears all data from the structure graph.
+     */
     public void clearAll() {
         posToNodeMap.clear();
         activeEdges.clear();
         chunkMap.clear();
     }
     
+    /**
+     * Removes the node at the given position, if it exists. Cleans up any edges that are connected.
+     *
+     * @param pos The position of the node to be removed.
+     */
     public void remove(long pos) {
         var node = posToNodeMap.getOrDefault(pos, null);
         if (node == null) {
@@ -101,6 +109,11 @@ public final class StructureGraph {
         removeNode(node);
     }
     
+    /**
+     * Removes the edge represent by the provided positions. Cleans up remaining invalid nodes and edges.
+     * @param posA The start point of the edge.
+     * @param posB The end point of the edge.
+     */
     public void remove(long posA,
                        long posB
     ) {
@@ -114,6 +127,10 @@ public final class StructureGraph {
         }
     }
     
+    /**
+     * Removes the edge from the graph. Cleans up remaining invalid nodes and edges.
+     * @param edge The edge to be removed.
+     */
     public void remove(Edge edge) {
         remove(edge.firstPos(), edge.secondPos());
     }
@@ -164,14 +181,6 @@ public final class StructureGraph {
         return tryMergeEdges(first, second);
     }
     
-    /**
-     * Attempts to merge the edges if and only if they are collinear.
-     *
-     * @param first  An edge to try merging
-     * @param second An edge connected to the first.
-     *
-     * @return true if the edges successfully merge, otherwise false.
-     */
     private boolean tryMergeEdges(Edge first,
                                   Edge second
     ) {
@@ -211,17 +220,6 @@ public final class StructureGraph {
         handleOverlaps(newEdge);
     }
     
-    /**
-     * Handles any edges where the firstPos intersects. Coaxial edges are check for extendability, perpendicular edges
-     * for splitting needs.
-     * If an existing edge will be extended, the firstPos value will be adjusted to cover the new edge.
-     *
-     * @param firstPos  A packed position that rests on the edges.
-     * @param secondPos A packed position on the opposite end of the new edge from firstPos
-     * @param edges     The set of edges that intersect with firstPos
-     *
-     * @return An updated packed long where firstPos should be after modifying the grid.
-     */
     private long updateEdge(long firstPos,
                             long secondPos,
                             Set<Edge> edges
@@ -319,6 +317,13 @@ public final class StructureGraph {
                           .collect(Collectors.toSet());
     }
     
+    /**
+     * Finds the node with the proposed position, or creates it if it doesn't exist.
+     *
+     * @param position A position in space whose node is desired.
+     *
+     * @return A node with the corresponding position.
+     */
     public Node getOrCreateNode(long position) {
         Node fetchedNode = posToNodeMap.get(position);
         if (fetchedNode == null) {

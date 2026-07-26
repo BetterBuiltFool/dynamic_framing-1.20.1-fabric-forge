@@ -135,14 +135,14 @@ public final class StructureGraph {
         remove(edge.firstPos(), edge.secondPos());
     }
     
-    public void removeNode(@NotNull Node node) {
+    private void removeNode(@NotNull Node node) {
         posToNodeMap.remove(node.getPos());
         var chunkNodes = chunkMap.getOrDefault(new ChunkPos(node.getBlockPos()).toLong(), LongSets.EMPTY_SET);
         chunkNodes.remove(node.getPos());
         activeEdges.removeIf(edge -> edge.firstPos() == node.getPos() || edge.secondPos() == node.getPos());
     }
     
-    public void removeEdge(@NotNull Edge edge) {
+    private void removeEdge(@NotNull Edge edge) {
         activeEdges.remove(edge);
         
         cleanupEdgeNodes(edge.firstPos(), edge.secondPos());

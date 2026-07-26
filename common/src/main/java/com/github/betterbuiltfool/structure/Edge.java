@@ -31,7 +31,7 @@ public record Edge(long firstPos, long secondPos, Direction.Axis axis) {
         return getCoordinate(position, this.axis);
     }
     
-    private static int getCoordinate(long position,
+    public static int getCoordinate(long position,
                                      Direction.Axis axis
     ) {
         return switch (axis) {

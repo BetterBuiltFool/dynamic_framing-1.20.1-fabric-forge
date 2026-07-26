@@ -91,7 +91,11 @@ public record Edge(long firstPos, long secondPos, Direction.Axis axis) {
         if (this.axis == other.axis) {
             return false;
         }
-        return isCoplanarTo(other);
+        if (!isCoplanarTo(other)) {
+            return false;
+        }
+        
+        return this.containsOnAxis(other.firstPos()) && other.containsOnAxis(this.firstPos);
         
     }
     
@@ -102,11 +106,7 @@ public record Edge(long firstPos, long secondPos, Direction.Axis axis) {
      */
     public boolean isCoplanarTo(Edge other) {
         Direction.Axis normalAxis = getNormalAxis(other);
-        if (getCoordinate(firstPos, normalAxis) != getCoordinate(other.firstPos(), normalAxis)) {
-            return false;
-        }
-        
-        return this.containsOnAxis(other.firstPos()) && other.containsOnAxis(this.firstPos);
+        return getCoordinate(firstPos, normalAxis) == getCoordinate(other.firstPos(), normalAxis);
     }
     
     /**

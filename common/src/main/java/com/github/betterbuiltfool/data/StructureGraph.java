@@ -158,22 +158,41 @@ public final class StructureGraph {
     
     private boolean tryMergeEdges(Set<Edge> edges) {
         var iterator = edges.iterator();
-        var edge1 = iterator.next();
-        var edge2 = iterator.next();
-        if (edge1.axis() != edge2.axis()) {
+        var first = iterator.next();
+        var second = iterator.next();
+        return tryMergeEdges(first, second);
+    }
+    
+    /**
+     * Attempts to merge the edges if and only if they are collinear.
+     *
+     * @param first  An edge to try merging
+     * @param second An edge connected to the first.
+     *
+     * @return true if the edges successfully merge, otherwise false.
+     */
+    private boolean tryMergeEdges(Edge first,
+                                  Edge second
+    ) {
+        if (first.axis() != second.axis()) {
             return false;
         }
-        removeEdge(edge1);
-        removeEdge(edge2);
+        removeEdge(first);
+        removeEdge(second);
         
-        var sharedPos = edge1.getSharedEnd(edge2);
-        long newStart = edge1.getOpposingEnd(sharedPos);
-        long newEnd = edge2.getOpposingEnd(sharedPos);
+        var sharedPos = first.getSharedEnd(second);
+        long newStart = first.getOpposingEnd(sharedPos);
+        long newEnd = second.getOpposingEnd(sharedPos);
         
         insertEdge(new Edge(newStart, newEnd));
         return true;
     }
     
+    /**
+     * Connects two world positions. Generates new edges as needed and cleans up redundancies.
+     * @param first The start point of the proposed edge.
+     * @param second The end point of hte proposed edge.
+     */
     public void connect(long first, long second) {
         var firstEdges = getLappingEdge(first);
         var secondEdges = getLappingEdge(second);

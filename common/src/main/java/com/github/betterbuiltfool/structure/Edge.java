@@ -27,10 +27,23 @@ public record Edge(long firstPos, long secondPos, Direction.Axis axis) {
         return Direction.Axis.Z;
     }
     
+    /**
+     * Gets the BlockPos coordinate of the packed value along the edge's axis.
+     *
+     * @param position A packed long position.
+     *
+     * @return The appropriate coordinate along the edge's internal axis.
+     */
     public int getCoordinate(long position) {
         return getCoordinate(position, this.axis);
     }
     
+    /**
+     * Gets the BlockPos coordinate of the packed values along the specified axis.
+     * @param position A packed long position.
+     * @param axis The axis we want the coordinate along.
+     * @return The appropriate coordinate along the specified axis.
+     */
     public static int getCoordinate(long position,
                                      Direction.Axis axis
     ) {
@@ -41,6 +54,11 @@ public record Edge(long firstPos, long secondPos, Direction.Axis axis) {
         };
     }
     
+    /**
+     * Finds the shared end point of this edge with the other. Throws if the edges do not share an end.
+     * @param edge The other edge to compare with.
+     * @return The packed position of the endpoint common to both edges.
+     */
     public long getSharedEnd(Edge edge) {
         if (this.firstPos == edge.firstPos || this.firstPos == edge.secondPos) {
             return firstPos;
@@ -51,6 +69,11 @@ public record Edge(long firstPos, long secondPos, Direction.Axis axis) {
         throw new IllegalArgumentException(this + " does not share an end with " + edge);
     }
     
+    /**
+     * Determines if the target position exists within the bounds of this edge.
+     * @param targetPos A packed position in space.
+     * @return True if the position is coaxial to the edge, else false.
+     */
     public boolean containsOnAxis(long targetPos) {
         int targetCoord = getCoordinate(targetPos);
         int firstCoord = getCoordinate(this.firstPos);
@@ -59,6 +82,11 @@ public record Edge(long firstPos, long secondPos, Direction.Axis axis) {
         return targetCoord >= Math.min(firstCoord, secondCoord) && targetCoord <= Math.max(firstCoord, secondCoord);
     }
     
+    /**
+     * Determines if the two edges intersect in a noncoaxial way.
+     * @param other The other edge that may be intersecting.
+     * @return True if the edges cross, otherwise false.
+     */
     public boolean intersectedBy(Edge other) {
         if (this.axis == other.axis) {
             return false;
@@ -67,6 +95,11 @@ public record Edge(long firstPos, long secondPos, Direction.Axis axis) {
         
     }
     
+    /**
+     * Determines if the other edge exists on the same plane as this one.
+     * @param other The other edge that may be coplanar.
+     * @return True if the edges are on the same plane, otherwise false.
+     */
     public boolean isCoplanarTo(Edge other) {
         Direction.Axis normalAxis = getNormalAxis(other);
         if (getCoordinate(firstPos, normalAxis) != getCoordinate(other.firstPos(), normalAxis)) {
@@ -76,6 +109,11 @@ public record Edge(long firstPos, long secondPos, Direction.Axis axis) {
         return this.containsOnAxis(other.firstPos()) && other.containsOnAxis(this.firstPos);
     }
     
+    /**
+     * Determines if this edge fully contains the other edge within its bounds
+     * @param other The other edge that may be subsumed by this one.
+     * @return True if the other edge is contained, otherwise false.
+     */
     public boolean coaxiallyContains(Edge other) {
         
         if (this.axis != other.axis()) {
@@ -160,6 +198,11 @@ public record Edge(long firstPos, long secondPos, Direction.Axis axis) {
         ));
     }
     
+    /**
+     * Determines if the position is coaxial to the edge.
+     * @param position A packed position which may or may not be coaxial.
+     * @return True if it is. otherwise false.
+     */
     public boolean isCoaxialTo(long position) {
         return switch (this.axis) {
             case X -> BlockPos.getY(position) == BlockPos.getY(this.firstPos) &&
@@ -171,6 +214,11 @@ public record Edge(long firstPos, long secondPos, Direction.Axis axis) {
         };
     }
     
+    /**
+     * Determines the end of the edge that is closest to the supplied position.
+     * @param target Packed position we are looking for.
+     * @return The packed endpoint closest to the target.
+     */
     public long getClosestEnd(long target) {
         int tx = BlockPos.getX(target);
         int ty = BlockPos.getY(target);
@@ -193,6 +241,12 @@ public record Edge(long firstPos, long secondPos, Direction.Axis axis) {
         return secondPos;
     }
     
+    /**
+     * Calculates the square distance between two packed positions
+     * @param firstPos The first packed position.
+     * @param secondPos The second packed position.
+     * @return The square distance between both positions.
+     */
     public static long distanceSqr(long firstPos,
                                    long secondPos
     ) {
@@ -206,6 +260,16 @@ public record Edge(long firstPos, long secondPos, Direction.Axis axis) {
         return distanceSqr(x1, y1, z1, x2, y2, z2);
     }
     
+    /**
+     * Calculates the distance between two coordinate-wise positions.
+     * @param x1 First x coordinate.
+     * @param y1 First y coordinate.
+     * @param z1 First z coordinate.
+     * @param x2 Second x coordinate.
+     * @param y2 Second y coordinate.
+     * @param z2 Second z coordinate.
+     * @return The square distance between the two positions.
+     */
     public static long distanceSqr(
             long x1,
             long y1,
@@ -221,6 +285,11 @@ public record Edge(long firstPos, long secondPos, Direction.Axis axis) {
         return dx * dx + dy * dy + dz * dz;
     }
     
+    /**
+     * Provides a pair of edges with the same outer endpoints as this edge, and a shared endpoint at the split pos.
+     * @param splitPos The packed position where the edge should be split.
+     * @return The split pair.
+     */
     public Edge.Split splitAt(long splitPos) {
         long firstPos = this.firstPos;
         long secondPos = this.secondPos;
@@ -241,6 +310,11 @@ public record Edge(long firstPos, long secondPos, Direction.Axis axis) {
         );
     }
     
+    /**
+     * Container for split pairs.
+     * @param upper One of the new edges.
+     * @param lower The other new edge.
+     */
     public record Split(Edge upper, Edge lower) {}
     
 }

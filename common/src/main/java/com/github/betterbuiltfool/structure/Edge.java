@@ -73,8 +73,42 @@ public record Edge(long firstPos, long secondPos, Direction.Axis axis) {
             return false;
         }
         
-        return this.intersectedBy(other.firstPos()) && other.intersectedBy(this.firstPos);
+        return this.containsOnAxis(other.firstPos()) && other.containsOnAxis(this.firstPos);
+    }
+    
+    public boolean coaxiallyContains(Edge other) {
         
+        if (this.axis != other.axis()) {
+            return false;
+        }
+        
+        Direction.Axis firstPlanarAxis, secondPlanarAxis;
+        switch (this.axis) {
+            case X -> {
+                firstPlanarAxis = Direction.Axis.Y;
+                secondPlanarAxis = Direction.Axis.Z;
+            }
+            case Y -> {
+                firstPlanarAxis = Direction.Axis.X;
+                secondPlanarAxis = Direction.Axis.Z;
+            }
+            case Z -> {
+                firstPlanarAxis = Direction.Axis.Y;
+                secondPlanarAxis = Direction.Axis.X;
+            }
+            default -> throw new IllegalArgumentException("Invalid axis");
+        }
+        if (getCoordinate(this.firstPos(), firstPlanarAxis) != getCoordinate(other.firstPos, firstPlanarAxis) ||
+            getCoordinate(this.firstPos(), secondPlanarAxis) != getCoordinate(other.firstPos, secondPlanarAxis)) {
+            return false;
+        }
+        int firstThis = getCoordinate(this.firstPos);
+        int secondThis = getCoordinate(this.secondPos);
+        int firstOther = other.getCoordinate(other.firstPos());
+        int secondOther = other.getCoordinate(other.secondPos());
+        
+        return Math.min(firstThis, secondThis) < Math.min(firstOther, secondOther) &&
+               Math.max(firstThis, secondThis) > Math.max(firstOther, secondOther);
     }
     
     /**

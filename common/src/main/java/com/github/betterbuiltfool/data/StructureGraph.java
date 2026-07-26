@@ -13,10 +13,7 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.world.level.ChunkPos;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public final class StructureGraph {
@@ -269,15 +266,27 @@ public final class StructureGraph {
     }
     
     private void handleOverlaps(Edge newEdge) {
+        List<Edge> toDelete = new ArrayList<>();
+        List<Edge> toReplace = new ArrayList<>();
+        List<Edge> toAdd = new ArrayList<>();
+        
         long[] intersections = activeEdges.stream()
-                                          .filter(edge -> edge.intersectedBy(newEdge))
+                                          .filter(edge -> {
+                                              if (newEdge.coaxiallyContains(edge)) {
+                                                  toDelete.add(edge);
+                                                  DynamicFraming.LOGGER.info(
+                                                          "Found contained edge {}, marking for delete", edge);
+                                                  return false;
+                                              }
+                                              return newEdge.intersectedBy(edge);
+                                          })
                                           .mapToLong(edge -> {
                                               long intersection = newEdge.getIntersectionPos(edge);
                                               if (intersection != edge.firstPos() && intersection != edge.secondPos()) {
                                                   var split = edge.splitAt(intersection);
-                                                  removeEdge(edge);
-                                                  insertEdge(split.upper());
-                                                  insertEdge(split.lower());
+                                                  toReplace.add(edge);
+                                                  toAdd.add(split.upper());
+                                                  toAdd.add(split.lower());
                                               }
                                               return intersection;
                                           })
@@ -285,6 +294,15 @@ public final class StructureGraph {
                                           .sorted(Comparator.comparingInt(newEdge::getCoordinate))
                                           .mapToLong(Long::longValue)
                                           .toArray();
+        for (var edge : toDelete) {
+            remove(edge);
+        }
+        for (var edge : toReplace) {
+            removeEdge(edge);
+        }
+        for (var edge : toAdd) {
+            insertEdge(edge);
+        }
         
         Edge activeEdge = newEdge;
         for (long intersection : intersections) {

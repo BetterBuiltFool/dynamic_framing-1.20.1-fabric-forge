@@ -51,7 +51,7 @@ public record Edge(long firstPos, long secondPos, Direction.Axis axis) {
         throw new IllegalArgumentException(this + " does not share an end with " + edge);
     }
     
-    public boolean intersectedBy(long targetPos) {
+    public boolean containsOnAxis(long targetPos) {
         int targetCoord = getCoordinate(targetPos);
         int firstCoord = getCoordinate(this.firstPos);
         int secondCoord = getCoordinate(this.secondPos);

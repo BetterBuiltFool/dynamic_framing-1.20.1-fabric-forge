@@ -313,7 +313,7 @@ public final class StructureGraph {
         
         return activeEdges.stream()
                           .filter(edge -> edge.isCoaxialTo(position))
-                          .filter(edge -> edge.intersectedBy(position))
+                          .filter(edge -> edge.containsOnAxis(position))
                           .collect(Collectors.toSet());
     }
     

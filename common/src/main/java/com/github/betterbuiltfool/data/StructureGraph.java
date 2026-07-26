@@ -274,8 +274,6 @@ public final class StructureGraph {
                                           .filter(edge -> {
                                               if (newEdge.coaxiallyContains(edge)) {
                                                   toDelete.add(edge);
-                                                  DynamicFraming.LOGGER.info(
-                                                          "Found contained edge {}, marking for delete", edge);
                                                   return false;
                                               }
                                               return newEdge.intersectedBy(edge);

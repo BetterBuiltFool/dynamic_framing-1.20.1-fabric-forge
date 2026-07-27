@@ -1,6 +1,6 @@
 package com.github.betterbuiltfool.ui.overlays;
 
-import com.github.betterbuiltfool.CommonConfig;
+import com.github.betterbuiltfool.config.CommonConfig;
 import com.github.betterbuiltfool.data.NodeMap;
 import com.github.betterbuiltfool.structure.Edge;
 import com.github.betterbuiltfool.ui.NodeOverlayContext;

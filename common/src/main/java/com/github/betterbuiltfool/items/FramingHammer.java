@@ -1,8 +1,8 @@
 package com.github.betterbuiltfool.items;
 
-import com.github.betterbuiltfool.CommonConfig;
 import com.github.betterbuiltfool.DynamicFraming;
 import com.github.betterbuiltfool.client.ClientLocalNodes;
+import com.github.betterbuiltfool.config.CommonConfig;
 import com.github.betterbuiltfool.data.CoaxSelection;
 import com.github.betterbuiltfool.data.FramedStructureStorage;
 import com.github.betterbuiltfool.data.RaycastService;

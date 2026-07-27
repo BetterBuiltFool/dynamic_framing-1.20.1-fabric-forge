@@ -1,6 +1,6 @@
 package com.github.betterbuiltfool.ui.overlays;
 
-import com.github.betterbuiltfool.CommonConfig;
+import com.github.betterbuiltfool.config.CommonConfig;
 import com.github.betterbuiltfool.ui.LineRenderer;
 import com.github.betterbuiltfool.ui.NodeMarkerRenderer;
 import com.github.betterbuiltfool.ui.NodeOverlayContext;

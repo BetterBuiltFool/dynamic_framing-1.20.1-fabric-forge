@@ -1,4 +1,4 @@
-package com.github.betterbuiltfool;
+package com.github.betterbuiltfool.config;
 
 import java.awt.*;
 

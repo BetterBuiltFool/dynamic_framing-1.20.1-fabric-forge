@@ -69,6 +69,7 @@ public class FramingHammer extends Item implements RendersOverlay, SuppressesEqu
             } else if (selection instanceof GraphHit.EdgeHit edgeHit) {
                 graph.remove(edgeHit.posA(), edgeHit.posB());
             }
+            storage.setDirty();
             hammerTool.clearSelection();
         }
         

@@ -2,10 +2,11 @@ package com.github.betterbuiltfool.items;
 
 import com.github.betterbuiltfool.DynamicFraming;
 import com.github.betterbuiltfool.client.ClientLocalNodes;
+import com.github.betterbuiltfool.data.CoaxSelection;
 import com.github.betterbuiltfool.data.FramedStructureStorage;
+import com.github.betterbuiltfool.data.RaycastService;
 import com.github.betterbuiltfool.items.nbtHelper.FramingHammerData;
 import com.github.betterbuiltfool.structure.GraphHit;
-import com.github.betterbuiltfool.structure.RaycastService;
 import com.github.betterbuiltfool.ui.overlays.FramingHammerOverlay;
 import com.github.betterbuiltfool.ui.overlays.NodeOverlayContextBuilder;
 import com.github.betterbuiltfool.validation.EdgeValidator;
@@ -13,7 +14,6 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
@@ -53,6 +53,9 @@ public class FramingHammer extends Item implements RendersOverlay, SuppressesEqu
         if (!shouldBlockMining(player, itemStack)) {
             return InteractionResult.PASS;
         }
+        if (!player.isShiftKeyDown()) {
+            return InteractionResult.PASS;
+        }
         var hammerTool = new FramingHammerData(itemStack);
         
         if (!level.isClientSide() && !hammerTool.hasSecondPos()) {
@@ -66,6 +69,7 @@ public class FramingHammer extends Item implements RendersOverlay, SuppressesEqu
             } else if (selection instanceof GraphHit.EdgeHit edgeHit) {
                 graph.remove(edgeHit.posA(), edgeHit.posB());
             }
+            storage.setDirty();
             hammerTool.clearSelection();
         }
         
@@ -92,18 +96,29 @@ public class FramingHammer extends Item implements RendersOverlay, SuppressesEqu
         
         var hammerTool = new FramingHammerData(stack);
         
+        var selection = RaycastService.getClosest(player);
+        hammerTool.setSelection(selection);
+        
         if (!hammerTool.hasFirstPos()) {
-            var selection = RaycastService.getClosest(player);
-            hammerTool.setSelection(selection);
             return;
         }
         
         long firstPos = hammerTool.getFirstPos();
         
-        var ray = getPlayerPOVHitResult(level, player, ClipContext.Fluid.NONE);
-        var lookPos = ray.getBlockPos();
+        if (selection != null) {
+            long secondPos = getSelectedPos(hammerTool);
+            if (CoaxSelection.isCoaxial(firstPos, secondPos)) {
+                hammerTool.setSecondPos(secondPos);
+                return;
+            }
+        }
+        long secondPos = CoaxSelection.getCoaxialPoint(
+                player.getEyePosition(1.0f),
+                player.getViewVector(1.0f),
+                BlockPos.of(firstPos)
+        );
         
-        hammerTool.setSecondPos(calcSecondPos(BlockPos.of(firstPos), lookPos).asLong());
+        hammerTool.setSecondPos(secondPos);
     }
     
     @Override
@@ -112,6 +127,9 @@ public class FramingHammer extends Item implements RendersOverlay, SuppressesEqu
             Player player,
             InteractionHand usedHand
     ) {
+        if (usedHand != InteractionHand.MAIN_HAND) {
+            return InteractionResultHolder.pass(player.getMainHandItem());
+        }
         var hammerTool = new FramingHammerData(player.getMainHandItem());
         
         if (player.isShiftKeyDown()) {
@@ -120,7 +138,14 @@ public class FramingHammer extends Item implements RendersOverlay, SuppressesEqu
         }
         
         var ray = getPlayerPOVHitResult(level, player, ClipContext.Fluid.NONE);
-        var lookPos = ray.getBlockPos();
+        BlockPos lookPos;
+        var hitPos = ray.getBlockPos();
+        if (level.getBlockState(hitPos)
+                 .isAir()) {
+            lookPos = hitPos;
+        } else {
+            lookPos = hitPos.relative(ray.getDirection());
+        }
         
         if (!hammerTool.hasFirstPos()) {
             return firstUse(hammerTool, lookPos);
@@ -192,8 +217,26 @@ public class FramingHammer extends Item implements RendersOverlay, SuppressesEqu
             FramingHammerData hammerTool,
             BlockPos lookPos
     ) {
-        hammerTool.setFirstPos(lookPos.asLong());
+        long firstPos;
+        if (!hammerTool.hasSelection()) {
+            firstPos = lookPos.asLong();
+        } else {
+            firstPos = getSelectedPos(hammerTool);
+        }
+        hammerTool.setFirstPos(firstPos);
         return InteractionResultHolder.success(hammerTool.wrapped);
+    }
+    
+    private static long getSelectedPos(FramingHammerData hammerTool) {
+        var selection = hammerTool.getSelection();
+        if (selection instanceof GraphHit.NodeHit nodeHit) {
+            return nodeHit.packedPos();
+        } else if (selection instanceof GraphHit.EdgeHit edgeHit) {
+            // TODO: temp, make EdgeHit contain collision position
+            return edgeHit.hitPos();
+        } else {
+            throw new IllegalArgumentException();
+        }
     }
     
     private @NotNull InteractionResultHolder<ItemStack> secondUse(
@@ -217,25 +260,6 @@ public class FramingHammer extends Item implements RendersOverlay, SuppressesEqu
         }
         hammerTool.clear();
         return InteractionResultHolder.success(hammerTool.wrapped);
-    }
-    
-    /**
-     * Calculates the second position of an edge based on where the player is looking.
-     *
-     * @param firstPos The starting position of the edge
-     * @param lookPos The position at which the player is looking
-     * @return A BlockPos that is coaxial to the firstPos
-     */
-    private @NotNull BlockPos calcSecondPos(
-            @NotNull BlockPos firstPos,
-            @NotNull BlockPos lookPos
-    ) {
-        
-        var delta = lookPos.subtract(firstPos);
-        var direction = Direction.getNearest(delta.getX(), delta.getY(), delta.getZ());
-        var axis = direction.getAxis();
-        
-        return firstPos.relative(axis, delta.get(axis));
     }
     
     @Override
@@ -262,13 +286,20 @@ public class FramingHammer extends Item implements RendersOverlay, SuppressesEqu
                                            .addHighlightPos(secondPos)
                                            .addSecondPos(secondPos);
         } else if (hammerTool.hasSelection()) {
-            contextBuilder = contextBuilder.setHighlightColor(new Color(255, 127, 0));
+            var player = client.player;
+            assert player != null;
+            if (!player.isShiftKeyDown()) {
+                contextBuilder = contextBuilder.setHighlightColor(new Color(0, 127, 255));
+            } else {
+                contextBuilder = contextBuilder.setHighlightColor(new Color(255, 127, 0));
+            }
             var selection = hammerTool.getSelection();
             if (selection instanceof GraphHit.NodeHit nodeHit) {
                 contextBuilder = contextBuilder.addHighlightPos(nodeHit.packedPos());
             } else if (selection instanceof GraphHit.EdgeHit edgeHit) {
                 contextBuilder = contextBuilder.addFirstPos(edgeHit.posA())
-                                               .addSecondPos(edgeHit.posB());
+                                               .addSecondPos(edgeHit.posB())
+                                               .addHighlightPos(edgeHit.hitPos());
             }
         }
         FramingHammerOverlay.renderOverlay(contextBuilder.build());

@@ -6,6 +6,9 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
 
+import java.util.HashSet;
+import java.util.Set;
+
 public class Node {
     public static final String NODE_POS_LABEL = "nodePos";
     public static final String CONNECTIONS_LABEL = "connections";
@@ -52,6 +55,14 @@ public class Node {
     
     public LongSet getConnections() {
         return this.connections;
+    }
+    
+    public Set<Edge> getEdges() {
+        var edges = new HashSet<Edge>();
+        for (var connection : connections) {
+            edges.add(new Edge(this.pos, connection));
+        }
+        return edges;
     }
     //endregion
     

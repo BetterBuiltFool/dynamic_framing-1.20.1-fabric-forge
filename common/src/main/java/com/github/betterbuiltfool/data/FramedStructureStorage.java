@@ -3,8 +3,6 @@ package com.github.betterbuiltfool.data;
 import com.github.betterbuiltfool.DynamicFraming;
 import com.github.betterbuiltfool.network.ChunkNodeDataPacket;
 import com.github.betterbuiltfool.network.DynamicFramingNetworking;
-import com.github.betterbuiltfool.structure.NodeMap;
-import com.github.betterbuiltfool.structure.StructureGraph;
 import it.unimi.dsi.fastutil.longs.LongSet;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
@@ -100,7 +98,7 @@ public class FramedStructureStorage extends SavedData {
     public static void sendChunkDataToPlayer(ServerPlayer player, ResourceKey<Level> dimension, long... pos) {
         Level serverLevel = player.serverLevel();
         FramedStructureStorage storage = FramedStructureStorage.get(serverLevel);
-        StructureGraph dimensionGraph = storage.getDimensionGraph(serverLevel.dimension());
+        StructureGraph dimensionGraph = storage.getDimensionGraph(dimension);
         
         LongSet nodesPositions = dimensionGraph.getPackedNodesForChunk(pos);
         NodeMap nodeData = dimensionGraph.getNodeMap(nodesPositions);

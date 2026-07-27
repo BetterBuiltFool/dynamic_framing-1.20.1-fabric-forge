@@ -1,9 +1,9 @@
 package com.github.betterbuiltfool.client;
 
 import com.github.betterbuiltfool.data.FramedStructureStorage;
+import com.github.betterbuiltfool.data.NodeMap;
 import com.github.betterbuiltfool.network.ChunkNodeRequestPacket;
 import com.github.betterbuiltfool.network.DynamicFramingNetworking;
-import com.github.betterbuiltfool.structure.NodeMap;
 import net.minecraft.client.Minecraft;
 
 public class ClientLocalNodes {

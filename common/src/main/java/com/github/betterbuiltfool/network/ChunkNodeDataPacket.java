@@ -1,6 +1,6 @@
 package com.github.betterbuiltfool.network;
 
-import com.github.betterbuiltfool.structure.NodeMap;
+import com.github.betterbuiltfool.data.NodeMap;
 import dev.architectury.networking.NetworkManager;
 import net.minecraft.network.FriendlyByteBuf;
 

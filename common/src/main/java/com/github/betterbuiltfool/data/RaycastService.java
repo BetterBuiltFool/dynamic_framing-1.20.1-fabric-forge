@@ -1,6 +1,6 @@
-package com.github.betterbuiltfool.structure;
+package com.github.betterbuiltfool.data;
 
-import com.github.betterbuiltfool.data.FramedStructureStorage;
+import com.github.betterbuiltfool.structure.GraphHit;
 import it.unimi.dsi.fastutil.longs.LongSet;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.player.Player;
@@ -79,42 +79,37 @@ public class RaycastService {
             double reach,
             NodeMap nodeMap
     ) {
-        long closestStart = -1;
-        long closestEnd = -1;
-        double closestDist = Double.MAX_VALUE;
+        final RaycastTracker tracker = new RaycastTracker();
         
         Vec3 rayEnd = origin.add(direction.scale(reach));
         
-        for (var entry : nodeMap.entrySet()) {
-            long startPos = entry.getLongKey();
-            Vec3 startCenter = Vec3.atCenterOf(BlockPos.of(startPos));
+        BlockPos.MutableBlockPos firstPos = new BlockPos.MutableBlockPos();
+        BlockPos.MutableBlockPos secondPos = new BlockPos.MutableBlockPos();
+        BlockPos.MutableBlockPos hitPos = new BlockPos.MutableBlockPos();
+        
+        nodeMap.applyToEachEdge(edge -> {
+            firstPos.set(edge.firstPos());
+            secondPos.set(edge.secondPos());
+            Vec3 start = Vec3.atCenterOf(firstPos);
+            Vec3 end = Vec3.atCenterOf(secondPos);
             
-            for (long endPos : entry.getValue()) {
-                Vec3 endCenter = Vec3.atCenterOf(BlockPos.of(endPos));
-                
-                var hitResult = getBoundingBoxHitPoint(origin, rayEnd, startCenter, endCenter, EDGE_THICKNESS);
-                
-                if (hitResult.isEmpty()) {
-                    continue;
-                }
-                
-                var dist = origin.distanceToSqr(hitResult.get());
-                
-                if (dist >= closestDist) {
-                    continue;
-                }
-                
-                closestStart = startPos;
-                closestEnd = endPos;
-                closestDist = dist;
+            var hitResult = getBoundingBoxHitPoint(origin, rayEnd, start, end, EDGE_THICKNESS);
+            
+            if (hitResult.isEmpty()) {
+                return;
             }
+            var hit = hitResult.get();
+            hitPos.set(hit.x, hit.y, hit.z);
+            var dist = origin.distanceToSqr(hit);
+            
+            tracker.update(edge.firstPos(), edge.secondPos(), hitPos.asLong(), dist);
+        });
+        
+        if (tracker.start == -1) {
+            return null;
         }
         
-        if (closestStart == -1) {
-            return null;
-        } else {
-            return new GraphHit.EdgeHit(closestStart, closestEnd, closestDist);
-        }
+        return new GraphHit.EdgeHit(tracker.start, tracker.end, tracker.hit, tracker.minDistance);
     }
     
     private static double calcReach(Player player) {
@@ -155,6 +150,27 @@ public class RaycastService {
         }
         
         return nodeTarget.distance() <= edgeTarget.distance() ? nodeTarget : edgeTarget;
+    }
+    
+    private static class RaycastTracker {
+        public long start = -1;
+        public long end = -1;
+        public long hit = -1;
+        public double minDistance = Double.MAX_VALUE;
+        
+        public void update(long firstPos,
+                           long secondPos,
+                           long hitPos,
+                           double dist
+        ) {
+            if (dist >= minDistance) {
+                return;
+            }
+            start = firstPos;
+            end = secondPos;
+            hit = hitPos;
+            minDistance = dist;
+        }
     }
     
     

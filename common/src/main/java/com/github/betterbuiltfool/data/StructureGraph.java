@@ -122,6 +122,9 @@ public final class StructureGraph {
         if (nodeB != null) {
             removeConnection(nodeB, posA);
         }
+        long min = Math.min(posA, posB);
+        long max = Math.max(posA, posB);
+        activeEdges.removeIf(edge -> edge.firstPos() == min && edge.secondPos() == max);
     }
     
     /**

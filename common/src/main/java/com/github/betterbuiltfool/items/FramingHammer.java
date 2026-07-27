@@ -127,6 +127,9 @@ public class FramingHammer extends Item implements RendersOverlay, SuppressesEqu
             Player player,
             InteractionHand usedHand
     ) {
+        if (usedHand != InteractionHand.MAIN_HAND) {
+            return InteractionResultHolder.pass(player.getMainHandItem());
+        }
         var hammerTool = new FramingHammerData(player.getMainHandItem());
         
         if (player.isShiftKeyDown()) {

@@ -20,6 +20,9 @@
     ],
     "client": [
       "com.github.betterbuiltfool.fabric.client.DynamicFramingFabricClient"
+    ],
+    "modmenu": [
+      "com.example.mod.fabric.ModMenuImpl"
     ]
   },
   "mixins": [

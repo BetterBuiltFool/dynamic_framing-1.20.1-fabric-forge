@@ -1,5 +1,6 @@
 package com.github.betterbuiltfool.items;
 
+import com.github.betterbuiltfool.CommonConfig;
 import com.github.betterbuiltfool.DynamicFraming;
 import com.github.betterbuiltfool.client.ClientLocalNodes;
 import com.github.betterbuiltfool.data.CoaxSelection;
@@ -28,7 +29,6 @@ import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.awt.*;
 import java.util.List;
 
 /**
@@ -37,7 +37,6 @@ import java.util.List;
 public class FramingHammer extends Item implements RendersOverlay, SuppressesEquipAnimation, HasLeftClickUse {
     
     public static final String ITEM_ID = "framing_hammer";
-    public static final Color INVALID_EDGE_COLOR = new Color(255, 0, 0);
     
     public FramingHammer(Properties properties) {
         super(properties);
@@ -279,7 +278,7 @@ public class FramingHammer extends Item implements RendersOverlay, SuppressesEqu
             var firstPos = hammerTool.getFirstPos();
             var secondPos = hammerTool.getSecondPos();
             if (!EdgeValidator.validate(client.level, firstPos, secondPos)) {
-                contextBuilder = contextBuilder.setHighlightColor(INVALID_EDGE_COLOR);
+                contextBuilder = contextBuilder.setHighlightColor(CommonConfig.invalidEdgeColor);
             }
             contextBuilder = contextBuilder.addHighlightPos(firstPos)
                                            .addFirstPos(firstPos)
@@ -289,9 +288,9 @@ public class FramingHammer extends Item implements RendersOverlay, SuppressesEqu
             var player = client.player;
             assert player != null;
             if (!player.isShiftKeyDown()) {
-                contextBuilder = contextBuilder.setHighlightColor(new Color(0, 127, 255));
+                contextBuilder = contextBuilder.setHighlightColor(CommonConfig.selectionColor);
             } else {
-                contextBuilder = contextBuilder.setHighlightColor(new Color(255, 127, 0));
+                contextBuilder = contextBuilder.setHighlightColor(CommonConfig.removeSelectionColor);
             }
             var selection = hammerTool.getSelection();
             if (selection instanceof GraphHit.NodeHit nodeHit) {

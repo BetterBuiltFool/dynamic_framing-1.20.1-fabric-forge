@@ -37,6 +37,10 @@ subprojects {
             name = "Shedaniel Maven"
             url = "https://maven.shedaniel.me/"
         }
+        maven {
+            name = "TerraformersMC"
+            url = "https://maven.terraformersmc.com/releases/"
+        }
     }
 
     loom {

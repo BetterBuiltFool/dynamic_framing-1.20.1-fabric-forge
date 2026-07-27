@@ -33,6 +33,10 @@ subprojects {
             name = 'ParchmentMC'
             url = 'https://maven.parchmentmc.org'
         }
+        maven {
+            name = "Shedaniel Maven"
+            url = "https://maven.shedaniel.me/"
+        }
     }
 
     loom {
@@ -44,6 +48,9 @@ subprojects {
         mappings loom.layered() {
             officialMojangMappings()
             parchment("org.parchmentmc.data:parchment-${rootProject.minecraft_version}:2023.09.03@zip")
+        }
+        dependencies {
+            modApi "me.shedaniel.cloth:cloth-config:11.1.118"
         }
     }
 

@@ -37,6 +37,8 @@ dependencies {
     shadowBundle project(path: ':common', configuration: 'transformProductionFabric')
 
     modCompileOnly "com.terraformersmc:modmenu:7.2.2"
+
+    modApi "me.shedaniel.cloth:cloth-config:11.1.118"
 }
 
 processResources {

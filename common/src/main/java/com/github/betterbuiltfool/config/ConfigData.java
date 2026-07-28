@@ -1,13 +1,16 @@
 package com.github.betterbuiltfool.config;
 
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public record ConfigData (
         int lineColor,
         int invalidEdgeColor,
         int validEdgeColor,
         int selectionColor,
-        int removeSelectionColor
+        int removeSelectionColor,
+        List<String> blockReplaceWhiteList
 ) {
     public static final Color BLUE = new Color(0, 0, 255);
     public static final Color RED = new Color(255, 0, 0);
@@ -21,7 +24,8 @@ public record ConfigData (
                 RED.getRGB(),
                 GREEN.getRGB(),
                 SKY_BLUE.getRGB(),
-                DARK_ORANGE.getRGB()
+                DARK_ORANGE.getRGB(),
+                new ArrayList<>()
         );
     }
     public  ConfigData (
@@ -29,14 +33,16 @@ public record ConfigData (
             Color invalidEdgeColor,
             Color validEdgeColor,
             Color selectionColor,
-            Color removeSelectionColor
+            Color removeSelectionColor,
+            List<String> blockReplaceWhiteList
     ) {
         this(
                 lineColor.getRGB(),
                 invalidEdgeColor.getRGB(),
                 validEdgeColor.getRGB(),
                 selectionColor.getRGB(),
-                removeSelectionColor.getRGB()
+                removeSelectionColor.getRGB(),
+                blockReplaceWhiteList
         );
     }
 }

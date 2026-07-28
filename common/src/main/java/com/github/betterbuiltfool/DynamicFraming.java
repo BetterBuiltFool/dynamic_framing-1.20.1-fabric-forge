@@ -1,5 +1,6 @@
 package com.github.betterbuiltfool;
 
+import com.github.betterbuiltfool.config.ConfigScreenRegistry;
 import com.github.betterbuiltfool.network.DynamicFramingNetworking;
 import com.github.betterbuiltfool.registry.BlockRegistry;
 import com.github.betterbuiltfool.registry.CommandRegistry;
@@ -22,5 +23,6 @@ public final class DynamicFraming {
         CommandRegistry.register();
         
         DynamicFramingNetworking.init();
+        ConfigScreenRegistry.register();
     }
 }

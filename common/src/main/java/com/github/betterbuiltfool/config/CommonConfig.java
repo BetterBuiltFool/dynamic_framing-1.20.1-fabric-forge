@@ -9,13 +9,33 @@ import net.minecraft.network.chat.Component;
 import java.awt.*;
 
 public class CommonConfig {
-    public static final Color SKY_BLUE = new Color(0, 192, 255);
-    public static final Color DARK_ORANGE = new Color(255, 127, 0);
-    public static Color lineColor = new Color(0, 0, 255);
-    public static Color invalidEdgeColor = new Color(255, 0, 0);
-    public static Color validEdgeColor = new Color(0, 255, 0);
-    public static Color selectionColor = SKY_BLUE;
-    public static Color removeSelectionColor = DARK_ORANGE;
+    public static Color lineColor;
+    public static Color invalidEdgeColor;
+    public static Color validEdgeColor;
+    public static Color selectionColor;
+    public static Color removeSelectionColor;
+    
+    static {
+        unpack(new ConfigData());
+    }
+    
+    public static void unpack(ConfigData data) {
+        lineColor = new Color(data.lineColor(), false);
+        invalidEdgeColor = new Color(data.invalidEdgeColor(), false);
+        validEdgeColor = new Color(data.validEdgeColor(), false);
+        selectionColor = new Color(data.selectionColor(), false);
+        removeSelectionColor = new Color(data.removeSelectionColor(), false);
+    }
+    
+    public static ConfigData pack() {
+        return new ConfigData(
+                lineColor,
+                invalidEdgeColor,
+                validEdgeColor,
+                selectionColor,
+                removeSelectionColor
+        );
+    }
     
     public static ConfigBuilder createGui(Screen parent) {
         ConfigBuilder builder = ConfigBuilder.create()
@@ -28,14 +48,18 @@ public class CommonConfig {
         );
         ConfigEntryBuilder entryBuilder = builder.entryBuilder();
         
+        ConfigData defaults = new ConfigData();
+        
         ConfigHelper helper = new ConfigHelper(networkView, entryBuilder);
-        helper.addColor("standard_edge_color", lineColor, Color.BLUE, color -> lineColor = color);
-        helper.addColor("invalid_edge_color", invalidEdgeColor, Color.RED, color -> invalidEdgeColor = color);
-        helper.addColor("valid_edge_color", validEdgeColor, Color.GREEN, color -> validEdgeColor = color);
-        helper.addColor("selection_color", selectionColor, SKY_BLUE, color -> selectionColor = color);
-        helper.addColor("remove_selection_color", removeSelectionColor, DARK_ORANGE,
+        helper.addColor("standard_edge_color", lineColor, defaults.lineColor(), color -> lineColor = color);
+        helper.addColor("invalid_edge_color", invalidEdgeColor, defaults.invalidEdgeColor(), color -> invalidEdgeColor = color);
+        helper.addColor("valid_edge_color", validEdgeColor, defaults.validEdgeColor(), color -> validEdgeColor = color);
+        helper.addColor("selection_color", selectionColor, defaults.selectionColor(), color -> selectionColor = color);
+        helper.addColor("remove_selection_color", removeSelectionColor, defaults.removeSelectionColor(),
                         color -> removeSelectionColor = color
         );
+        
+        builder.setSavingRunnable(ConfigManager::save);
         
         return builder;
     }

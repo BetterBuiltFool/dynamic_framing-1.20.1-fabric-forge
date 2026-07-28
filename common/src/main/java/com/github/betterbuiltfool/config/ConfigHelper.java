@@ -30,8 +30,11 @@ public class ConfigHelper {
             Color defaultColor,
             Consumer<Color> saveConsumer
     ) {
-        category.addEntry(builder.startColorField(getText(key), current.getRGB())
-                                 .setDefaultValue(defaultColor.getRGB())
+        int cleanCurrentColor = current.getRGB() & 0xFFFFFF;
+        int cleanDefaultColor = defaultColor.getRGB() & 0xFFFFFF;
+        
+        category.addEntry(builder.startColorField(getText(key), cleanCurrentColor)
+                                 .setDefaultValue(cleanDefaultColor)
                                  .setSaveConsumer(intColor -> saveConsumer.accept(new Color(intColor, true)))
                                  .build()
         );

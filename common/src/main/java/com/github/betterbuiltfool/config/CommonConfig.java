@@ -4,9 +4,15 @@ import me.shedaniel.clothconfig2.api.ConfigBuilder;
 import me.shedaniel.clothconfig2.api.ConfigCategory;
 import me.shedaniel.clothconfig2.api.ConfigEntryBuilder;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.TagKey;
+import net.minecraft.world.level.block.Block;
 
 import java.awt.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class CommonConfig {
     public static Color lineColor;
@@ -14,6 +20,9 @@ public class CommonConfig {
     public static Color validEdgeColor;
     public static Color selectionColor;
     public static Color removeSelectionColor;
+    
+    public static List<String> blockReplaceWhitelistRaw;
+    public static List<TagKey<Block>> blockReplaceWhitelist;
     
     static {
         unpack(new ConfigData());
@@ -25,6 +34,16 @@ public class CommonConfig {
         validEdgeColor = new Color(data.validEdgeColor(), false);
         selectionColor = new Color(data.selectionColor(), false);
         removeSelectionColor = new Color(data.removeSelectionColor(), false);
+        
+        blockReplaceWhitelist = new ArrayList<>();
+        blockReplaceWhitelistRaw = new ArrayList<>(data.blockReplaceWhiteList());
+        for (var tagString:blockReplaceWhitelistRaw) {
+            if (!ResourceLocation.isValidResourceLocation(tagString)) continue;
+            ResourceLocation id = new ResourceLocation(tagString);
+            
+            TagKey<Block> tagKey = TagKey.create(Registries.BLOCK, id);
+            blockReplaceWhitelist.add(tagKey);
+        }
     }
     
     public static ConfigData pack() {
@@ -33,7 +52,8 @@ public class CommonConfig {
                 invalidEdgeColor,
                 validEdgeColor,
                 selectionColor,
-                removeSelectionColor
+                removeSelectionColor,
+                blockReplaceWhitelistRaw
         );
     }
     

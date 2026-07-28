@@ -6,6 +6,7 @@ import me.shedaniel.clothconfig2.api.ConfigEntryBuilder;
 import net.minecraft.network.chat.Component;
 
 import java.awt.*;
+import java.util.List;
 import java.util.function.Consumer;
 
 public class ConfigHelper {
@@ -37,6 +38,20 @@ public class ConfigHelper {
                                  .setDefaultValue(cleanDefaultColor)
                                  .setSaveConsumer(intColor -> saveConsumer.accept(new Color(intColor, false)))
                                  .build()
+        );
+    }
+    
+    public void addStringList(
+            String key,
+            List<String> currentList,
+            List<String> defaultList,
+            Consumer<List<String>> saveConsumer
+    ) {
+        
+        category.addEntry(builder.startStrList(getText(key), currentList)
+                                  .setDefaultValue(defaultList)
+                                  .setSaveConsumer(saveConsumer)
+                                  .build()
         );
     }
 }

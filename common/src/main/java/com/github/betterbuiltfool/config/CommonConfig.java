@@ -70,12 +70,12 @@ public class CommonConfig {
         
         ConfigData defaults = new ConfigData();
         
-        ConfigHelper helper = new ConfigHelper(networkView, entryBuilder);
-        helper.addColor("standard_edge_color", lineColor, defaults.lineColor(), color -> lineColor = color);
-        helper.addColor("invalid_edge_color", invalidEdgeColor, defaults.invalidEdgeColor(), color -> invalidEdgeColor = color);
-        helper.addColor("valid_edge_color", validEdgeColor, defaults.validEdgeColor(), color -> validEdgeColor = color);
-        helper.addColor("selection_color", selectionColor, defaults.selectionColor(), color -> selectionColor = color);
-        helper.addColor("remove_selection_color", removeSelectionColor, defaults.removeSelectionColor(),
+        ConfigHelper networkViewHelper = new ConfigHelper(networkView, entryBuilder);
+        networkViewHelper.addColor("standard_edge_color", lineColor, defaults.lineColor(), color -> lineColor = color);
+        networkViewHelper.addColor("invalid_edge_color", invalidEdgeColor, defaults.invalidEdgeColor(), color -> invalidEdgeColor = color);
+        networkViewHelper.addColor("valid_edge_color", validEdgeColor, defaults.validEdgeColor(), color -> validEdgeColor = color);
+        networkViewHelper.addColor("selection_color", selectionColor, defaults.selectionColor(), color -> selectionColor = color);
+        networkViewHelper.addColor("remove_selection_color", removeSelectionColor, defaults.removeSelectionColor(),
                         color -> removeSelectionColor = color
         );
         

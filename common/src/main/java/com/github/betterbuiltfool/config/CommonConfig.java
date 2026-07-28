@@ -31,7 +31,7 @@ public class CommonConfig {
         ConfigHelper helper = new ConfigHelper(networkView, entryBuilder);
         helper.addColor("standard_edge_color", lineColor, Color.BLUE, color -> lineColor = color);
         helper.addColor("invalid_edge_color", invalidEdgeColor, Color.RED, color -> invalidEdgeColor = color);
-        helper.addColor("valid_edge_color", lineColor, Color.GREEN, color -> validEdgeColor = color);
+        helper.addColor("valid_edge_color", validEdgeColor, Color.GREEN, color -> validEdgeColor = color);
         helper.addColor("selection_color", selectionColor, SKY_BLUE, color -> selectionColor = color);
         helper.addColor("remove_selection_color", removeSelectionColor, DARK_ORANGE,
                         color -> removeSelectionColor = color

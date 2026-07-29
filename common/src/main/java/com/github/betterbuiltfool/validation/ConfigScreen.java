@@ -19,22 +19,23 @@ public class ConfigScreen {
                                              .setTitle(
                                                      Component.translatable("config.title")
                                              );
-        ConfigCategory networkView = builder.getOrCreateCategory(
-                Component.translatable("config.category.network_view")
-        );
         ConfigEntryBuilder entryBuilder = builder.entryBuilder();
         
         ConfigData defaults = new ConfigData();
         
-        ConfigHelper networkViewHelper = new ConfigHelper(networkView, entryBuilder);
-        networkViewHelper.addColor("standard_edge_color", CommonConfig.lineColor, defaults.lineColor(), color -> CommonConfig.lineColor = color);
-        networkViewHelper.addColor("invalid_edge_color", CommonConfig.invalidEdgeColor, defaults.invalidEdgeColor(), color -> CommonConfig.invalidEdgeColor = color);
-        networkViewHelper.addColor("valid_edge_color", CommonConfig.validEdgeColor, defaults.validEdgeColor(), color -> CommonConfig.validEdgeColor = color);
-        networkViewHelper.addColor("selection_color", CommonConfig.selectionColor, defaults.selectionColor(), color -> CommonConfig.selectionColor = color);
-        networkViewHelper.addColor("remove_selection_color", CommonConfig.removeSelectionColor, defaults.removeSelectionColor(),
-                                   color -> CommonConfig.removeSelectionColor = color
-        );
+        createNetworkViewCategory(builder, entryBuilder, defaults);
         
+        createBlockValidationCategory(builder, entryBuilder, defaults);
+        
+        builder.setSavingRunnable(ConfigManager::save);
+        
+        return builder;
+    }
+    
+    private static void createBlockValidationCategory(ConfigBuilder builder,
+                                  ConfigEntryBuilder entryBuilder,
+                                  ConfigData defaults
+    ) {
         ConfigCategory blockValidation = builder.getOrCreateCategory(
                 Component.translatable("config.category.block_validation")
         );
@@ -46,9 +47,24 @@ public class ConfigScreen {
                 defaults.blockReplaceWhiteList(),
                 val -> CommonConfig.blockReplaceWhitelist = new CommonConfig.TagList<>(val, Registries.BLOCK)
         );
+    }
+    
+    private static void createNetworkViewCategory(ConfigBuilder builder,
+                                  ConfigEntryBuilder entryBuilder,
+                                  ConfigData defaults
+    ) {
+        ConfigCategory networkView = builder.getOrCreateCategory(
+                Component.translatable("config.category.network_view")
+        );
         
-        builder.setSavingRunnable(ConfigManager::save);
+        ConfigHelper networkViewHelper = new ConfigHelper(networkView, entryBuilder);
         
-        return builder;
+        networkViewHelper.addColor("standard_edge_color", CommonConfig.lineColor, defaults.lineColor(), color -> CommonConfig.lineColor = color);
+        networkViewHelper.addColor("invalid_edge_color", CommonConfig.invalidEdgeColor, defaults.invalidEdgeColor(), color -> CommonConfig.invalidEdgeColor = color);
+        networkViewHelper.addColor("valid_edge_color", CommonConfig.validEdgeColor, defaults.validEdgeColor(), color -> CommonConfig.validEdgeColor = color);
+        networkViewHelper.addColor("selection_color", CommonConfig.selectionColor, defaults.selectionColor(), color -> CommonConfig.selectionColor = color);
+        networkViewHelper.addColor("remove_selection_color", CommonConfig.removeSelectionColor, defaults.removeSelectionColor(),
+                                   color -> CommonConfig.removeSelectionColor = color
+        );
     }
 }

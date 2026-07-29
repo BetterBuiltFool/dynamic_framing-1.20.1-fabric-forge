@@ -1,9 +1,5 @@
-package com.github.betterbuiltfool.validation;
+package com.github.betterbuiltfool.config;
 
-import com.github.betterbuiltfool.config.CommonConfig;
-import com.github.betterbuiltfool.config.ConfigData;
-import com.github.betterbuiltfool.config.ConfigHelper;
-import com.github.betterbuiltfool.config.ConfigManager;
 import me.shedaniel.clothconfig2.api.ConfigBuilder;
 import me.shedaniel.clothconfig2.api.ConfigCategory;
 import me.shedaniel.clothconfig2.api.ConfigEntryBuilder;

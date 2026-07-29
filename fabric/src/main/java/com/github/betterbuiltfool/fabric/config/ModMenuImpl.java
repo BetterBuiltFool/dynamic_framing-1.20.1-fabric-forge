@@ -1,6 +1,6 @@
 package com.github.betterbuiltfool.fabric.config;
 
-import com.github.betterbuiltfool.validation.ConfigScreen;
+import com.github.betterbuiltfool.config.ConfigScreen;
 import com.terraformersmc.modmenu.api.ConfigScreenFactory;
 import com.terraformersmc.modmenu.api.ModMenuApi;
 

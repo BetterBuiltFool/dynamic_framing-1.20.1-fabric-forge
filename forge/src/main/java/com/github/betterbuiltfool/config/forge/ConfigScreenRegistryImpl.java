@@ -1,6 +1,6 @@
 package com.github.betterbuiltfool.config.forge;
 
-import com.github.betterbuiltfool.validation.ConfigScreen;
+import com.github.betterbuiltfool.config.ConfigScreen;
 import me.shedaniel.clothconfig2.api.ConfigBuilder;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;

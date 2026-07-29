@@ -50,45 +50,6 @@ public class CommonConfig {
         );
     }
     
-    public static ConfigBuilder createGui(Screen parent) {
-        ConfigBuilder builder = ConfigBuilder.create()
-                                             .setParentScreen(parent)
-                                             .setTitle(
-                                                     Component.translatable("config.title")
-                                             );
-        ConfigCategory networkView = builder.getOrCreateCategory(
-                Component.translatable("config.category.network_view")
-        );
-        ConfigEntryBuilder entryBuilder = builder.entryBuilder();
-        
-        ConfigData defaults = new ConfigData();
-        
-        ConfigHelper networkViewHelper = new ConfigHelper(networkView, entryBuilder);
-        networkViewHelper.addColor("standard_edge_color", lineColor, defaults.lineColor(), color -> lineColor = color);
-        networkViewHelper.addColor("invalid_edge_color", invalidEdgeColor, defaults.invalidEdgeColor(), color -> invalidEdgeColor = color);
-        networkViewHelper.addColor("valid_edge_color", validEdgeColor, defaults.validEdgeColor(), color -> validEdgeColor = color);
-        networkViewHelper.addColor("selection_color", selectionColor, defaults.selectionColor(), color -> selectionColor = color);
-        networkViewHelper.addColor("remove_selection_color", removeSelectionColor, defaults.removeSelectionColor(),
-                        color -> removeSelectionColor = color
-        );
-        
-        ConfigCategory blockValidation = builder.getOrCreateCategory(
-                Component.translatable("config.category.block_validation")
-        );
-        
-        ConfigHelper blockValidationHelper = new ConfigHelper(blockValidation, entryBuilder);
-        blockValidationHelper.addStringList(
-                "block_replacement_whitelist",
-                blockReplaceWhitelist.tagStrings(),
-                defaults.blockReplaceWhiteList(),
-                val -> blockReplaceWhitelist = new TagList<>(val, Registries.BLOCK)
-        );
-        
-        builder.setSavingRunnable(ConfigManager::save);
-        
-        return builder;
-    }
-    
     public record TagList<T> (List<String> tagStrings, List<TagKey<T>> tags) {
         
         public TagList (List<String> strings, ResourceKey<? extends Registry<T>> registryKey) {

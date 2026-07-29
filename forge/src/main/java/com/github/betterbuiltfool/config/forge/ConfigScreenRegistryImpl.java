@@ -1,6 +1,6 @@
 package com.github.betterbuiltfool.config.forge;
 
-import com.github.betterbuiltfool.config.CommonConfig;
+import com.github.betterbuiltfool.validation.ConfigScreen;
 import me.shedaniel.clothconfig2.api.ConfigBuilder;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.screens.Screen;
@@ -19,7 +19,7 @@ public class ConfigScreenRegistryImpl {
                     public Screen apply(Minecraft minecraft,
                                         Screen screen
                     ) {
-                        ConfigBuilder builder = CommonConfig.createGui(screen);
+                        ConfigBuilder builder = ConfigScreen.createGui(screen);
                         
                         return (Screen) builder.build();
                     }

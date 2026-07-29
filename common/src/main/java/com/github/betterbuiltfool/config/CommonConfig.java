@@ -58,7 +58,7 @@ public class CommonConfig {
                                                      Component.translatable("config.title")
                                              );
         ConfigCategory networkView = builder.getOrCreateCategory(
-                Component.translatable("config.network_view_category")
+                Component.translatable("config.category.network_view")
         );
         ConfigEntryBuilder entryBuilder = builder.entryBuilder();
         
@@ -74,7 +74,7 @@ public class CommonConfig {
         );
         
         ConfigCategory blockValidation = builder.getOrCreateCategory(
-                Component.translatable("config.block_validation_category")
+                Component.translatable("config.category.block_validation")
         );
         
         ConfigHelper blockValidationHelper = new ConfigHelper(blockValidation, entryBuilder);

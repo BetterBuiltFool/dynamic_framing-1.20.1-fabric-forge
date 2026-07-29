@@ -4,8 +4,10 @@ import me.shedaniel.clothconfig2.api.ConfigBuilder;
 import me.shedaniel.clothconfig2.api.ConfigCategory;
 import me.shedaniel.clothconfig2.api.ConfigEntryBuilder;
 import net.minecraft.client.gui.screens.Screen;
+import net.minecraft.core.Registry;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.block.Block;
@@ -82,5 +84,24 @@ public class CommonConfig {
         builder.setSavingRunnable(ConfigManager::save);
         
         return builder;
+    }
+    
+    public record TagList<T> (List<String> tagStrings, List<TagKey<T>> tags) {
+        
+        public TagList (List<String> strings, ResourceKey<? extends Registry<T>> registryKey) {
+            this(strings, generateTags(strings, registryKey));
+        }
+        
+        private static <T> List<TagKey<T>> generateTags(
+                List<String> strings,
+                ResourceKey<? extends Registry<T>> registryKey
+        ) {
+            List<TagKey<T>> compiledTags = new ArrayList<>();
+            for (var string:strings) {
+                if (!ResourceLocation.isValidResourceLocation(string)) continue;
+                compiledTags.add(TagKey.create(registryKey, new ResourceLocation(string)));
+            }
+            return compiledTags;
+        }
     }
 }

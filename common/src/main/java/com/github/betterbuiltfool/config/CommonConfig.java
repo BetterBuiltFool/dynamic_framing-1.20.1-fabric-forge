@@ -42,11 +42,11 @@ public class CommonConfig {
     
     public static ConfigData pack() {
         return new ConfigData(
-                lineColor,
-                invalidEdgeColor,
-                validEdgeColor,
-                selectionColor,
-                removeSelectionColor,
+                lineColor.getRGB(),
+                invalidEdgeColor.getRGB(),
+                validEdgeColor.getRGB(),
+                selectionColor.getRGB(),
+                removeSelectionColor.getRGB(),
                 blockReplaceWhitelist.tagStrings()
         );
     }

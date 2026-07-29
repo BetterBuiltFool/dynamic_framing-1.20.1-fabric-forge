@@ -6,6 +6,7 @@ import me.shedaniel.clothconfig2.api.ConfigEntryBuilder;
 import net.minecraft.network.chat.Component;
 
 import java.awt.*;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -47,8 +48,8 @@ public class ConfigHelper {
             List<String> defaultList,
             Consumer<List<String>> saveConsumer
     ) {
-        
-        category.addEntry(builder.startStrList(getText(key), currentList)
+        List<String> mutableCurrent = new ArrayList<>(currentList);
+        category.addEntry(builder.startStrList(getText(key), mutableCurrent)
                                   .setDefaultValue(defaultList)
                                   .setSaveConsumer(saveConsumer)
                                   .build()

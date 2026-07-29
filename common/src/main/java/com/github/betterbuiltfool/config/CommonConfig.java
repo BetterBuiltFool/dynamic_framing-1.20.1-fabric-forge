@@ -92,7 +92,10 @@ public class CommonConfig {
     public record TagList<T> (List<String> tagStrings, List<TagKey<T>> tags) {
         
         public TagList (List<String> strings, ResourceKey<? extends Registry<T>> registryKey) {
-            this(strings, generateTags(strings, registryKey));
+            this(
+                List.copyOf(strings),
+                List.copyOf(generateTags(strings, registryKey))
+            );
         }
         
         private static <T> List<TagKey<T>> generateTags(

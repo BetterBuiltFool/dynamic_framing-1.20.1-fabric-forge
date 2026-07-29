@@ -11,7 +11,8 @@ public record ConfigData (
         Integer validEdgeColor,
         Integer selectionColor,
         Integer removeSelectionColor,
-        List<String> blockReplaceWhiteList
+        List<String> blockReplaceWhiteList,
+        List<String> structureMaterialWhitelist
 ) {
     public static final Color BLUE = new Color(0, 0, 255);
     public static final Color RED = new Color(255, 0, 0);
@@ -26,8 +27,16 @@ public record ConfigData (
         selectionColor = Objects.requireNonNullElse(selectionColor, SKY_BLUE.getRGB());
         removeSelectionColor = Objects.requireNonNullElse(removeSelectionColor, DARK_ORANGE.getRGB());
         blockReplaceWhiteList = Objects.requireNonNullElse(blockReplaceWhiteList, new ArrayList<>());
+        structureMaterialWhitelist = Objects.requireNonNullElse(structureMaterialWhitelist, List.of("minecraft:logs"));
     }
     public ConfigData (){
-        this(null, null , null, null, null, null);
+        this(
+            null,
+            null ,
+            null,
+            null,
+            null,
+            null,
+            null);
     }
 }

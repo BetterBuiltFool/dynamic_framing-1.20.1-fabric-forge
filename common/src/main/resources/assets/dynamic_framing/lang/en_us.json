@@ -7,12 +7,16 @@
   "category.framing_tools_tab": "Framing Tools",
 
   "config.title": "Dynamic Framing Config",
+
   "config.category.network_view": "Network View",
   "option.dynamic_framing.standard_edge_color": "Normal Line Color",
   "option.dynamic_framing.invalid_edge_color": "Invalid Edge Color",
   "option.dynamic_framing.valid_edge_color": "Valid Edge Color",
   "option.dynamic_framing.selection_color": "Selection Color",
   "option.dynamic_framing.remove_selection_color": "Remove Selection Color",
+
   "config.category.block_validation": "Block Validation",
-  "option.dynamic_framing.block_replacement_whitelist": "Block Replacement Whitelist"
+  "option.dynamic_framing.block_replacement_whitelist": "Block Replacement Whitelist",
+  "config.category.structure": "Structure",
+  "option.dynamic_framing.structure_material_whitelist": "Valid Structure Materials"
 }

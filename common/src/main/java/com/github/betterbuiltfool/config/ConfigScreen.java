@@ -23,9 +23,32 @@ public class ConfigScreen {
         
         createBlockValidationCategory(builder, entryBuilder, defaults);
         
+        createStructureCategory(builder, entryBuilder, defaults);
+        
         builder.setSavingRunnable(ConfigManager::save);
         
         return builder;
+    }
+    
+    private static void createStructureCategory(
+            ConfigBuilder builder,
+            ConfigEntryBuilder entryBuilder,
+            ConfigData defaults
+    ) {
+        ConfigCategory structure = builder.getOrCreateCategory(
+                Component.translatable("config.category.structure")
+        );
+        
+        ConfigHelper structureHelper = new ConfigHelper(structure, entryBuilder);
+        structureHelper.addStringList("structure_material_whitelist",
+                                      CommonConfig.structureMaterialWhitelist.tagStrings(),
+                                      defaults.structureMaterialWhitelist(),
+                                      val ->
+                                              CommonConfig.structureMaterialWhitelist = new CommonConfig.TagList<>(
+                                                      val,
+                                                      Registries.ITEM
+                                              )
+        );
     }
     
     private static void createBlockValidationCategory(ConfigBuilder builder,

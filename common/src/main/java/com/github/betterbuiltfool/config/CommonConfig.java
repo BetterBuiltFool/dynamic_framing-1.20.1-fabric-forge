@@ -10,6 +10,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.Block;
 
 import java.awt.*;
@@ -24,6 +25,7 @@ public class CommonConfig {
     public static Color removeSelectionColor;
     
     public static TagList<Block> blockReplaceWhitelist;
+    public static TagList<Item> structureMaterialWhitelist;
     
     static {
         unpack(new ConfigData());
@@ -37,6 +39,7 @@ public class CommonConfig {
         removeSelectionColor = new Color(data.removeSelectionColor(), false);
         
         blockReplaceWhitelist = new TagList<>(data.blockReplaceWhiteList(), Registries.BLOCK);
+        structureMaterialWhitelist = new TagList<>(data.structureMaterialWhitelist(), Registries.ITEM);
     }
     
     public static ConfigData pack() {
@@ -46,7 +49,8 @@ public class CommonConfig {
                 validEdgeColor.getRGB(),
                 selectionColor.getRGB(),
                 removeSelectionColor.getRGB(),
-                blockReplaceWhitelist.tagStrings()
+                blockReplaceWhitelist.tagStrings(),
+                structureMaterialWhitelist.tagStrings()
         );
     }
     

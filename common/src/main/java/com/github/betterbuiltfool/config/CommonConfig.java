@@ -9,7 +9,6 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.block.Block;
 
@@ -82,7 +81,7 @@ public class CommonConfig {
                 "block_replacement_whitelist",
                 blockReplaceWhitelist.tagStrings(),
                 defaults.blockReplaceWhiteList(),
-                val -> blockReplaceWhitelist = new TagList<>(val, BlockTags.REPLACEABLE, Registries.BLOCK)
+                val -> blockReplaceWhitelist = new TagList<>(val, Registries.BLOCK)
         );
         
         builder.setSavingRunnable(ConfigManager::save);
@@ -93,23 +92,14 @@ public class CommonConfig {
     public record TagList<T> (List<String> tagStrings, List<TagKey<T>> tags) {
         
         public TagList (List<String> strings, ResourceKey<? extends Registry<T>> registryKey) {
-            this(strings, generateTags(strings, new ArrayList<>(), registryKey));
-        }
-        
-        public TagList (List<String> stringList, List<TagKey<T>> tagList, ResourceKey<? extends Registry<T>> registryKey) {
-            this(stringList, generateTags(stringList, tagList, registryKey));
-        }
-        
-        public TagList (List<String> stringList, TagKey<T> tag, ResourceKey<? extends Registry<T>> registryKey) {
-            this(stringList, List.of(tag), registryKey);
+            this(strings, generateTags(strings, registryKey));
         }
         
         private static <T> List<TagKey<T>> generateTags(
                 List<String> strings,
-                List<TagKey<T>> startingList,
                 ResourceKey<? extends Registry<T>> registryKey
         ) {
-            List<TagKey<T>> compiledTags = new ArrayList<>(startingList);
+            List<TagKey<T>> compiledTags = new ArrayList<>();
             for (var string:strings) {
                 if (!ResourceLocation.isValidResourceLocation(string)) continue;
                 compiledTags.add(TagKey.create(registryKey, new ResourceLocation(string)));

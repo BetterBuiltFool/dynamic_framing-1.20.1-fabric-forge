@@ -23,8 +23,7 @@ public class CommonConfig {
     public static Color selectionColor;
     public static Color removeSelectionColor;
     
-    public static List<String> blockReplaceWhitelistRaw;
-    public static List<TagKey<Block>> blockReplaceWhitelist;
+    public static TagList<Block> blockReplaceWhitelist;
     
     static {
         unpack(new ConfigData());
@@ -37,15 +36,7 @@ public class CommonConfig {
         selectionColor = new Color(data.selectionColor(), false);
         removeSelectionColor = new Color(data.removeSelectionColor(), false);
         
-        blockReplaceWhitelist = new ArrayList<>();
-        blockReplaceWhitelistRaw = new ArrayList<>(data.blockReplaceWhiteList());
-        for (var tagString:blockReplaceWhitelistRaw) {
-            if (!ResourceLocation.isValidResourceLocation(tagString)) continue;
-            ResourceLocation id = new ResourceLocation(tagString);
-            
-            TagKey<Block> tagKey = TagKey.create(Registries.BLOCK, id);
-            blockReplaceWhitelist.add(tagKey);
-        }
+        blockReplaceWhitelist = new TagList<>(data.blockReplaceWhiteList(), Registries.BLOCK);
     }
     
     public static ConfigData pack() {
@@ -55,7 +46,7 @@ public class CommonConfig {
                 validEdgeColor,
                 selectionColor,
                 removeSelectionColor,
-                blockReplaceWhitelistRaw
+                blockReplaceWhitelist.tagStrings()
         );
     }
     
@@ -79,6 +70,18 @@ public class CommonConfig {
         networkViewHelper.addColor("selection_color", selectionColor, defaults.selectionColor(), color -> selectionColor = color);
         networkViewHelper.addColor("remove_selection_color", removeSelectionColor, defaults.removeSelectionColor(),
                         color -> removeSelectionColor = color
+        );
+        
+        ConfigCategory blockValidation = builder.getOrCreateCategory(
+                Component.translatable("config.block_validation_category")
+        );
+        
+        ConfigHelper blockValidationHelper = new ConfigHelper(blockValidation, entryBuilder);
+        blockValidationHelper.addStringList(
+                "block_replacement_whitelist",
+                blockReplaceWhitelist.tagStrings(),
+                defaults.blockReplaceWhiteList(),
+                val -> blockReplaceWhitelist = new TagList<>(val, Registries.BLOCK)
         );
         
         builder.setSavingRunnable(ConfigManager::save);

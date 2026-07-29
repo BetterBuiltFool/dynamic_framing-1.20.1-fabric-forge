@@ -1,5 +1,6 @@
 package com.github.betterbuiltfool.ui.overlays;
 
+import com.github.betterbuiltfool.config.CommonConfig;
 import com.github.betterbuiltfool.data.NodeMap;
 import com.github.betterbuiltfool.structure.Edge;
 import com.github.betterbuiltfool.ui.NodeOverlayContext;
@@ -19,7 +20,7 @@ public class NodeOverlayContextBuilder {
     private final PoseStack poseStack;
     private final Object2LongMap<String> highlightEdgePositions = new Object2LongOpenHashMap<>();
     private final LongSet highlightNodes = new LongOpenHashSet();
-    private Color highlightColor = new Color(0, 255, 0);
+    private Color highlightColor = CommonConfig.validEdgeColor;
     
     public NodeOverlayContextBuilder(Minecraft client,
                                      PoseStack poseStack

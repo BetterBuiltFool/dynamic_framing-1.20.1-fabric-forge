@@ -1,5 +1,6 @@
 package com.github.betterbuiltfool.validation;
 
+import com.github.betterbuiltfool.config.CommonConfig;
 import net.minecraft.core.BlockPos;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.TagKey;
@@ -11,13 +12,7 @@ import java.util.HashSet;
 
 public class BlockPosValidator {
     
-    private static final HashSet<TagKey<Block>> replacementWhiteList = new HashSet<>();
-    
-    static {
-        // TODO: read this in from config
-        replacementWhiteList.add(BlockTags.REPLACEABLE);
-    }
-    
+    private static final TagKey<Block> ALWAYS_REPLACEABLE = BlockTags.REPLACEABLE;
     /**
      * Determines if the given BlockPos is able to be filled by framing.
      *
@@ -31,12 +26,12 @@ public class BlockPosValidator {
     ) {
         var blockState = level.getBlockState(blockPos);
         
-        for (TagKey<Block> block : replacementWhiteList) {
+        for (TagKey<Block> block : CommonConfig.blockReplaceWhitelist.tags()) {
             if (blockState.is(block)) {
                 return true;
             }
         }
         
-        return blockState.isAir();
+        return blockState.isAir() || blockState.is(ALWAYS_REPLACEABLE);
     }
 }

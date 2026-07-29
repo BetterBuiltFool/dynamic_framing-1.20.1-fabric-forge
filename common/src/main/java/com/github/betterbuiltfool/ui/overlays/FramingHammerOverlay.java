@@ -1,13 +1,11 @@
 package com.github.betterbuiltfool.ui.overlays;
 
+import com.github.betterbuiltfool.config.CommonConfig;
 import com.github.betterbuiltfool.ui.LineRenderer;
 import com.github.betterbuiltfool.ui.NodeMarkerRenderer;
 import com.github.betterbuiltfool.ui.NodeOverlayContext;
 
-import java.awt.*;
-
 public class FramingHammerOverlay {
-    private static final Color defaultColor = new Color(0, 0, 255);
     
     public static void renderOverlay(NodeOverlayContext context) {
         renderEdges(context);
@@ -53,7 +51,7 @@ public class FramingHammerOverlay {
                 if (hasHighlightEdge && node == firstHighlightPoint && connection == secondHighlightPoint) {
                     return;
                 }
-                renderer.renderLine(node, connection, defaultColor);
+                renderer.renderLine(node, connection, CommonConfig.lineColor);
             });
             renderer.renderLine(firstHighlightPoint, secondHighlightPoint, context.highlightColor);
         });

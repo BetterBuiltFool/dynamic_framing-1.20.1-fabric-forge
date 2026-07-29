@@ -22,8 +22,13 @@
       "com.github.betterbuiltfool.fabric.client.DynamicFramingFabricClient"
     ],
     "modmenu": [
-      "com.example.mod.fabric.ModMenuImpl"
+      "com.github.betterbuiltfool.fabric.config.ModMenuImpl"
     ]
+  },
+  "custom": {
+    "modmenu": {
+      "update_checker": false
+    }
   },
   "mixins": [
     "dynamic_framing.mixins.json",

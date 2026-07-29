@@ -37,8 +37,9 @@ dependencies {
     shadowBundle project(path: ':common', configuration: 'transformProductionFabric')
 
     modCompileOnly "com.terraformersmc:modmenu:7.2.2"
+    modLocalRuntime "com.terraformersmc:modmenu:7.2.2"
 
-    modApi "me.shedaniel.cloth:cloth-config:11.1.118"
+    modApi "me.shedaniel.cloth:cloth-config-fabric:11.1.118"
 }
 
 processResources {
@@ -56,4 +57,14 @@ shadowJar {
 
 remapJar {
     inputFile.set shadowJar.archiveFile
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.compilerArgs << "-Xlint:-options"
+}
+
+loom {
+    runConfigs.configureEach {
+        ideConfigGenerated = true
+    }
 }

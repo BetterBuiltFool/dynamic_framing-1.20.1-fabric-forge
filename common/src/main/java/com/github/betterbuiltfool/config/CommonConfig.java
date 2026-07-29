@@ -9,6 +9,7 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.BlockTags;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.level.block.Block;
 
@@ -81,7 +82,7 @@ public class CommonConfig {
                 "block_replacement_whitelist",
                 blockReplaceWhitelist.tagStrings(),
                 defaults.blockReplaceWhiteList(),
-                val -> blockReplaceWhitelist = new TagList<>(val, Registries.BLOCK)
+                val -> blockReplaceWhitelist = new TagList<>(val, BlockTags.REPLACEABLE, Registries.BLOCK)
         );
         
         builder.setSavingRunnable(ConfigManager::save);

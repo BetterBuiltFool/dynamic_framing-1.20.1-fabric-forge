@@ -3,13 +3,14 @@ package com.github.betterbuiltfool.config;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public record ConfigData (
-        int lineColor,
-        int invalidEdgeColor,
-        int validEdgeColor,
-        int selectionColor,
-        int removeSelectionColor,
+        Integer lineColor,
+        Integer invalidEdgeColor,
+        Integer validEdgeColor,
+        Integer selectionColor,
+        Integer removeSelectionColor,
         List<String> blockReplaceWhiteList
 ) {
     public static final Color BLUE = new Color(0, 0, 255);
@@ -18,31 +19,15 @@ public record ConfigData (
     public static final Color SKY_BLUE = new Color(0, 192, 255);
     public static final Color DARK_ORANGE = new Color(255, 127, 0);
     
-    public ConfigData (){
-        this(
-                BLUE.getRGB(),
-                RED.getRGB(),
-                GREEN.getRGB(),
-                SKY_BLUE.getRGB(),
-                DARK_ORANGE.getRGB(),
-                new ArrayList<>()
-        );
+    public ConfigData {
+        lineColor = Objects.requireNonNullElse(lineColor, BLUE.getRGB());
+        invalidEdgeColor = Objects.requireNonNullElse(invalidEdgeColor, RED.getRGB());
+        validEdgeColor = Objects.requireNonNullElse(validEdgeColor, GREEN.getRGB());
+        selectionColor = Objects.requireNonNullElse(selectionColor, SKY_BLUE.getRGB());
+        removeSelectionColor = Objects.requireNonNullElse(removeSelectionColor, DARK_ORANGE.getRGB());
+        blockReplaceWhiteList = Objects.requireNonNullElse(blockReplaceWhiteList, new ArrayList<>());
     }
-    public  ConfigData (
-            Color lineColor,
-            Color invalidEdgeColor,
-            Color validEdgeColor,
-            Color selectionColor,
-            Color removeSelectionColor,
-            List<String> blockReplaceWhiteList
-    ) {
-        this(
-                lineColor.getRGB(),
-                invalidEdgeColor.getRGB(),
-                validEdgeColor.getRGB(),
-                selectionColor.getRGB(),
-                removeSelectionColor.getRGB(),
-                blockReplaceWhiteList
-        );
+    public ConfigData (){
+        this(null, null , null, null, null, null);
     }
 }

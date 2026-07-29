@@ -92,14 +92,23 @@ public class CommonConfig {
     public record TagList<T> (List<String> tagStrings, List<TagKey<T>> tags) {
         
         public TagList (List<String> strings, ResourceKey<? extends Registry<T>> registryKey) {
-            this(strings, generateTags(strings, registryKey));
+            this(strings, generateTags(strings, new ArrayList<>(), registryKey));
+        }
+        
+        public TagList (List<String> stringList, List<TagKey<T>> tagList, ResourceKey<? extends Registry<T>> registryKey) {
+            this(stringList, generateTags(stringList, tagList, registryKey));
+        }
+        
+        public TagList (List<String> stringList, TagKey<T> tag, ResourceKey<? extends Registry<T>> registryKey) {
+            this(stringList, List.of(tag), registryKey);
         }
         
         private static <T> List<TagKey<T>> generateTags(
                 List<String> strings,
+                List<TagKey<T>> startingList,
                 ResourceKey<? extends Registry<T>> registryKey
         ) {
-            List<TagKey<T>> compiledTags = new ArrayList<>();
+            List<TagKey<T>> compiledTags = new ArrayList<>(startingList);
             for (var string:strings) {
                 if (!ResourceLocation.isValidResourceLocation(string)) continue;
                 compiledTags.add(TagKey.create(registryKey, new ResourceLocation(string)));

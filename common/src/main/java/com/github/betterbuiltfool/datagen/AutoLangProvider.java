@@ -1,6 +1,5 @@
 package com.github.betterbuiltfool.datagen;
 
-import com.github.betterbuiltfool.DynamicFraming;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
@@ -13,6 +12,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class AutoLangProvider {
+    private static final String MOD_ID = "dynamic_framing";
     private static final Gson GSON = new GsonBuilder()
                                              .setPrettyPrinting()
                                              .disableHtmlEscaping()
@@ -21,7 +21,7 @@ public class AutoLangProvider {
     public final Map<String, String> translations = new HashMap<>();
     
     public String add(String category, String key, String value) {
-        String fullKey = category + "." + DynamicFraming.MOD_ID + "." + key;
+        String fullKey = category + "." + MOD_ID + "." + key;
         if (translations.containsKey(fullKey)) {
             throw new IllegalArgumentException("Cannot add duplicate key %s to translations".formatted(fullKey));
         }
@@ -34,7 +34,7 @@ public class AutoLangProvider {
     }
     
     private void generateJson() throws IOException{
-        Path jsonPath = Path.of("common/src/main/resources/assets/" + DynamicFraming.MOD_ID + "/lang/en_us.json");
+        Path jsonPath = Path.of("common/src/main/resources/assets/" + MOD_ID + "/lang/en_us.json");
         Files.createDirectories(jsonPath.getParent());
         
         JsonObject jsonTree = new JsonObject();
@@ -58,7 +58,7 @@ public class AutoLangProvider {
             writer.write("public class ModTexts {\n");
             for (var entry:translations.entrySet()) {
                 String varName = entry.getKey()
-                                         .replace("." + DynamicFraming.MOD_ID + ".", "_")
+                                      .replace("." + MOD_ID + ".", "_")
                                          .toUpperCase()
                                          .replace(".", "_");
                 writer.write("\tpublic static Component " + varName + " = Component.translatable(\"" + entry.getValue() + "\");\n");

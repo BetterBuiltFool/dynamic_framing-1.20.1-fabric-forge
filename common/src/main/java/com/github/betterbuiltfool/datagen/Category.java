@@ -1,7 +1,7 @@
 package com.github.betterbuiltfool.datagen;
 
 public enum Category {
-    TOOL("tool"),
+    ITEM("item"),
     TOOLTIP("tooltip"),
     CREATIVE_TAB("creative_tab"),
     CONFIG("config");

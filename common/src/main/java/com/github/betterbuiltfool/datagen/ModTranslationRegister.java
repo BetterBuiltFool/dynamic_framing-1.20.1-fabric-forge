@@ -3,8 +3,8 @@ package com.github.betterbuiltfool.datagen;
 public class ModTranslationRegister {
     
     public static void register(AutoLangProvider provider) {
-        provider.add(Category.TOOL, "froe", "Froe");
-        provider.add(Category.TOOL, "framing_hammer", "Framing Mallet");
+        provider.add(Category.ITEM, "froe", "Froe");
+        provider.add(Category.ITEM, "framing_hammer", "Framing Mallet");
         
         provider.add(Category.TOOLTIP, "framing_hammer", "first_pos", "First Selected Position: %s");
         provider.add(Category.TOOLTIP, "framing_hammer", "selection", "Selection: %s");

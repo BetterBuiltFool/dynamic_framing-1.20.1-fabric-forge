@@ -20,8 +20,8 @@ public class AutoLangProvider {
     public static final String DOMAIN = "com.github.betterbuiltfool";
     public final Map<String, String> translations = new HashMap<>();
     
-    public String add(String category, String key, String value) {
-        String fullKey = category + "." + MOD_ID + "." + key;
+    public String add(Category category, String key, String value) {
+        String fullKey = category.getKey() + "." + MOD_ID + "." + key;
         if (translations.containsKey(fullKey)) {
             throw new IllegalArgumentException("Cannot add duplicate key %s to translations".formatted(fullKey));
         }
@@ -29,7 +29,7 @@ public class AutoLangProvider {
         return fullKey;
     }
     
-    public String add(String category, String subcategory, String key, String value) {
+    public String add(Category category, String subcategory, String key, String value) {
         return add(category, subcategory + "." + key, value);
     }
     

@@ -1,11 +1,11 @@
 package com.github.betterbuiltfool.config;
 
+import com.github.betterbuiltfool.init.ModTexts;
 import me.shedaniel.clothconfig2.api.ConfigBuilder;
 import me.shedaniel.clothconfig2.api.ConfigCategory;
 import me.shedaniel.clothconfig2.api.ConfigEntryBuilder;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.network.chat.Component;
 
 public class ConfigScreen {
     
@@ -13,7 +13,7 @@ public class ConfigScreen {
         ConfigBuilder builder = ConfigBuilder.create()
                                              .setParentScreen(parent)
                                              .setTitle(
-                                                     Component.translatable("config.title")
+                                                     ModTexts.CONFIG_TITLE
                                              );
         ConfigEntryBuilder entryBuilder = builder.entryBuilder();
         
@@ -36,11 +36,11 @@ public class ConfigScreen {
             ConfigData defaults
     ) {
         ConfigCategory structure = builder.getOrCreateCategory(
-                Component.translatable("config.category.structure")
+                ModTexts.CONFIG_CATEGORY_STRUCTURE
         );
         
         ConfigHelper structureHelper = new ConfigHelper(structure, entryBuilder);
-        structureHelper.addStringList("structure_material_whitelist",
+        structureHelper.addStringList(ModTexts.CONFIG_OPTION_STRUCTURE_MATERIAL_WHITELIST,
                                       CommonConfig.structureMaterialWhitelist.tagStrings(),
                                       defaults.structureMaterialWhitelist(),
                                       val ->
@@ -56,12 +56,12 @@ public class ConfigScreen {
                                   ConfigData defaults
     ) {
         ConfigCategory blockValidation = builder.getOrCreateCategory(
-                Component.translatable("config.category.block_validation")
+                ModTexts.CONFIG_CATEGORY_BLOCK_VALIDATION
         );
         
         ConfigHelper blockValidationHelper = new ConfigHelper(blockValidation, entryBuilder);
         blockValidationHelper.addStringList(
-                "block_replacement_whitelist",
+                ModTexts.CONFIG_OPTION_BLOCK_REPLACEMENT_WHITELIST,
                 CommonConfig.blockReplaceWhitelist.tagStrings(),
                 defaults.blockReplaceWhiteList(),
                 val -> CommonConfig.blockReplaceWhitelist = new CommonConfig.TagList<>(val, Registries.BLOCK)
@@ -73,16 +73,16 @@ public class ConfigScreen {
                                   ConfigData defaults
     ) {
         ConfigCategory networkView = builder.getOrCreateCategory(
-                Component.translatable("config.category.network_view")
+                ModTexts.CONFIG_CATEGORY_NETWORK_VIEW
         );
         
         ConfigHelper networkViewHelper = new ConfigHelper(networkView, entryBuilder);
         
-        networkViewHelper.addColor("standard_edge_color", CommonConfig.lineColor, defaults.lineColor(), color -> CommonConfig.lineColor = color);
-        networkViewHelper.addColor("invalid_edge_color", CommonConfig.invalidEdgeColor, defaults.invalidEdgeColor(), color -> CommonConfig.invalidEdgeColor = color);
-        networkViewHelper.addColor("valid_edge_color", CommonConfig.validEdgeColor, defaults.validEdgeColor(), color -> CommonConfig.validEdgeColor = color);
-        networkViewHelper.addColor("selection_color", CommonConfig.selectionColor, defaults.selectionColor(), color -> CommonConfig.selectionColor = color);
-        networkViewHelper.addColor("remove_selection_color", CommonConfig.removeSelectionColor, defaults.removeSelectionColor(),
+        networkViewHelper.addColor(ModTexts.CONFIG_OPTION_STANDARD_EDGE_COLOR, CommonConfig.lineColor, defaults.lineColor(), color -> CommonConfig.lineColor = color);
+        networkViewHelper.addColor(ModTexts.CONFIG_OPTION_INVALID_EDGE_COLOR, CommonConfig.invalidEdgeColor, defaults.invalidEdgeColor(), color -> CommonConfig.invalidEdgeColor = color);
+        networkViewHelper.addColor(ModTexts.CONFIG_OPTION_VALID_EDGE_COLOR, CommonConfig.validEdgeColor, defaults.validEdgeColor(), color -> CommonConfig.validEdgeColor = color);
+        networkViewHelper.addColor(ModTexts.CONFIG_OPTION_SELECTION_COLOR, CommonConfig.selectionColor, defaults.selectionColor(), color -> CommonConfig.selectionColor = color);
+        networkViewHelper.addColor(ModTexts.CONFIG_OPTION_REMOVE_SELECTION_COLOR, CommonConfig.removeSelectionColor, defaults.removeSelectionColor(),
                                    color -> CommonConfig.removeSelectionColor = color
         );
     }

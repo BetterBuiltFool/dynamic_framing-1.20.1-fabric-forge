@@ -1,6 +1,5 @@
 package com.github.betterbuiltfool.config;
 
-import com.github.betterbuiltfool.DynamicFraming;
 import me.shedaniel.clothconfig2.api.ConfigCategory;
 import me.shedaniel.clothconfig2.api.ConfigEntryBuilder;
 import net.minecraft.network.chat.Component;
@@ -22,12 +21,8 @@ public class ConfigHelper {
         this.builder = builder;
     }
     
-    private Component getText(String key) {
-        return Component.translatable("option." + DynamicFraming.MOD_ID + "." + key);
-    }
-    
     public void addColor(
-            String key,
+            Component text,
             Color current,
             int defaultColor,
             Consumer<Color> saveConsumer
@@ -35,7 +30,7 @@ public class ConfigHelper {
         int cleanCurrentColor = current.getRGB() & 0xFFFFFF;
         int cleanDefaultColor = defaultColor & 0xFFFFFF;
         
-        category.addEntry(builder.startColorField(getText(key), cleanCurrentColor)
+        category.addEntry(builder.startColorField(text, cleanCurrentColor)
                                  .setDefaultValue(cleanDefaultColor)
                                  .setSaveConsumer(intColor -> saveConsumer.accept(new Color(intColor, false)))
                                  .build()
@@ -43,13 +38,13 @@ public class ConfigHelper {
     }
     
     public void addStringList(
-            String key,
+            Component text,
             List<String> currentList,
             List<String> defaultList,
             Consumer<List<String>> saveConsumer
     ) {
         List<String> mutableCurrent = new ArrayList<>(currentList);
-        category.addEntry(builder.startStrList(getText(key), mutableCurrent)
+        category.addEntry(builder.startStrList(text, mutableCurrent)
                                   .setDefaultValue(defaultList)
                                   .setSaveConsumer(saveConsumer)
                                   .build()

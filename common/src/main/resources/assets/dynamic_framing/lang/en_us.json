@@ -1,22 +1,18 @@
 {
+  "tooltip.dynamic_framing.framing_hammer.selection": "Selection: %s",
+  "config.dynamic_framing.option.remove_selection_color": "Remove Selection Color",
+  "config.dynamic_framing.title": "Dynamic Framing Config",
+  "config.dynamic_framing.option.block_replacement_whitelist": "Block Replacement Whitelist",
+  "tooltip.dynamic_framing.framing_hammer.first_pos": "First Selected Position: %s",
+  "config.dynamic_framing.option.structure_material_whitelist": "Valid Structure Materials",
   "item.dynamic_framing.froe": "Froe",
+  "config.dynamic_framing.category.structure": "Structure",
+  "config.dynamic_framing.option.standard_edge_color": "Normal Line Color",
+  "creative_tab.dynamic_framing.tools": "Framing Tools",
+  "config.dynamic_framing.category.block_validation": "Block Validation",
+  "config.dynamic_framing.category.network_view": "Network View",
   "item.dynamic_framing.framing_hammer": "Framing Mallet",
-
-  "tooltip.dynamic_framing.framing_hammer.firstpos": "First selected position: ",
-  "tooltip.dynamic_framing.framing_hammer.selection": "Selected: ",
-  "category.framing_tools_tab": "Framing Tools",
-
-  "config.title": "Dynamic Framing Config",
-
-  "config.category.network_view": "Network View",
-  "option.dynamic_framing.standard_edge_color": "Normal Line Color",
-  "option.dynamic_framing.invalid_edge_color": "Invalid Edge Color",
-  "option.dynamic_framing.valid_edge_color": "Valid Edge Color",
-  "option.dynamic_framing.selection_color": "Selection Color",
-  "option.dynamic_framing.remove_selection_color": "Remove Selection Color",
-
-  "config.category.block_validation": "Block Validation",
-  "option.dynamic_framing.block_replacement_whitelist": "Block Replacement Whitelist",
-  "config.category.structure": "Structure",
-  "option.dynamic_framing.structure_material_whitelist": "Valid Structure Materials"
+  "config.dynamic_framing.option.invalid_edge_color": "Invalid Edge Color",
+  "config.dynamic_framing.option.valid_edge_color": "Valid Edge Color",
+  "config.dynamic_framing.option.selection_color": "Selection Color"
 }

@@ -6,6 +6,7 @@ import com.github.betterbuiltfool.config.CommonConfig;
 import com.github.betterbuiltfool.data.CoaxSelection;
 import com.github.betterbuiltfool.data.FramedStructureStorage;
 import com.github.betterbuiltfool.data.RaycastService;
+import com.github.betterbuiltfool.init.ModTexts;
 import com.github.betterbuiltfool.items.nbtHelper.FramingHammerData;
 import com.github.betterbuiltfool.structure.GraphHit;
 import com.github.betterbuiltfool.ui.overlays.FramingHammerOverlay;
@@ -190,10 +191,9 @@ public class FramingHammer extends Item implements RendersOverlay, SuppressesEqu
         if (tool.hasSelection()) {
             tooltipComponents.add(
                     Component.translatable(
-                                     "tooltip.dynamic_framing.framing_hammer.selection"
-                             )
-                             .append(tool.getSelection()
-                                         .toString())
+                            ModTexts.TOOLTIP_FRAMING_HAMMER_SELECTION.getString(),
+                            tool.getSelection()
+                    )
             );
         }
     }
@@ -204,10 +204,10 @@ public class FramingHammer extends Item implements RendersOverlay, SuppressesEqu
         if (tool.hasFirstPos()) {
             tooltipComponents.add(
                     Component.translatable(
-                            "tooltip.dynamic_framing.framing_hammer.firstpos"
-                             )
-                             .append(BlockPos.of(tool.getFirstPos())
-                                             .toShortString())
+                            ModTexts.TOOLTIP_FRAMING_HAMMER_FIRST_POS.getString(),
+                            BlockPos.of(tool.getFirstPos())
+                                    .toShortString()
+                    )
             );
         }
     }

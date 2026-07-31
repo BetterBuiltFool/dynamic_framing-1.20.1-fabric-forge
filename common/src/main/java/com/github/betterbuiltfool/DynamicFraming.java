@@ -3,10 +3,7 @@ package com.github.betterbuiltfool;
 import com.github.betterbuiltfool.config.ConfigManager;
 import com.github.betterbuiltfool.config.ConfigScreenRegistry;
 import com.github.betterbuiltfool.network.DynamicFramingNetworking;
-import com.github.betterbuiltfool.registry.BlockRegistry;
-import com.github.betterbuiltfool.registry.CommandRegistry;
-import com.github.betterbuiltfool.registry.ItemRegistry;
-import com.github.betterbuiltfool.registry.TabRegistry;
+import com.github.betterbuiltfool.registry.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,6 +19,7 @@ public final class DynamicFraming {
         BlockRegistry.register();
         ItemRegistry.register();
         CommandRegistry.register();
+        BlockEntityRegistry.register();
         
         DynamicFramingNetworking.init();
         

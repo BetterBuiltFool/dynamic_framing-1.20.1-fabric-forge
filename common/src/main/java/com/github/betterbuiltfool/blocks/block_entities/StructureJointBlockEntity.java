@@ -26,6 +26,8 @@ public class StructureJointBlockEntity extends BlockEntity {
         super(type, pos, blockState);
     }
     
+    //region Mutators
+    
     public void setJointAlignment(Alignment x,
                                   Alignment y,
                                   Alignment z
@@ -35,6 +37,35 @@ public class StructureJointBlockEntity extends BlockEntity {
         this.alignZ = z;
         this.sync();
     }
+    
+    public void registerConnection(BlockPos position,
+                                   BlockState material,
+                                   Size size
+    ) {
+        edges.put(position.asLong(), new EdgeProfile(material, size));
+        sync();
+    }
+    
+    //endregion
+    //region Accessors
+    
+    public Alignment getAlignX() {
+        return alignX;
+    }
+    
+    public Alignment getAlignY() {
+        return alignY;
+    }
+    
+    public Alignment getAlignZ() {
+        return alignZ;
+    }
+    
+    public EdgeProfile getEdgeProfile(BlockPos position) {
+        return edges.get(position.asLong());
+    }
+    
+    //endregion
     
     private void sync() {
         this.setChanged();

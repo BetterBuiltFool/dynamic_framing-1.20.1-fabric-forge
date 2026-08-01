@@ -14,4 +14,10 @@ public enum Alignment {
     public int getAlignment() {
         return alignment;
     }
+    
+    public static Alignment fromValue(int value) {
+        if (value < 0) return NEGATIVE;
+        if (value > 0) return POSITIVE;
+        return CENTER;
+    }
 }

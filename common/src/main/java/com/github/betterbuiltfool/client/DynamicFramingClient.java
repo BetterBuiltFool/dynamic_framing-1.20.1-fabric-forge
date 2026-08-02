@@ -4,7 +4,5 @@ public class DynamicFramingClient {
     
     public static void init() {
         SoundEventHook.registerHooks();
-        
-        
     }
 }

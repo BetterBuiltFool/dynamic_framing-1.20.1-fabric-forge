@@ -1,6 +1,5 @@
 package com.github.betterbuiltfool.client;
 
-import com.github.betterbuiltfool.blocks.BeamBlock;
 import com.github.betterbuiltfool.blocks.block_entities.Alignment;
 import com.github.betterbuiltfool.blocks.block_entities.Size;
 import com.github.betterbuiltfool.blocks.block_entities.StructureJointBlockEntity;
@@ -52,7 +51,7 @@ public class ProceduralFrameModel implements BakedModel {
             BlockAndTintGetter level
     ) {
         boolean isVertical = state.is(BlockRegistry.POST_BLOCK.get());
-        Direction negative = getNegativeAxis(state, isVertical);
+        Direction negative = FrameEndpointHelper.getNegativeAxis(state, isVertical);
         
         BlockPos jointPos;
         Direction positive = negative.getOpposite();
@@ -167,19 +166,6 @@ public class ProceduralFrameModel implements BakedModel {
         
         vertices[offset + 4] = Float.floatToRawIntBits(uMin + localU * (uMax - uMin));
         vertices[offset + 5] = Float.floatToRawIntBits(vMin + localV * (vMax - vMin));
-    }
-    
-    private Direction getNegativeAxis(BlockState state,
-                                      boolean isVertical
-    ) {
-        if (isVertical) {
-            return Direction.DOWN;
-        }
-        if (state.getValue(BeamBlock.AXIS) == Direction.Axis.X) {
-            return Direction.WEST;
-        } else {
-            return Direction.NORTH;
-        }
     }
     
     private float[] calcAxisBounds(Alignment alignment,

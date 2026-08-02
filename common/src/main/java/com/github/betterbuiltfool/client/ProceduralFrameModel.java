@@ -4,6 +4,7 @@ import com.github.betterbuiltfool.blocks.BeamBlock;
 import com.github.betterbuiltfool.blocks.block_entities.Alignment;
 import com.github.betterbuiltfool.blocks.block_entities.Size;
 import com.github.betterbuiltfool.blocks.block_entities.StructureJointBlockEntity;
+import com.github.betterbuiltfool.helper.FrameEndpointHelper;
 import com.github.betterbuiltfool.registry.BlockRegistry;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.BakedQuad;
@@ -56,8 +57,8 @@ public class ProceduralFrameModel implements BakedModel {
         BlockPos jointPos;
         Direction positive = negative.getOpposite();
         
-        var negativePos = findEndPoint(level, pos, negative);
-        var positivePos = findEndPoint(level, pos, positive);
+        var negativePos = FrameEndpointHelper.findEndPoint(level, pos, negative);
+        var positivePos = FrameEndpointHelper.findEndPoint(level, pos, positive);
         
         var negativeDist = pos.distToCenterSqr(negativePos.getCenter());
         var positiveDist = pos.distToCenterSqr(positivePos.getCenter());
@@ -166,24 +167,6 @@ public class ProceduralFrameModel implements BakedModel {
         
         vertices[offset + 4] = Float.floatToRawIntBits(uMin + localU * (uMax - uMin));
         vertices[offset + 5] = Float.floatToRawIntBits(vMin + localV * (vMax - vMin));
-    }
-    
-    private BlockPos findEndPoint(BlockAndTintGetter level,
-                                  BlockPos start,
-                                  Direction direction
-    ) {
-        var current = start.mutable();
-        while (true) {
-            current.move(direction);
-            var state = level.getBlockState(current);
-            if (state.is(BlockRegistry.JOINT_BLOCK.get())) {
-                return current.immutable();
-            }
-            
-            if (!state.is(BlockRegistry.POST_BLOCK.get()) || !state.is(BlockRegistry.BEAM_BLOCK.get())) {
-                return start;
-            }
-        }
     }
     
     private Direction getNegativeAxis(BlockState state,

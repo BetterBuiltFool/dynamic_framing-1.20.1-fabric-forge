@@ -8,11 +8,8 @@ import net.minecraft.core.Direction;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.BlockGetter;
-import net.minecraft.world.level.LevelReader;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockState;
-import org.jetbrains.annotations.NotNull;
 
 public abstract class FrameBlock extends Block {
     public FrameBlock(Properties properties) {
@@ -49,11 +46,6 @@ public abstract class FrameBlock extends Block {
         var oppositeJointPos = jointPos == negativePos ? positivePos : negativePos;
         return jbEntity.getEdgeProfile(oppositeJointPos)
                        .material();
-    }
-    
-    public @NotNull SoundType getSoundType(BlockState state, LevelReader level, BlockPos pos) {
-        BlockState material = getComposedMaterial(state, level, pos);
-        return super.getSoundType(state);
     }
     
     @Override

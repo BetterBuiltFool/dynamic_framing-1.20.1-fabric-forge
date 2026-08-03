@@ -35,7 +35,7 @@ public class ProceduralFrameModel implements BakedModel {
     @Override
     public @NotNull List<BakedQuad> getQuads(@Nullable BlockState state,
                                              @Nullable Direction direction,
-                                             RandomSource random
+                                             @Nullable RandomSource random
     ) {
         if (state == null) {
             return originalModel.getQuads(null, direction, random);

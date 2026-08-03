@@ -3,11 +3,9 @@ package com.github.betterbuiltfool.forge.client;
 import com.github.betterbuiltfool.client.BaseModelCache;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.client.event.ModelEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 public class ForgeModelLoaderHook {
     
-    @SubscribeEvent
     public static void onModelBake(ModelEvent.ModifyBakingResult event) {
         var models = event.getModels();
         

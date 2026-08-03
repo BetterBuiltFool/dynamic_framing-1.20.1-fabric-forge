@@ -2,7 +2,6 @@ package com.github.betterbuiltfool.forge;
 
 import com.github.betterbuiltfool.DynamicFraming;
 import com.github.betterbuiltfool.client.DynamicFramingClient;
-import com.github.betterbuiltfool.forge.client.ForgeModelLoaderHook;
 import dev.architectury.platform.forge.EventBuses;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.common.Mod;
@@ -25,9 +24,5 @@ public final class DynamicFramingForge {
     
     private void onClientSetup(final FMLClientSetupEvent event) {
         DynamicFramingClient.init();
-        
-        IEventBus modEventBus = FMLJavaModLoadingContext.get()
-                                                        .getModEventBus();
-        modEventBus.register(ForgeModelLoaderHook.class);
     }
 }

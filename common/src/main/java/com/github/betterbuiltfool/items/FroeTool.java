@@ -36,6 +36,7 @@ public class FroeTool extends Item implements RendersOverlay, SuppressesEquipAni
             } else {
                 contextBuilder.setHighlightColor(CommonConfig.invalidEdgeColor);
             }
+            contextBuilder.addFirstPos(selection.posA()).addSecondPos(selection.posB());
         }
         FramingHammerOverlay.renderOverlay(contextBuilder.build());
     }

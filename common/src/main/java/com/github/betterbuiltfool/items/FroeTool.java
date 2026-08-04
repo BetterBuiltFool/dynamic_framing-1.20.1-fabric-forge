@@ -2,6 +2,7 @@ package com.github.betterbuiltfool.items;
 
 import com.github.betterbuiltfool.client.ClientLocalNodes;
 import com.github.betterbuiltfool.config.CommonConfig;
+import com.github.betterbuiltfool.data.RaycastService;
 import com.github.betterbuiltfool.items.nbtHelper.FroeData;
 import com.github.betterbuiltfool.ui.overlays.FramingHammerOverlay;
 import com.github.betterbuiltfool.ui.overlays.NodeOverlayContextBuilder;
@@ -9,6 +10,7 @@ import com.github.betterbuiltfool.validation.EdgeValidator;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -19,6 +21,24 @@ public class FroeTool extends Item implements RendersOverlay, SuppressesEquipAni
     
     public FroeTool(Properties properties) {
         super(properties);
+    }
+    
+    @Override
+    public void inventoryTick(
+            ItemStack stack,
+            Level level,
+            Entity entity,
+            int slotId,
+            boolean isSelected
+    ) {
+        if (!isSelected || !(entity instanceof Player player) || level.isClientSide()) {
+            return;
+        }
+        
+        var froeTool = new FroeData(stack);
+        
+        var selection = RaycastService.getClosestEdge(player);
+        froeTool.setSelection(selection);
     }
     
     public boolean shouldCauseReequipAnimation(

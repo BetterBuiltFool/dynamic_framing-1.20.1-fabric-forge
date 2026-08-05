@@ -33,7 +33,6 @@ public class EdgeBuilder {
                                      .setValue(BlockStateProperties.AXIS, facing.getAxis());
         
         BlockPos.betweenClosedStream(BlockPos.of(firstPos), BlockPos.of(secondPos))
-                .filter(blockPos -> BlockPosValidator.validate(level, blockPos))
                 .forEach(pos -> level.setBlockAndUpdate(pos, blockState));
         
     }

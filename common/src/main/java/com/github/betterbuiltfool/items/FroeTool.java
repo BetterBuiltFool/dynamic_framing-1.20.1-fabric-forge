@@ -12,6 +12,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
+import net.minecraft.world.InteractionResultHolder;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
@@ -58,10 +59,35 @@ public class FroeTool extends Item implements RendersOverlay, SuppressesEquipAni
         var blockState = level.getBlockState(pos);
         
         if (!(blockState.getBlock() instanceof FrameBlock)) return InteractionResult.PASS;
+        // TODO: Implement offset modification/scaling
         // Find the edge from the selection
         // determine if we're pushing or scaling
         // Go to each joint, and alter the scale/offset as appropriate
         return super.useOn(context);
+    }
+    
+    @Override
+    public @NotNull InteractionResultHolder<ItemStack> use(
+            Level level,
+            Player player,
+            InteractionHand usedHand
+    ) {
+        var stack = player.getMainHandItem();
+        if (usedHand != InteractionHand.MAIN_HAND) {
+            return InteractionResultHolder.pass(stack);
+        }
+        var froeTool = new FroeData(stack);
+        
+        if (!froeTool.hasSelection()) {
+            return InteractionResultHolder.pass(stack);
+        }
+        
+        // TODO Implement edge generation
+        // Find selection edge
+        // Check offhand item, validate type and amount.
+        // Fill the edge, using the offhand item to define the copy texture
+        // Subtract the appropriate amount of the item from player's inventory.
+        return super.use(level, player, usedHand);
     }
     
     public boolean shouldCauseReequipAnimation(

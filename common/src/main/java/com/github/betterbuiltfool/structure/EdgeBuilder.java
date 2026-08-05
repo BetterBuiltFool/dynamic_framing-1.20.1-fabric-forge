@@ -22,7 +22,7 @@ public class EdgeBuilder {
         var startPos = BlockPos.of(firstPos);
         var endPos = BlockPos.of(secondPos);
         
-        var directionVector = startPos.subtract(endPos);
+        var directionVector = endPos.subtract(startPos);
         var facing = Direction.getNearest(
                 directionVector.getX(),
                 directionVector.getY(),

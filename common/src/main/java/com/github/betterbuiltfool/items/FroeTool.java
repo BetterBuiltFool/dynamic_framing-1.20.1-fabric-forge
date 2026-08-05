@@ -5,9 +5,11 @@ import com.github.betterbuiltfool.client.ClientLocalNodes;
 import com.github.betterbuiltfool.config.CommonConfig;
 import com.github.betterbuiltfool.data.RaycastService;
 import com.github.betterbuiltfool.items.nbtHelper.FroeData;
+import com.github.betterbuiltfool.structure.EdgeBuilder;
 import com.github.betterbuiltfool.ui.overlays.FramingHammerOverlay;
 import com.github.betterbuiltfool.ui.overlays.NodeOverlayContextBuilder;
 import com.github.betterbuiltfool.validation.EdgeValidator;
+import com.github.betterbuiltfool.validation.ItemValidator;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.InteractionHand;
@@ -82,12 +84,20 @@ public class FroeTool extends Item implements RendersOverlay, SuppressesEquipAni
             return InteractionResultHolder.pass(stack);
         }
         
-        // TODO Implement edge generation
-        // Find selection edge
-        // Check offhand item, validate type and amount.
-        // Fill the edge, using the offhand item to define the copy texture
-        // Subtract the appropriate amount of the item from player's inventory.
-        return super.use(level, player, usedHand);
+        var selection = froeTool.getSelection();
+        if (!EdgeValidator.validate(level, selection.posA(), selection.posB())) return InteractionResultHolder.pass(stack);
+        
+        ItemStack offhandItem = player.getOffhandItem();
+        var offhandBlockItem = ItemValidator.validatedStructureItem(offhandItem);
+        if (offhandBlockItem == null) {
+            return InteractionResultHolder.pass(stack);
+        }
+        // TODO: Check inventory amount of offhandItem;
+        if (!level.isClientSide()) {
+            EdgeBuilder.build(level, selection.posA(), selection.posB(), offhandBlockItem.getBlock());
+            // TODO: Handle inventory adjustment
+        }
+        return InteractionResultHolder.success(stack);
     }
     
     public boolean shouldCauseReequipAnimation(

@@ -1,5 +1,7 @@
 package com.github.betterbuiltfool.structure;
 
+import com.github.betterbuiltfool.blocks.BeamBlock;
+import com.github.betterbuiltfool.registry.BlockRegistry;
 import com.github.betterbuiltfool.validation.BlockPosValidator;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -7,6 +9,7 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import org.jetbrains.annotations.NotNull;
 
@@ -29,12 +32,63 @@ public class EdgeBuilder {
                 directionVector.getZ()
         );
         
-        var blockState = edgeMaterial.defaultBlockState()
+        var edgeMaterialBlockState = edgeMaterial.defaultBlockState()
                                      .setValue(BlockStateProperties.AXIS, facing.getAxis());
         
         BlockPos.betweenClosedStream(BlockPos.of(firstPos), BlockPos.of(secondPos))
-                .forEach(pos -> level.setBlockAndUpdate(pos, blockState));
+                .forEach(pos -> level.setBlockAndUpdate(pos, edgeMaterialBlockState));
         
+        setEndJoint(level, startPos, endPos);
+        setEndJoint(level, endPos, startPos);
+        
+        var current = startPos.mutable();
+        var dist = startPos.distManhattan(endPos);
+        var halfway = dist / 2;
+        for (int step = 0; step < halfway; step++) {
+            current = current.move(facing);
+            setFrameBlock(level, current, startPos, facing);
+        }
+        for (int step = halfway; step < dist - 1; step++) {
+            current = current.move(facing);
+            setFrameBlock(level, current, endPos, facing);
+        }
+        
+    }
+    
+    private static void setFrameBlock(
+            Level level,
+            BlockPos.MutableBlockPos pos,
+            BlockPos jointPos,
+            Direction facing
+    ) {
+        var axis = facing.getAxis();
+        BlockState state;
+        if (axis.isVertical()) {
+            state = BlockRegistry.POST_BLOCK.get().defaultBlockState();
+        } else {
+            state = BlockRegistry.BEAM_BLOCK.get().defaultBlockState().setValue(BeamBlock.AXIS, axis);
+        }
+        
+        level.setBlockAndUpdate(pos, state);
+        
+        // TODO: get block entity for jointPos, ensure that the new block is covered by it.
+    }
+    
+    private static void setEndJoint(
+            Level level,
+            BlockPos pos,
+            BlockPos connectedPos
+    ) {
+        var state = level.getBlockState(pos);
+        
+        Block jointBlock = BlockRegistry.JOINT_BLOCK.get();
+        if (state.is(jointBlock)) {
+            // TODO: Connect to other end in block entity
+            return;
+        }
+        
+        var jointState = jointBlock.defaultBlockState();
+        level.setBlockAndUpdate(pos, jointState);
     }
     
     public static int getMaterialCost(

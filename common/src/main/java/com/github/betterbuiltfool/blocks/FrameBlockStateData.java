@@ -9,6 +9,13 @@ public class FrameBlockStateData {
     private Alignment alignZ;
     private Size size;
     
+    public static final FrameBlockStateData DEFAULT = new FrameBlockStateData(
+            Alignment.CENTER,
+            Alignment.CENTER,
+            Alignment.CENTER,
+            Size.FULL
+    );
+    
     public FrameBlockStateData(
             Alignment alignX,
             Alignment alignY,

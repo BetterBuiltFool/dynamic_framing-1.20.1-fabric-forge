@@ -37,6 +37,22 @@ public class FrameBlockStateData {
                size.ordinal();
     }
     
+    public Alignment getX() {
+        return alignX;
+    }
+    
+    public Alignment getY() {
+        return alignY;
+    }
+    
+    public Alignment getZ() {
+        return alignZ;
+    }
+    
+    public Size getSize() {
+        return size;
+    }
+    
     public static Alignment getX(int packed) {
         var ordinal = (packed >> 9) & 7;
         return Alignment.fromOrdinal(ordinal);

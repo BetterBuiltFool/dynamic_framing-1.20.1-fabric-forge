@@ -10,10 +10,15 @@ import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.IntegerProperty;
 
 public abstract class FrameBlock extends Block {
+    public static IntegerProperty PACKED_STATE;
     public FrameBlock(Properties properties) {
         super(properties);
+        this.registerDefaultState(getStateDefinition()
+                                          .any()
+                                          .setValue(PACKED_STATE, FrameBlockStateData.DEFAULT.asInt()));
     }
     
     public BlockState getComposedMaterial(

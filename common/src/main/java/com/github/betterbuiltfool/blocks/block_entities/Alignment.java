@@ -18,6 +18,10 @@ public enum Alignment {
         return alignment;
     }
     
+    public Alignment push() {
+        return CACHE[(this.ordinal() - 1) % CACHE.length];
+    }
+    
     public static Alignment fromValue(int value) {
         if (value < 0) return NEGATIVE;
         if (value > 0) return POSITIVE;

@@ -61,6 +61,14 @@ public class CoaxSelection {
         return ((xMatch && yMatch) || (xMatch && zMatch) || (yMatch && zMatch));
     }
     
+    public static boolean isCoplanar(
+            long firstPos,
+            long secondPos,
+            Direction.Axis normal
+    ) {
+        return getCoordinate(firstPos, normal) == getCoordinate(secondPos, normal);
+    }
+    
     /**
      * Gets the BlockPos coordinate of the packed values along the specified axis.
      *

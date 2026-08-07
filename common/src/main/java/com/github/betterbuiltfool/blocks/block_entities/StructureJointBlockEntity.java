@@ -1,8 +1,11 @@
 package com.github.betterbuiltfool.blocks.block_entities;
 
+import com.github.betterbuiltfool.blocks.FrameBlock;
+import com.github.betterbuiltfool.blocks.FrameBlockStateData;
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -42,7 +45,13 @@ public class StructureJointBlockEntity extends BlockEntity {
                                    BlockState material,
                                    Size size
     ) {
-        edges.put(position.asLong(), new EdgeProfile(material, size));
+        var directionVector = position.subtract(this.worldPosition);
+        var facing = Direction.getNearest(
+                directionVector.getX(),
+                directionVector.getY(),
+                directionVector.getZ()
+        );
+        edges.put(position.asLong(), new EdgeProfile(material, size, facing));
         sync();
     }
     
@@ -71,6 +80,25 @@ public class StructureJointBlockEntity extends BlockEntity {
         this.setChanged();
         if (this.level == null || this.level.isClientSide()) {
             return;
+        }
+        for (var entry : this.edges.long2ObjectEntrySet()) {
+            var connection = entry.getLongKey();
+            var edgeProfile = entry.getValue();
+            
+            var blockStateData = new FrameBlockStateData(alignX, alignY, alignZ, edgeProfile.size());
+            int packedState = blockStateData.asInt();
+            
+            var current = this.worldPosition.mutable();
+            var dist = this.worldPosition.distManhattan(BlockPos.of(connection));
+            var halfway = dist / 2;
+            for (int step = 0; step < halfway; step++) {
+                current = current.move(edgeProfile.direction());
+                var currentState = this.level.getBlockState(current);
+                var updatedState = currentState.setValue(FrameBlock.PACKED_STATE, packedState);
+                this.level.setBlockAndUpdate(current, updatedState);
+            }
+            
+            
         }
         this.level.sendBlockUpdated(this.worldPosition, this.getBlockState(), this.getBlockState(), 3);
     }
@@ -117,7 +145,15 @@ public class StructureJointBlockEntity extends BlockEntity {
             BlockState material = NbtUtils.readBlockState(blockLookup, entry.getCompound("Material"));
             Size size = Size.values()[entry.getInt("Size")];
             
-            edges.put(nodePos, new EdgeProfile(material, size));
+            var directionVector = BlockPos.of(nodePos)
+                                          .subtract(this.worldPosition);
+            var facing = Direction.getNearest(
+                    directionVector.getX(),
+                    directionVector.getY(),
+                    directionVector.getZ()
+            );
+            
+            edges.put(nodePos, new EdgeProfile(material, size, facing));
         }
     }
     //endregion

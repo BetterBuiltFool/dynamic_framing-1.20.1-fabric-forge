@@ -61,6 +61,24 @@ public class CoaxSelection {
         return ((xMatch && yMatch) || (xMatch && zMatch) || (yMatch && zMatch));
     }
     
+    /**
+     * Gets the BlockPos coordinate of the packed values along the specified axis.
+     *
+     * @param position A packed long position.
+     * @param axis     The axis we want the coordinate along.
+     *
+     * @return The appropriate coordinate along the specified axis.
+     */
+    public static int getCoordinate(long position,
+                                    Direction.Axis axis
+    ) {
+        return switch (axis) {
+            case X -> BlockPos.getX(position);
+            case Y -> BlockPos.getY(position);
+            case Z -> BlockPos.getZ(position);
+        };
+    }
+    
     private static Vec3 getIntersection(
             Vec3 planeOrigin,
             Vec3 planeNormal,

@@ -2,8 +2,8 @@ package com.github.betterbuiltfool.blocks.block_entities;
 
 import com.github.betterbuiltfool.blocks.FrameBlock;
 import com.github.betterbuiltfool.blocks.FrameBlockStateData;
-import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
-import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
+import com.github.betterbuiltfool.data.CoaxSelection;
+import it.unimi.dsi.fastutil.longs.*;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -74,6 +74,46 @@ public class StructureJointBlockEntity extends BlockEntity {
         return edges.get(position.asLong());
     }
     
+    //endregion
+    //region Mutators
+    public void pushAxis(Direction.Axis axis) {
+        
+        assert this.level != null;
+        
+        LongSet visited = new LongOpenHashSet();
+        LongArrayFIFOQueue toProcess = new LongArrayFIFOQueue();
+        
+        long thisPos = this.worldPosition.asLong();
+        visited.add(thisPos);
+        toProcess.enqueue(thisPos);
+        
+        while (!toProcess.isEmpty()) {
+            var pos = toProcess.dequeueLong();
+            if (visited.contains(pos)) {
+                continue;
+            }
+            if (!CoaxSelection.isCoplanar(thisPos, pos, axis)) {
+                continue;
+            }
+            var blockEntity = this.level.getBlockEntity(BlockPos.of(pos));
+            if (!(blockEntity instanceof StructureJointBlockEntity structureJointBlockEntity)) {
+                continue;
+            }
+            for (long connectedPos : structureJointBlockEntity.edges.keySet()) {
+                toProcess.enqueue(connectedPos);
+            }
+            structureJointBlockEntity.push(axis);
+        }
+    }
+    
+    public void push(Direction.Axis axis) {
+        switch (axis) {
+            case X -> alignX = alignX.push();
+            case Y -> alignY = alignY.push();
+            case Z -> alignZ = alignZ.push();
+        }
+        sync();
+    }
     //endregion
     
     private void sync() {

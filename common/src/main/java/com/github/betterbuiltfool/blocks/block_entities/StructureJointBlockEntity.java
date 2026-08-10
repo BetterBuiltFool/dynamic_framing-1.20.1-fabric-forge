@@ -1,7 +1,5 @@
 package com.github.betterbuiltfool.blocks.block_entities;
 
-import com.github.betterbuiltfool.blocks.FrameBlock;
-import com.github.betterbuiltfool.blocks.FrameBlockStateData;
 import com.github.betterbuiltfool.data.CoaxSelection;
 import it.unimi.dsi.fastutil.longs.*;
 import net.minecraft.core.BlockPos;
@@ -120,25 +118,6 @@ public class StructureJointBlockEntity extends BlockEntity {
         this.setChanged();
         if (this.level == null || this.level.isClientSide()) {
             return;
-        }
-        for (var entry : this.edges.long2ObjectEntrySet()) {
-            var connection = entry.getLongKey();
-            var edgeProfile = entry.getValue();
-            
-            var blockStateData = new FrameBlockStateData(alignX, alignY, alignZ, edgeProfile.size());
-            int packedState = blockStateData.asInt();
-            
-            var current = this.worldPosition.mutable();
-            var dist = this.worldPosition.distManhattan(BlockPos.of(connection));
-            var halfway = dist / 2;
-            for (int step = 0; step < halfway; step++) {
-                current = current.move(edgeProfile.direction());
-                var currentState = this.level.getBlockState(current);
-                var updatedState = currentState.setValue(FrameBlock.PACKED_STATE, packedState);
-                this.level.setBlockAndUpdate(current, updatedState);
-            }
-            
-            
         }
         this.level.sendBlockUpdated(this.worldPosition, this.getBlockState(), this.getBlockState(), 3);
     }

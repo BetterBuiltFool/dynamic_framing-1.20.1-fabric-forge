@@ -1,8 +1,9 @@
 package com.github.betterbuiltfool.blocks;
 
+import com.github.betterbuiltfool.blocks.block_entities.StructureJointBlockEntity;
+import com.github.betterbuiltfool.registry.BlockEntityRegistry;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
@@ -10,7 +11,7 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import org.jetbrains.annotations.Nullable;
 
-public class JointBlock extends FrameBlock implements EntityBlock {
+public class JointBlock extends FrameBlock {
     public static final String BLOCK_ID = "joint_block";
     
     public static final BooleanProperty NORTH = BlockStateProperties.NORTH;
@@ -37,7 +38,7 @@ public class JointBlock extends FrameBlock implements EntityBlock {
     public @Nullable BlockEntity newBlockEntity(BlockPos pos,
                                                 BlockState state
     ) {
-        return null;
+        return new StructureJointBlockEntity(BlockEntityRegistry.JOINT_ENTITY.get(), pos, state);
     }
     
     @Override

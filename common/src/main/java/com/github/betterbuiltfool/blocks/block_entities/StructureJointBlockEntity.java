@@ -2,6 +2,8 @@ package com.github.betterbuiltfool.blocks.block_entities;
 
 import com.github.betterbuiltfool.data.CoaxSelection;
 import it.unimi.dsi.fastutil.longs.*;
+import it.unimi.dsi.fastutil.objects.Object2LongMap;
+import it.unimi.dsi.fastutil.objects.Object2LongOpenHashMap;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -19,6 +21,7 @@ public class StructureJointBlockEntity extends BlockEntity {
     private Alignment alignZ = Alignment.CENTER;
     
     private final Long2ObjectMap<EdgeProfile> edges = new Long2ObjectOpenHashMap<>();
+    private final Object2LongMap<Direction> connections = new Object2LongOpenHashMap<>();
     
     public StructureJointBlockEntity(BlockEntityType<?> type,
                                      BlockPos pos,
@@ -50,6 +53,7 @@ public class StructureJointBlockEntity extends BlockEntity {
                 directionVector.getZ()
         );
         edges.put(position.asLong(), new EdgeProfile(material, size, facing));
+        connections.put(facing, position.asLong());
         sync();
     }
     

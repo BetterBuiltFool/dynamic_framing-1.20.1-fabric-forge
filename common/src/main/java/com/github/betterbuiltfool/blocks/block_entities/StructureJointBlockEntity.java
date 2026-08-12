@@ -1,5 +1,6 @@
 package com.github.betterbuiltfool.blocks.block_entities;
 
+import com.github.betterbuiltfool.blocks.FrameBlockStateData;
 import com.github.betterbuiltfool.data.CoaxSelection;
 import it.unimi.dsi.fastutil.longs.*;
 import it.unimi.dsi.fastutil.objects.Object2LongMap;
@@ -74,6 +75,13 @@ public class StructureJointBlockEntity extends BlockEntity {
     
     public EdgeProfile getEdgeProfile(BlockPos position) {
         return edges.get(position.asLong());
+    }
+    
+    public FrameBlockStateData getEdgeData(Direction direction) {
+        long connection = this.connections.getLong(direction);
+        var edgeProfile = this.edges.get(connection);
+        
+        return new FrameBlockStateData(alignX, alignY, alignZ, edgeProfile.size());
     }
     
     //endregion

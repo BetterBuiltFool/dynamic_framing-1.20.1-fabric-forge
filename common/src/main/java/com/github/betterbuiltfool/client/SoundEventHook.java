@@ -9,44 +9,46 @@ import net.minecraft.sounds.SoundSource;
 public class SoundEventHook {
     
     public static void registerHooks() {
-        InteractionEvent.LEFT_CLICK_BLOCK.register(((player, hand, pos, face) -> {
-            var level = player.level();
-            var state = level.getBlockState(pos);
-            
-            if (!(state.getBlock() instanceof FrameBlock frameBlock)) {
-                return EventResult.pass();
-            }
-            var composedMaterial = frameBlock.getComposedMaterial(level, pos);
-            if (composedMaterial == null) {
-                return EventResult.pass();
-            }
-            
-            var soundType = composedMaterial.getSoundType();
-            
-            level.playSound(player, pos, soundType.getHitSound(), SoundSource.BLOCKS,
-                            soundType.getVolume(), soundType.getPitch()
-            );
-            return EventResult.interruptTrue();
-        }
-                                                   ));
+        // TODO: Re-enable these, they're causing more trouble than their worth right now, the infrastructure isn't there.
         
-        BlockEvent.BREAK.register(((level, pos, state, player, xp) -> {
-            if (!(state.getBlock() instanceof FrameBlock frameBlock)) {
-                return EventResult.pass();
-            }
-            var composedMaterial = frameBlock.getComposedMaterial(level, pos);
-            if (composedMaterial == null) {
-                return EventResult.pass();
-            }
-            
-            var soundType = composedMaterial.getSoundType();
-            
-            level.playSound(player, pos, soundType.getBreakSound(), SoundSource.BLOCKS,
-                            soundType.getVolume(), soundType.getPitch()
-            );
-            return EventResult.interruptTrue();
-            
-        }
-                                  ));
+//        InteractionEvent.LEFT_CLICK_BLOCK.register(((player, hand, pos, face) -> {
+//            var level = player.level();
+//            var state = level.getBlockState(pos);
+//
+//            if (!(state.getBlock() instanceof FrameBlock frameBlock)) {
+//                return EventResult.pass();
+//            }
+//            var composedMaterial = frameBlock.getComposedMaterial(level, pos);
+//            if (composedMaterial == null) {
+//                return EventResult.pass();
+//            }
+//
+//            var soundType = composedMaterial.getSoundType();
+//
+//            level.playSound(player, pos, soundType.getHitSound(), SoundSource.BLOCKS,
+//                            soundType.getVolume(), soundType.getPitch()
+//            );
+//            return EventResult.interruptTrue();
+//        }
+//                                                   ));
+        
+//        BlockEvent.BREAK.register(((level, pos, state, player, xp) -> {
+//            if (!(state.getBlock() instanceof FrameBlock frameBlock)) {
+//                return EventResult.pass();
+//            }
+//            var composedMaterial = frameBlock.getComposedMaterial(level, pos);
+//            if (composedMaterial == null) {
+//                return EventResult.pass();
+//            }
+//
+//            var soundType = composedMaterial.getSoundType();
+//
+//            level.playSound(player, pos, soundType.getBreakSound(), SoundSource.BLOCKS,
+//                            soundType.getVolume(), soundType.getPitch()
+//            );
+//            return EventResult.interruptTrue();
+//
+//        }
+//                                  ));
     }
 }

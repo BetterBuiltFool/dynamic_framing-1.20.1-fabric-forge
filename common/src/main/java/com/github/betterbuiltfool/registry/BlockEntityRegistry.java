@@ -27,8 +27,8 @@ public class BlockEntityRegistry {
                                                                      )
                                                                              .build(null)
         );
-        JOINT_ENTITY = register("member_entity", () -> BlockEntityType.Builder.of(
-                                                                              (blockPos, blockState) -> new StructureJointBlockEntity(JOINT_ENTITY.get(), blockPos, blockState),
+        MEMBER_ENTITY = register("member_entity", () -> BlockEntityType.Builder.of(
+                                                                              (blockPos, blockState) -> new StructureMemberBlockEntity(JOINT_ENTITY.get(), blockPos, blockState),
                                                                               BlockRegistry.BEAM_BLOCK.get(),
                                                                               BlockRegistry.POST_BLOCK.get()
                                                                       )

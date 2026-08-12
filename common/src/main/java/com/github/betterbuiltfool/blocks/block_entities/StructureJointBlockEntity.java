@@ -77,6 +77,10 @@ public class StructureJointBlockEntity extends BlockEntity {
         return edges.get(position.asLong());
     }
     
+    public EdgeProfile getEdgeProfile(Direction direction) {
+        return getEdgeProfile(BlockPos.of(this.connections.getLong(direction)));
+    }
+    
     public FrameBlockStateData getEdgeData(Direction direction) {
         long connection = this.connections.getLong(direction);
         var edgeProfile = this.edges.get(connection);

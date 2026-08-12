@@ -2,6 +2,8 @@ package com.github.betterbuiltfool.blocks.block_entities;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtUtils;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
@@ -33,4 +35,22 @@ public class StructureMemberBlockEntity extends BlockEntity {
     public BlockPos getJointPos() {
         return jointPos;
     }
+    
+    //region Serialization
+    
+    @Override
+    protected void saveAdditional(CompoundTag tag) {
+        super.saveAdditional(tag);
+        NbtUtils.writeBlockPos(jointPos);
+        tag.putString("facing", direction.getName());
+    }
+    
+    @Override
+    public void load(CompoundTag tag) {
+        super.load(tag);
+        jointPos = NbtUtils.readBlockPos(tag);
+        direction = Direction.byName(tag.getString("facing"));
+    }
+    
+    //endregion
 }

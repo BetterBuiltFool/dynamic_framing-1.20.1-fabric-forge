@@ -1,6 +1,8 @@
 package com.github.betterbuiltfool.structure;
 
 import com.github.betterbuiltfool.blocks.BeamBlock;
+import com.github.betterbuiltfool.blocks.block_entities.Size;
+import com.github.betterbuiltfool.blocks.block_entities.StructureJointBlockEntity;
 import com.github.betterbuiltfool.registry.BlockEntityRegistry;
 import com.github.betterbuiltfool.registry.BlockRegistry;
 import com.github.betterbuiltfool.validation.BlockPosValidator;
@@ -39,8 +41,8 @@ public class EdgeBuilder {
         BlockPos.betweenClosedStream(BlockPos.of(firstPos), BlockPos.of(secondPos))
                 .forEach(pos -> level.setBlockAndUpdate(pos, edgeMaterialBlockState));
         
-        setEndJoint(level, startPos, endPos);
-        setEndJoint(level, endPos, startPos);
+        setEndJoint(level, startPos, endPos, edgeMaterialBlockState);
+        setEndJoint(level, endPos, startPos, edgeMaterialBlockState);
         
         var current = startPos.mutable();
         var dist = startPos.distManhattan(endPos);
@@ -83,18 +85,23 @@ public class EdgeBuilder {
     private static void setEndJoint(
             Level level,
             BlockPos pos,
-            BlockPos connectedPos
+            BlockPos connectedPos,
+            BlockState material
     ) {
         var state = level.getBlockState(pos);
         
         Block jointBlock = BlockRegistry.JOINT_BLOCK.get();
-        if (state.is(jointBlock)) {
-            // TODO: Connect to other end in block entity
+        if (!state.is(jointBlock)) {
+            var jointState = jointBlock.defaultBlockState();
+            level.setBlockAndUpdate(pos, jointState);
+        }
+        
+        if (!(level.getBlockEntity(pos) instanceof StructureJointBlockEntity be)) {
             return;
         }
         
-        var jointState = jointBlock.defaultBlockState();
-        level.setBlockAndUpdate(pos, jointState);
+        be.registerConnection(connectedPos, material, Size.FULL);
+        
     }
     
     public static int getMaterialCost(

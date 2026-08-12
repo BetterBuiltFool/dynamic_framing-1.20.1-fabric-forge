@@ -1,6 +1,7 @@
 package com.github.betterbuiltfool.blocks;
 
 import com.github.betterbuiltfool.blocks.block_entities.StructureJointBlockEntity;
+import com.github.betterbuiltfool.blocks.block_entities.StructureMemberBlockEntity;
 import com.github.betterbuiltfool.helper.FrameEndpointHelper;
 import com.github.betterbuiltfool.registry.BlockRegistry;
 import net.minecraft.core.BlockPos;
@@ -19,34 +20,17 @@ public abstract class FrameBlock extends Block implements EntityBlock {
     }
     
     public BlockState getComposedMaterial(
-            BlockState state,
             BlockGetter level,
             BlockPos pos
     ) {
-        
-        boolean isVertical = state.is(BlockRegistry.POST_BLOCK.get());
-        Direction negative = FrameEndpointHelper.getNegativeAxis(state, isVertical);
-        
-        BlockPos jointPos;
-        Direction positive = negative.getOpposite();
-        
-        var negativePos = FrameEndpointHelper.findEndPoint((BlockAndTintGetter) level, pos, negative);
-        var positivePos = FrameEndpointHelper.findEndPoint((BlockAndTintGetter) level, pos, positive);
-        
-        var negativeDist = pos.distToCenterSqr(negativePos.getCenter());
-        var positiveDist = pos.distToCenterSqr(positivePos.getCenter());
-        
-        if (negativeDist < positiveDist) {
-            jointPos = negativePos;
-        } else {
-            jointPos = positivePos;
-        }
+        var blockEntity = level.getBlockEntity(pos);
+        if (!(blockEntity instanceof StructureMemberBlockEntity structureBE)) return null;
+        var jointPos = structureBE.getJointPos();
         
         if (!(level.getBlockEntity(jointPos) instanceof StructureJointBlockEntity jbEntity)) {
             return null;
         }
-        var oppositeJointPos = jointPos == negativePos ? positivePos : negativePos;
-        return jbEntity.getEdgeProfile(oppositeJointPos)
+        return jbEntity.getEdgeProfile(structureBE.getDirection())
                        .material();
     }
     
@@ -57,7 +41,7 @@ public abstract class FrameBlock extends Block implements EntityBlock {
                                     BlockGetter level,
                                     BlockPos pos
     ) {
-        BlockState material = getComposedMaterial(state, level, pos);
+        BlockState material = getComposedMaterial(level, pos);
         if (material == null) {
             return super.getDestroyProgress(state, player, level, pos);
         }

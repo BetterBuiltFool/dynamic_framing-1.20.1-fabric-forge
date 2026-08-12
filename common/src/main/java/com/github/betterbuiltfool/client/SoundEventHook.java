@@ -16,7 +16,7 @@ public class SoundEventHook {
             if (!(state.getBlock() instanceof FrameBlock frameBlock)) {
                 return EventResult.pass();
             }
-            var composedMaterial = frameBlock.getComposedMaterial(state, level, pos);
+            var composedMaterial = frameBlock.getComposedMaterial(level, pos);
             if (composedMaterial == null) {
                 return EventResult.pass();
             }
@@ -34,7 +34,7 @@ public class SoundEventHook {
             if (!(state.getBlock() instanceof FrameBlock frameBlock)) {
                 return EventResult.pass();
             }
-            var composedMaterial = frameBlock.getComposedMaterial(state, level, pos);
+            var composedMaterial = frameBlock.getComposedMaterial(level, pos);
             if (composedMaterial == null) {
                 return EventResult.pass();
             }

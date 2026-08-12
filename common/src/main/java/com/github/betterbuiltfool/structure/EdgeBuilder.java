@@ -1,6 +1,7 @@
 package com.github.betterbuiltfool.structure;
 
 import com.github.betterbuiltfool.blocks.BeamBlock;
+import com.github.betterbuiltfool.registry.BlockEntityRegistry;
 import com.github.betterbuiltfool.registry.BlockRegistry;
 import com.github.betterbuiltfool.validation.BlockPosValidator;
 import net.minecraft.core.BlockPos;
@@ -71,7 +72,12 @@ public class EdgeBuilder {
         
         level.setBlockAndUpdate(pos, state);
         
-        // TODO: get block entity for jointPos, ensure that the new block is covered by it.
+        var blockEntityResult = level.getBlockEntity(pos, BlockEntityRegistry.MEMBER_ENTITY.get());
+        assert blockEntityResult.isPresent();
+        
+        var blockEntity = blockEntityResult.get();
+        blockEntity.setJointPos(jointPos);
+        blockEntity.setDirection(facing);
     }
     
     private static void setEndJoint(

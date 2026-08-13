@@ -3,11 +3,7 @@ package com.github.betterbuiltfool.blocks;
 import com.github.betterbuiltfool.blocks.block_entities.Alignment;
 import com.github.betterbuiltfool.blocks.block_entities.Size;
 
-public class FrameBlockStateData {
-    private Alignment alignX;
-    private Alignment alignY;
-    private Alignment alignZ;
-    private Size size;
+public record FrameBlockStateData(Alignment alignX, Alignment alignY, Alignment alignZ, Size size) {
     
     public static final FrameBlockStateData DEFAULT = new FrameBlockStateData(
             Alignment.CENTER,
@@ -15,18 +11,6 @@ public class FrameBlockStateData {
             Alignment.CENTER,
             Size.FULL
     );
-    
-    public FrameBlockStateData(
-            Alignment alignX,
-            Alignment alignY,
-            Alignment alignZ,
-            Size size
-    ) {
-        this.alignX = alignX;
-        this.alignY = alignY;
-        this.alignZ = alignZ;
-        this.size = size;
-    }
     
     public static FrameBlockStateData of(int packed) {
         return new FrameBlockStateData(

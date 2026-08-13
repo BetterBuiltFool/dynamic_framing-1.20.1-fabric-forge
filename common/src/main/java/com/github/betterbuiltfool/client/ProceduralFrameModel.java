@@ -2,96 +2,26 @@ package com.github.betterbuiltfool.client;
 
 import com.github.betterbuiltfool.blocks.block_entities.Alignment;
 import com.github.betterbuiltfool.blocks.block_entities.Size;
-import com.github.betterbuiltfool.blocks.block_entities.StructureJointBlockEntity;
-import com.github.betterbuiltfool.helper.FrameEndpointHelper;
-import com.github.betterbuiltfool.registry.BlockRegistry;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.BakedQuad;
-import net.minecraft.client.renderer.block.model.ItemOverrides;
-import net.minecraft.client.renderer.block.model.ItemTransforms;
-import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.client.resources.model.BakedModel;
-import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.util.RandomSource;
-import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
-import java.util.List;
 
-public class ProceduralFrameModel implements BakedModel {
+public class ProceduralFrameModel {
     
-    protected final BakedModel originalModel;
-    
-    public ProceduralFrameModel(
-            BakedModel fallbackModel
-    ) {
-        this.originalModel = fallbackModel;
-    }
-    
-    @Override
-    public @NotNull List<BakedQuad> getQuads(@Nullable BlockState state,
-                                             @Nullable Direction direction,
-                                             @Nullable RandomSource random
-    ) {
-        if (state == null) {
-            return originalModel.getQuads(null, direction, random);
-        }
-        return originalModel.getQuads(state, direction, random);
-    }
-    
-    public @NotNull List<BakedQuad> getProceduralQuads(
-            BlockState state,
-            @Nullable Direction side,
+    public static @NotNull ArrayList<BakedQuad> generateQuads(
+            Direction side,
             RandomSource rand,
-            BlockPos pos,
-            BlockAndTintGetter level
+            Alignment alignX,
+            Alignment alignY,
+            Alignment alignZ,
+            Size size,
+            BlockState material
     ) {
-        boolean isVertical = state.is(BlockRegistry.POST_BLOCK.get());
-        Direction negative = FrameEndpointHelper.getNegativeAxis(state, isVertical);
-        
-        BlockPos jointPos;
-        Direction positive = negative.getOpposite();
-        
-        var negativePos = FrameEndpointHelper.findEndPoint(level, pos, negative);
-        var positivePos = FrameEndpointHelper.findEndPoint(level, pos, positive);
-        
-        var negativeDist = pos.distToCenterSqr(negativePos.getCenter());
-        var positiveDist = pos.distToCenterSqr(positivePos.getCenter());
-        
-        if (negativeDist < positiveDist) {
-            jointPos = negativePos;
-        } else {
-            jointPos = positivePos;
-        }
-        
-        if (!(level.getBlockEntity(jointPos) instanceof StructureJointBlockEntity jbEntity)) {
-            return originalModel.getQuads(state, side, rand);
-        }
-        
-        return generateQuads(side, rand, jbEntity, jointPos, negativePos, positivePos);
-    }
-    
-    private @NotNull ArrayList<BakedQuad> generateQuads(
-            @Nullable Direction side,
-            RandomSource rand,
-            StructureJointBlockEntity jbEntity,
-            BlockPos jointPos,
-            BlockPos negativePos,
-            BlockPos positivePos
-    ) {
-        var oppositeJointPos = jointPos == negativePos ? positivePos : negativePos;
-        
-        var edgeProfile = jbEntity.getEdgeProfile(oppositeJointPos);
-        var size = edgeProfile.size();
-        var material = edgeProfile.material();
-        
-        var alignX = jbEntity.getAlignX();
-        var alignY = jbEntity.getAlignY();
-        var alignZ = jbEntity.getAlignZ();
         
         var dispatcher = Minecraft.getInstance()
                                   .getBlockRenderer();
@@ -132,7 +62,7 @@ public class ProceduralFrameModel implements BakedModel {
         return newQuads;
     }
     
-    private void calcUV(
+    private static void calcUV(
             int[] vertices,
             BakedQuad quad,
             int offset,
@@ -168,8 +98,8 @@ public class ProceduralFrameModel implements BakedModel {
         vertices[offset + 5] = Float.floatToRawIntBits(vMin + localV * (vMax - vMin));
     }
     
-    private float[] calcAxisBounds(Alignment alignment,
-                                   Size size
+    private static float[] calcAxisBounds(Alignment alignment,
+                                          Size size
     ) {
         float scale = size.getThickness();
         float start;
@@ -181,40 +111,5 @@ public class ProceduralFrameModel implements BakedModel {
             default -> throw new IllegalArgumentException("What kind of alignment enum is this?");
         }
         return new float[]{start, start + scale};
-    }
-    
-    @Override
-    public boolean useAmbientOcclusion() {
-        return originalModel.useAmbientOcclusion();
-    }
-    
-    @Override
-    public boolean isGui3d() {
-        return originalModel.isGui3d();
-    }
-    
-    @Override
-    public boolean usesBlockLight() {
-        return originalModel.usesBlockLight();
-    }
-    
-    @Override
-    public boolean isCustomRenderer() {
-        return false;
-    }
-    
-    @Override
-    public @NotNull TextureAtlasSprite getParticleIcon() {
-        return originalModel.getParticleIcon();
-    }
-    
-    @Override
-    public @NotNull ItemTransforms getTransforms() {
-        return originalModel.getTransforms();
-    }
-    
-    @Override
-    public @NotNull ItemOverrides getOverrides() {
-        return originalModel.getOverrides();
     }
 }

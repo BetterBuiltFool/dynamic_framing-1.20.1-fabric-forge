@@ -82,8 +82,7 @@ public class StructureJointBlockEntity extends BlockEntity {
     }
     
     public FrameBlockStateData getEdgeData(Direction direction) {
-        long connection = this.connections.getLong(direction);
-        var edgeProfile = this.edges.get(connection);
+        var edgeProfile = getEdgeProfile(direction);
         
         return new FrameBlockStateData(alignX, alignY, alignZ, edgeProfile.size());
     }

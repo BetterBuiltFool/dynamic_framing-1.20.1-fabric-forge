@@ -87,6 +87,10 @@ public class StructureJointBlockEntity extends BlockEntity {
         return new FrameBlockStateData(alignX, alignY, alignZ, edgeProfile.size());
     }
     
+    public BlockState getEdgeMaterial(Direction direction) {
+        return getEdgeProfile(direction).material();
+    }
+    
     //endregion
     //region Mutators
     public void pushAxis(Direction.Axis axis) {

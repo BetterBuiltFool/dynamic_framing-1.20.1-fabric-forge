@@ -1,5 +1,7 @@
 {
   "variants": {
-    "": "dynamic_framing:blocks/beam_block"
+    "": {
+      "model": "dynamic_framing:block/beam_block"
+    }
   }
 }

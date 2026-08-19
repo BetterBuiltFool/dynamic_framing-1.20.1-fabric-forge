@@ -11,9 +11,15 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.NbtUtils;
+import net.minecraft.nbt.Tag;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.game.ClientGamePacketListener;
+import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class StructureJointBlockEntity extends BlockEntity {
     
@@ -150,7 +156,7 @@ public class StructureJointBlockEntity extends BlockEntity {
         tag.putInt("JointAY", alignY.ordinal());
         tag.putInt("JointAZ", alignZ.ordinal());
         
-        ListTag list = new ListTag();
+        ListTag edgeTagList = new ListTag();
         for (var entry : edges.long2ObjectEntrySet()) {
             CompoundTag entryTag = new CompoundTag();
             var profile = entry.getValue();
@@ -159,8 +165,25 @@ public class StructureJointBlockEntity extends BlockEntity {
             entryTag.putInt("Size", profile.size()
                                            .ordinal()
             );
+            
+            edgeTagList.add(entryTag);
         }
-        tag.put("Edges", list);
+        tag.put("Edges", edgeTagList);
+        
+        ListTag connectionsTagList = new ListTag();
+        for (var entry : connections.object2LongEntrySet()) {
+            var key = entry.getKey();
+            var value = entry.getLongValue();
+            
+            CompoundTag entryTag = new CompoundTag();
+            entryTag.putString("direction", key.getName());
+            entryTag.putLong("connection", value);
+            
+            connectionsTagList.add(entryTag);
+        }
+        
+        tag.put("Connections", connectionsTagList);
+        
     }
     
     @Override
@@ -171,14 +194,15 @@ public class StructureJointBlockEntity extends BlockEntity {
         this.alignZ = Alignment.values()[tag.getInt("JointAZ")];
         
         edges.clear();
-        if (!tag.contains("Edges", 9)) {
+        connections.clear();
+        if (!tag.contains("Edges", Tag.TAG_LIST)) {
             return;
         }
-        var list = tag.getList("Edges", 10);
+        var edgeTagList = tag.getList("Edges", Tag.TAG_COMPOUND);
         var blockLookup = BuiltInRegistries.BLOCK.asLookup();
         
-        for (int i = 0; i < list.size(); i++) {
-            var entry = list.getCompound(i);
+        for (int i = 0; i < edgeTagList.size(); i++) {
+            var entry = edgeTagList.getCompound(i);
             long nodePos = entry.getLong("TargetNodePos");
             BlockState material = NbtUtils.readBlockState(blockLookup, entry.getCompound("Material"));
             Size size = Size.values()[entry.getInt("Size")];
@@ -190,9 +214,34 @@ public class StructureJointBlockEntity extends BlockEntity {
                     directionVector.getY(),
                     directionVector.getZ()
             );
-            
             edges.put(nodePos, new EdgeProfile(material, size, facing));
         }
+        if (!tag.contains("Connections", Tag.TAG_LIST)) {
+            return;
+        }
+        
+        var connectionTagList = tag.getList("Connections", Tag.TAG_COMPOUND);
+        
+        
+        for (int i = 0; i < connectionTagList.size(); i++) {
+            var entry = connectionTagList.getCompound(i);
+            long connection = entry.getLong("connection");
+            Direction facing = Direction.byName(entry.getString("direction"));
+            
+            connections.put(facing, connection);
+        }
+        
     }
+    
+    @Override
+    public @NotNull CompoundTag getUpdateTag() {
+        return saveWithoutMetadata();
+    }
+    
+    @Override
+    public @Nullable Packet<ClientGamePacketListener> getUpdatePacket() {
+        return ClientboundBlockEntityDataPacket.create(this);
+    }
+    
     //endregion
 }

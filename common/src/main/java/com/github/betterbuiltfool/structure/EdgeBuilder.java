@@ -3,7 +3,7 @@ package com.github.betterbuiltfool.structure;
 import com.github.betterbuiltfool.blocks.BeamBlock;
 import com.github.betterbuiltfool.blocks.block_entities.Size;
 import com.github.betterbuiltfool.blocks.block_entities.StructureJointBlockEntity;
-import com.github.betterbuiltfool.registry.BlockEntityRegistry;
+import com.github.betterbuiltfool.blocks.block_entities.StructureMemberBlockEntity;
 import com.github.betterbuiltfool.registry.BlockRegistry;
 import com.github.betterbuiltfool.validation.BlockPosValidator;
 import net.minecraft.core.BlockPos;
@@ -47,13 +47,14 @@ public class EdgeBuilder {
         var current = startPos.mutable();
         var dist = startPos.distManhattan(endPos);
         var halfway = dist / 2;
+        var opposite = facing.getOpposite();
         for (int step = 0; step < halfway; step++) {
             current = current.move(facing);
             setFrameBlock(level, current, startPos, facing);
         }
         for (int step = halfway; step < dist - 1; step++) {
             current = current.move(facing);
-            setFrameBlock(level, current, endPos, facing);
+            setFrameBlock(level, current, endPos, opposite);
         }
         
     }
@@ -72,14 +73,16 @@ public class EdgeBuilder {
             state = BlockRegistry.BEAM_BLOCK.get().defaultBlockState().setValue(BeamBlock.AXIS, axis);
         }
         
-        level.setBlockAndUpdate(pos, state);
+        level.setBlock(pos, state, Block.UPDATE_ALL);
         
-        var blockEntityResult = level.getBlockEntity(pos, BlockEntityRegistry.MEMBER_ENTITY.get());
-        assert blockEntityResult.isPresent();
+        var blockEntity = level.getBlockEntity(pos);
+        if (blockEntity instanceof StructureMemberBlockEntity be) {
+            be.setJointPos(jointPos);
+            be.setDirection(facing);
+            be.setChanged();
+            level.sendBlockUpdated(pos, state, state, Block.UPDATE_CLIENTS);
+        }
         
-        var blockEntity = blockEntityResult.get();
-        blockEntity.setJointPos(jointPos);
-        blockEntity.setDirection(facing);
     }
     
     private static void setEndJoint(
@@ -93,7 +96,7 @@ public class EdgeBuilder {
         Block jointBlock = BlockRegistry.JOINT_BLOCK.get();
         if (!state.is(jointBlock)) {
             var jointState = jointBlock.defaultBlockState();
-            level.setBlockAndUpdate(pos, jointState);
+            level.setBlock(pos, jointState, Block.UPDATE_ALL);
         }
         
         if (!(level.getBlockEntity(pos) instanceof StructureJointBlockEntity be)) {
@@ -101,6 +104,7 @@ public class EdgeBuilder {
         }
         
         be.registerConnection(connectedPos, material, Size.FULL);
+        level.sendBlockUpdated(pos, state, state, Block.UPDATE_CLIENTS);
         
     }
     

@@ -38,9 +38,9 @@ public class BeamBlock extends FrameBlock {
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
         builder.add(AXIS)
-                .add(ALIGNMENT_PRIMARY)
-                .add(ALIGNMENT_SECONDARY)
-                .add(SCALING);
+               .add(ALIGNMENT_PRIMARY)
+               .add(ALIGNMENT_SECONDARY)
+               .add(SCALING);
     }
     
     @Override

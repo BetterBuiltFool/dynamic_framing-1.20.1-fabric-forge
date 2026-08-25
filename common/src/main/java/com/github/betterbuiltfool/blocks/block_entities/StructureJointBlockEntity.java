@@ -79,8 +79,8 @@ public class StructureJointBlockEntity extends BlockEntity {
         return alignZ;
     }
     
-    public EdgeProfile getEdgeProfile(BlockPos position) {
-        return edges.get(position.asLong());
+    public EdgeProfile getEdgeProfile(BlockPos connectedPos) {
+        return edges.get(connectedPos.asLong());
     }
     
     public EdgeProfile getEdgeProfile(Direction direction) {
@@ -95,6 +95,32 @@ public class StructureJointBlockEntity extends BlockEntity {
     
     public BlockState getEdgeMaterial(Direction direction) {
         return getEdgeProfile(direction).material();
+    }
+    
+    public void setEdgeProfile(BlockPos connectedPos,
+                               EdgeProfile profile
+    ) {
+        edges.put(connectedPos.asLong(), profile);
+    }
+    
+    public void setEdgeProfile(Direction direction,
+                               EdgeProfile profile
+    ) {
+        edges.put(connections.getLong(direction), profile);
+    }
+    
+    public void setEdgeData(Direction direction, FrameBlockStateData data) {
+        var edgeProfile = getEdgeProfile(direction);
+        
+        alignX = data.alignX();
+        alignY = data.alignY();
+        alignZ = data.alignZ();
+        setEdgeProfile(direction, new EdgeProfile(edgeProfile.material(), data.size(), direction));
+    }
+    
+    public void setEdgeMaterial(Direction direction, BlockState material) {
+        var edgeProfile = getEdgeProfile(direction);
+        setEdgeProfile(direction, new EdgeProfile(material, edgeProfile.size(), direction));
     }
     
     //endregion

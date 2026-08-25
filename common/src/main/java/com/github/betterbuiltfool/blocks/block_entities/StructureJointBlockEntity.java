@@ -1,5 +1,6 @@
 package com.github.betterbuiltfool.blocks.block_entities;
 
+import com.github.betterbuiltfool.blocks.BeamBlock;
 import com.github.betterbuiltfool.blocks.FrameBlockStateData;
 import com.github.betterbuiltfool.data.CoaxSelection;
 import it.unimi.dsi.fastutil.longs.*;
@@ -171,7 +172,61 @@ public class StructureJointBlockEntity extends BlockEntity {
         if (this.level == null || this.level.isClientSide()) {
             return;
         }
-        this.level.sendBlockUpdated(this.worldPosition, this.getBlockState(), this.getBlockState(), 3);
+        for (var direction : this.connections.keySet()) {
+            syncEdge(direction);
+        }
+        this.level.sendBlockUpdated(this.worldPosition, this.getBlockState(), this.getBlockState(),
+                                    BeamBlock.UPDATE_ALL
+        );
+    }
+    
+    public void syncEdge(Direction direction) {
+        if (!connections.containsKey(direction)) {
+            return;
+        }
+        
+        long packedConnection = connections.getLong(direction);
+        var edgeProfile = edges.get(packedConnection);
+        var material = edgeProfile.material();
+        var connectionPos = BlockPos.of(packedConnection);
+        
+        BlockPos.betweenClosedStream(this.worldPosition, connectionPos)
+                .forEach(pos -> {
+                    assert level != null;
+                    var state = level.getBlockState(pos);
+                    if (!(state.getBlock() instanceof BeamBlock)) {
+                        return;
+                    }
+                    var axis = direction.getAxis();
+                    Alignment primary;
+                    Alignment secondary;
+                    switch (axis) {
+                        case X -> {
+                            primary = this.alignY;
+                            secondary = this.alignZ;
+                        }
+                        case Y -> {
+                            primary = this.alignX;
+                            secondary = this.alignZ;
+                        }
+                        default -> {
+                            primary = this.alignX;
+                            secondary = this.alignY;
+                        }
+                    }
+                    state.setValue(BeamBlock.ALIGNMENT_PRIMARY, primary);
+                    state.setValue(BeamBlock.ALIGNMENT_SECONDARY, secondary);
+                    state.setValue(BeamBlock.SCALING, edgeProfile.size());
+                    
+                    if (!(level.getBlockEntity(pos) instanceof StructureMemberBlockEntity be)) {
+                        return;
+                    }
+                    be.setMaterial(material);
+                    be.setChanged();
+                    
+                    level.sendBlockUpdated(pos, state, state, BeamBlock.UPDATE_CLIENTS);
+                });
+        
     }
     
     //region Serialization

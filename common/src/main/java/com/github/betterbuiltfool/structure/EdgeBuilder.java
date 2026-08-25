@@ -66,12 +66,9 @@ public class EdgeBuilder {
             Direction facing
     ) {
         var axis = facing.getAxis();
-        BlockState state;
-        if (axis.isVertical()) {
-            state = BlockRegistry.POST_BLOCK.get().defaultBlockState();
-        } else {
-            state = BlockRegistry.BEAM_BLOCK.get().defaultBlockState().setValue(BeamBlock.AXIS, axis);
-        }
+        BlockState state = BlockRegistry.BEAM_BLOCK.get()
+                                                   .defaultBlockState()
+                                                   .setValue(BeamBlock.AXIS, axis);
         
         level.setBlock(pos, state, Block.UPDATE_ALL);
         

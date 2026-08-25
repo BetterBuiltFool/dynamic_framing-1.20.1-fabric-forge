@@ -1,5 +1,6 @@
 package com.github.betterbuiltfool.forge.client;
 
+import com.github.betterbuiltfool.blocks.BeamBlock;
 import com.github.betterbuiltfool.blocks.FrameBlockStateData;
 import com.github.betterbuiltfool.blocks.block_entities.Alignment;
 import com.github.betterbuiltfool.blocks.block_entities.Size;
@@ -16,6 +17,7 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraftforge.client.extensions.IForgeBakedModel;
 import net.minecraftforge.client.model.data.ModelData;
 import net.minecraftforge.client.model.data.ModelProperty;
@@ -30,6 +32,7 @@ public class ForgeBakedFrameProceduralModel implements IForgeBakedModel, BakedMo
     private static final ModelProperty<Alignment> ALIGN_Y_PROPERTY = new ModelProperty<>();
     private static final ModelProperty<Alignment> ALIGN_Z_PROPERTY = new ModelProperty<>();
     private static final ModelProperty<Size> SIZE_PROPERTY = new ModelProperty<>();
+    private static final ModelProperty<Direction.Axis> AXIS_PROPERTY = new ModelProperty<>();
     private static final ModelProperty<BlockState> COPY_MATERIAL_PROPERTY = new ModelProperty<>();
     
     public static final ForgeBakedFrameProceduralModel INSTANCE = new ForgeBakedFrameProceduralModel();
@@ -70,6 +73,14 @@ public class ForgeBakedFrameProceduralModel implements IForgeBakedModel, BakedMo
             @NotNull BlockState state,
             @NotNull ModelData modelData
     ) {
+        var defaultData = FrameBlockStateData.DEFAULT;
+        var alignX = defaultData.alignX();
+        var alignY = defaultData.alignY();
+        var alignZ = defaultData.alignZ();
+        var size = defaultData.size();
+        var axis = state.getValue(BeamBlock.AXIS);
+        var copyMaterial = Blocks.OAK_LOG.defaultBlockState().setValue(BlockStateProperties.AXIS, axis);
+        
         DynamicFramingClientForge.LOGGER.info("Getting model data...");
         var blockEntityResult = level.getBlockEntity(pos, BlockEntityRegistry.MEMBER_ENTITY.get());
         if (blockEntityResult.isPresent()) {
@@ -84,29 +95,24 @@ public class ForgeBakedFrameProceduralModel implements IForgeBakedModel, BakedMo
                     DynamicFramingClientForge.LOGGER.info("Found joint entity.");
                     var jointEntity = jointEntityResult.get();
                     
-                    var direction = blockEntity.getDirection();
-                    var edgeData = jointEntity.getEdgeData(direction);
-                    var copyMaterial = jointEntity.getEdgeMaterial(direction);
-                    
-                    return ModelData.builder()
-                                    .with(ALIGN_X_PROPERTY, edgeData.alignX())
-                                    .with(ALIGN_Y_PROPERTY, edgeData.alignY())
-                                    .with(ALIGN_Z_PROPERTY, edgeData.alignZ())
-                                    .with(SIZE_PROPERTY, edgeData.size())
-                                    .with(COPY_MATERIAL_PROPERTY, copyMaterial)
-                                    .build();
+                    var edgeDirection = blockEntity.getDirection();
+                    var edgeData = jointEntity.getEdgeData(edgeDirection);
+                    copyMaterial = jointEntity.getEdgeMaterial(edgeDirection);
+                    alignX = edgeData.alignX();
+                    alignY = edgeData.alignY();
+                    alignZ = edgeData.alignZ();
+                    size = edgeData.size();
+                    axis = edgeDirection.getAxis();
                 }
             }
         }
-        DynamicFramingClientForge.LOGGER.info("Failed model data packing, going default...");
-        var defaultData = FrameBlockStateData.DEFAULT;
-        var copyMaterial = Blocks.OAK_LOG.defaultBlockState();
         return ModelData.builder()
-                        .with(ALIGN_X_PROPERTY, defaultData.alignX())
-                        .with(ALIGN_Y_PROPERTY, defaultData.alignY())
-                        .with(ALIGN_Z_PROPERTY, defaultData.alignZ())
-                        .with(SIZE_PROPERTY, defaultData.size())
+                        .with(ALIGN_X_PROPERTY, alignX)
+                        .with(ALIGN_Y_PROPERTY, alignY)
+                        .with(ALIGN_Z_PROPERTY, alignZ)
+                        .with(SIZE_PROPERTY, size)
                         .with(COPY_MATERIAL_PROPERTY, copyMaterial)
+                        .with(AXIS_PROPERTY, axis)
                         .build();
     }
     

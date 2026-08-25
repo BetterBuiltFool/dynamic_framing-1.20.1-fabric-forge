@@ -94,7 +94,8 @@ public class StructureJointBlockEntity extends BlockEntity {
     }
     
     public BlockState getEdgeMaterial(Direction direction) {
-        return getEdgeProfile(direction).material();
+        var edgeProfile = getEdgeProfile(direction);
+        return edgeProfile != null ? edgeProfile.material(): null;
     }
     
     public void setEdgeProfile(BlockPos connectedPos,

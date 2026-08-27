@@ -4,6 +4,7 @@ import com.github.betterbuiltfool.blocks.BeamBlock;
 import com.github.betterbuiltfool.blocks.FrameBlockStateData;
 import com.github.betterbuiltfool.blocks.block_entities.Alignment;
 import com.github.betterbuiltfool.blocks.block_entities.Size;
+import com.github.betterbuiltfool.blocks.block_entities.StructureMemberBlockEntity;
 import com.github.betterbuiltfool.client.ProceduralFrameModel;
 import com.github.betterbuiltfool.registry.BlockEntityRegistry;
 import net.minecraft.client.renderer.RenderType;
@@ -33,6 +34,8 @@ public class ForgeBakedFrameProceduralModel implements IForgeBakedModel, BakedMo
     private static final ModelProperty<Alignment> ALIGN_Z_PROPERTY = new ModelProperty<>();
     private static final ModelProperty<Size> SIZE_PROPERTY = new ModelProperty<>();
     private static final ModelProperty<Direction.Axis> AXIS_PROPERTY = new ModelProperty<>();
+    private static final ModelProperty<Alignment> ALIGN_PRIMARY_PROPERTY = new ModelProperty<>();
+    private static final ModelProperty<Alignment> ALIGN_SECONDARY_PROPERTY = new ModelProperty<>();
     private static final ModelProperty<BlockState> COPY_MATERIAL_PROPERTY = new ModelProperty<>();
     
     public static final ForgeBakedFrameProceduralModel INSTANCE = new ForgeBakedFrameProceduralModel();
@@ -53,17 +56,36 @@ public class ForgeBakedFrameProceduralModel implements IForgeBakedModel, BakedMo
         var alignY = data.get(ALIGN_Y_PROPERTY);
         var alignZ = data.get(ALIGN_Z_PROPERTY);
         var size = data.get(SIZE_PROPERTY);
+        var axis = data.get(AXIS_PROPERTY);
         var copyMaterial = data.get(COPY_MATERIAL_PROPERTY);
         
-        if (alignX == null || alignY == null || alignZ == null || size == null || copyMaterial == null) {
+        if (alignX == null || alignY == null || alignZ == null || size == null || copyMaterial == null || axis == null) {
             DynamicFramingClientForge.LOGGER.info(
                     "Data failure; ModelData was not properly packed. Returning empty list.");
             return List.of();
         }
+        Alignment primary;
+        Alignment secondary;
+        
+        switch (axis) {
+            case X -> {
+                primary = alignY;
+                secondary = alignZ;
+            }
+            case Y -> {
+                primary = alignX;
+                secondary = alignZ;
+            }
+            default -> {
+                primary = alignX;
+                secondary = alignY;
+            }
+        }
         
         DynamicFramingClientForge.LOGGER.info("Creating model quads");
         
-        return ProceduralFrameModel.generateQuads(side, rand, alignX, alignY, alignZ, size, copyMaterial);
+//        return ProceduralFrameModel.generateQuads(side, rand, alignX, alignY, alignZ, size, copyMaterial);
+        return ProceduralFrameModel.generateQuads(side, rand, primary, secondary, axis, size, copyMaterial);
     }
     
     @Override
@@ -114,6 +136,31 @@ public class ForgeBakedFrameProceduralModel implements IForgeBakedModel, BakedMo
                         .with(COPY_MATERIAL_PROPERTY, copyMaterial)
                         .with(AXIS_PROPERTY, axis)
                         .build();
+    }
+    
+//    @Override
+    public @NotNull ModelData getModelDataNew(
+            @NotNull BlockAndTintGetter level,
+            @NotNull BlockPos pos,
+            @NotNull BlockState state,
+            @NotNull ModelData modelData
+    ) {
+        var primary = state.getValue(BeamBlock.ALIGNMENT_PRIMARY);
+        var secondary = state.getValue(BeamBlock.ALIGNMENT_PRIMARY);
+        var scaling = state.getValue(BeamBlock.SCALING);
+        var axis = state.getValue(BeamBlock.AXIS);
+        
+        if (!(level.getBlockEntity(pos) instanceof StructureMemberBlockEntity be)) return modelData;
+        
+        var copyMaterial = be.getMaterial();
+        
+        return ModelData.builder()
+                       .with(ALIGN_PRIMARY_PROPERTY, primary)
+                       .with(ALIGN_SECONDARY_PROPERTY, secondary)
+                       .with(AXIS_PROPERTY, axis)
+                       .with(SIZE_PROPERTY, scaling)
+                       .with(COPY_MATERIAL_PROPERTY, copyMaterial)
+                       .build();
     }
     
     @Override

@@ -31,7 +31,11 @@ public class BlockRegistry {
         
         BEAM_BLOCK = register(
                 BeamBlock.BLOCK_ID,
-                () -> new BeamBlock(BlockBehaviour.Properties.of())
+                // TODO: Temp fix, do actual fix for particles at some point
+                () -> new BeamBlock(
+                        BlockBehaviour.Properties.of()
+                                                 .noParticlesOnBreak()
+                )
         );
         
         JOINT_BLOCK = register(

@@ -3,7 +3,6 @@ package com.github.betterbuiltfool.registry;
 import com.github.betterbuiltfool.DynamicFraming;
 import com.github.betterbuiltfool.blocks.BeamBlock;
 import com.github.betterbuiltfool.blocks.JointBlock;
-import com.github.betterbuiltfool.blocks.PostBlock;
 import dev.architectury.registry.registries.DeferredRegister;
 import dev.architectury.registry.registries.RegistrySupplier;
 import net.minecraft.core.registries.Registries;
@@ -18,16 +17,11 @@ public class BlockRegistry {
             DynamicFraming.MOD_ID, Registries.BLOCK
     );
     
-    public static RegistrySupplier<Block> POST_BLOCK;
     public static RegistrySupplier<Block> BEAM_BLOCK;
     public static RegistrySupplier<Block> JOINT_BLOCK;
     
     public static void register() {
         DynamicFraming.LOGGER.info("Registering blocks");
-        POST_BLOCK = register(
-                PostBlock.BLOCK_ID,
-                () -> new PostBlock(BlockBehaviour.Properties.of())
-        );
         
         BEAM_BLOCK = register(
                 BeamBlock.BLOCK_ID,

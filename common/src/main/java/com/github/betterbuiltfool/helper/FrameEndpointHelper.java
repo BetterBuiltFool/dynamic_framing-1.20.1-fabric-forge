@@ -21,7 +21,7 @@ public class FrameEndpointHelper {
                 return current.immutable();
             }
             
-            if (!state.is(BlockRegistry.POST_BLOCK.get()) || !state.is(BlockRegistry.BEAM_BLOCK.get())) {
+            if (!state.is(BlockRegistry.BEAM_BLOCK.get())) {
                 return start;
             }
         }

@@ -1,27 +1,18 @@
 package com.github.betterbuiltfool.client;
 
-import com.github.betterbuiltfool.DynamicFraming;
 import com.github.betterbuiltfool.blocks.block_entities.Alignment;
 import com.github.betterbuiltfool.blocks.block_entities.Size;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.BakedQuad;
-import net.minecraft.client.renderer.block.model.BlockElementFace;
-import net.minecraft.client.renderer.block.model.BlockFaceUV;
-import net.minecraft.client.renderer.block.model.FaceBakery;
-import net.minecraft.client.resources.model.BlockModelRotation;
 import net.minecraft.core.Direction;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.NotNull;
-import org.joml.Vector3f;
 
 import java.util.ArrayList;
 
 public class ProceduralFrameModel {
-    
-    private static final ResourceLocation GENERATED_QUADS =
-            new ResourceLocation(DynamicFraming.MOD_ID, "generated_geometry");
     
     public static @NotNull ArrayList<BakedQuad> generateQuads(
             Direction side,
@@ -37,107 +28,67 @@ public class ProceduralFrameModel {
         var materialModel = dispatcher.getBlockModel(material);
         var scale = size.getThickness();
         var bounds = calcAxisBounds(primary, secondary, axis, scale);
-        var bakery = new FaceBakery();
         var faces = new ArrayList<BakedQuad>();
         
         for (var quad : materialModel.getQuads(material, side, rand)) {
-            var sprite = quad.getSprite();
-            var direction = quad.getDirection();
-            var from = getQuadFrom(bounds, direction);
-            var to = getQuadTo(bounds, direction);
-            var face = getBlockElementFace(direction, bounds);
-            
-            faces.add(
-                    bakery.bakeQuad(
-                            from,
-                            to,
-                            face,
-                            sprite,
-                            direction,
-                            BlockModelRotation.X0_Y0,
-                            null,
-                            true,
-                            GENERATED_QUADS
-                    )
-            );
-        }
-        
-        return faces;
-    }
-    
-    private static @NotNull BlockElementFace getBlockElementFace(Direction direction,
-                                                                 Bounds bounds
-    ) {
-        float[] uvBounds = switch (direction.getAxis()) {
-            case X -> calcUV(bounds.y(), bounds.z(), false);
-            case Y -> calcUV(bounds.x(), bounds.z(), false);
-            default -> calcUV(bounds.x(), bounds.y(), true);
-        };
-        
-        var uv = new BlockFaceUV(
-                uvBounds,
-                0
-        );
-        
-        var face = new BlockElementFace(
-                null,
-                -1,
-                "texture",
-                uv
-        );
-        return face;
-    }
-    
-    public static @NotNull ArrayList<BakedQuad> generateQuads(
-            Direction side,
-            RandomSource rand,
-            Alignment alignX,
-            Alignment alignY,
-            Alignment alignZ,
-            Size size,
-            BlockState material
-    ) {
-        
-        var dispatcher = Minecraft.getInstance()
-                                  .getBlockRenderer();
-        var materialModel = dispatcher.getBlockModel(material);
-        var originalQuads = materialModel.getQuads(material, side, rand);
-        var newQuads = new ArrayList<BakedQuad>();
-        
-        float scale = size.getThickness();
-        var xBounds = calcAxisBounds(alignX, size);
-        var yBounds = calcAxisBounds(alignY, size);
-        var zBounds = calcAxisBounds(alignZ, size);
-        
-        float[][] bounds = {xBounds, yBounds, zBounds};
-        
-        for (var quad : originalQuads) {
             int[] vertices = quad.getVertices()
                                  .clone();
-            var face = quad.getDirection();
+            var facing = quad.getDirection();
             
             for (int i = 0; i < 4; i++) {
                 int offset = i * 8;
                 
-                for (int j = 0; j < 3; j++) {
-                    float original = Float.intBitsToFloat(vertices[offset + j]);
-                    float modified = bounds[j][0] + (original * scale);
-                    vertices[offset + j] = Float.floatToRawIntBits(modified);
-                }
+                adjustBounds(vertices, bounds, offset);
                 
-                if (face.getAxis() == Direction.Axis.Z) {
-                    calcUV(vertices, quad, offset, scale, xBounds, yBounds, true);
-                } else if (face.getAxis() == Direction.Axis.X) {
-                    calcUV(vertices, quad, offset, scale, zBounds, yBounds, true);
-                } else {
-                    calcUV(vertices, quad, offset, scale, xBounds, yBounds, false);
+                switch (facing.getAxis()) {
+                    case X -> adjustUV(vertices, quad, offset, scale, bounds.z(), bounds.y(), true);
+                    case Y -> adjustUV(vertices, quad, offset, scale, bounds.x(), bounds.z(), false);
+                    default -> adjustUV(vertices, quad, offset, scale, bounds.x(), bounds.y(), true);
                 }
             }
+            faces.add(new BakedQuad(vertices, quad.getTintIndex(), facing, quad.getSprite(), quad.isShade()));
         }
-        return newQuads;
+        return faces;
     }
     
-    private static void calcUV(
+    private static void adjustBounds(
+            int[] vertices,
+            Bounds bounds,
+            int vertexOffset
+    ) {
+        for (var axis : Direction.Axis.values()) {
+            adjustBound(vertices, bounds, vertexOffset, axis);
+        }
+    }
+    
+    private static void adjustBound(
+            int[] vertices,
+            Bounds bounds,
+            int vertexOffset,
+            Direction.Axis axis
+    ) {
+        int positionOffset;
+        float[] axisBounds;
+        switch (axis) {
+            case X -> {
+                positionOffset = 0;
+                axisBounds = bounds.x();
+            }
+            case Y -> {
+                positionOffset = 1;
+                axisBounds = bounds.y();
+            }
+            default -> {
+                positionOffset = 2;
+                axisBounds = bounds.z();
+            }
+        }
+        float original = Float.intBitsToFloat(vertices[vertexOffset + positionOffset]);
+        float modified = Mth.clamp(original, axisBounds[0], axisBounds[1]);
+        vertices[vertexOffset + positionOffset] = Float.floatToRawIntBits(modified);
+    }
+    
+    private static void adjustUV(
             int[] vertices,
             BakedQuad quad,
             int offset,
@@ -173,42 +124,6 @@ public class ProceduralFrameModel {
         vertices[offset + 5] = Float.floatToRawIntBits(vMin + localV * (vMax - vMin));
     }
     
-    private static float[] calcUV(
-            float[] uBounds,
-            float[] vBounds,
-            boolean invertV
-    ) {
-        
-        float[] uv = new float[4];
-        for (int i = 0; i < 2; i++) {
-            uv[(2 * i)] = uBounds[i];
-        }
-        for (int j = 0; j < 2; j++) {
-            var v = vBounds[j];
-            if (invertV) {
-                v = 16 - v;
-            }
-            uv[1 + (2 * j)] = v;
-        }
-        
-        return uv;
-    }
-    
-    private static float[] calcAxisBounds(Alignment alignment,
-                                          Size size
-    ) {
-        float scale = size.getThickness();
-        float start;
-        
-        switch (alignment) {
-            case NEGATIVE -> start = 0.0f;
-            case POSITIVE -> start = 1.0f - scale;
-            case CENTER -> start = 0.5f - (scale / 2.0f);
-            default -> throw new IllegalArgumentException("What kind of alignment enum is this?");
-        }
-        return new float[]{start, start + scale};
-    }
-    
     private static Bounds calcAxisBounds(
             Alignment primary,
             Alignment secondary,
@@ -241,40 +156,6 @@ public class ProceduralFrameModel {
             default -> start = 0.5f - (scale / 2.0f);
         }
         return new float[]{start, start + scale};
-    }
-    
-    private static Vector3f getQuadFrom(Bounds bounds,
-                                        Direction direction
-    ) {
-        int xIndex = 0;
-        int yIndex = 0;
-        int zIndex = 0;
-        
-        switch (direction) {
-            case UP -> yIndex = 1;
-            case NORTH -> zIndex = 1;
-            case EAST -> xIndex = 1;
-        }
-        
-        return new Vector3f(bounds.x()[xIndex] * 16, bounds.y()[yIndex] * 16, bounds.z()[zIndex] * 16);
-        
-    }
-    
-    private static Vector3f getQuadTo(Bounds bounds,
-                                      Direction direction
-    ) {
-        int xIndex = 1;
-        int yIndex = 1;
-        int zIndex = 1;
-        
-        switch (direction) {
-            case DOWN -> yIndex = 0;
-            case SOUTH -> zIndex = 0;
-            case WEST -> xIndex = 0;
-        }
-        
-        return new Vector3f(bounds.x()[xIndex] * 16, bounds.y()[yIndex] * 16, bounds.z()[zIndex] * 16);
-        
     }
     
     private record Bounds(float[] x, float[] y, float[] z) {}

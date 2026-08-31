@@ -22,7 +22,7 @@ import org.jetbrains.annotations.Nullable;
 public class BeamBlock extends FrameBlock {
     public static final String BLOCK_ID = "beam_block";
     public static EnumProperty<Size> SCALING =
-            EnumProperty.create("scaling", Size.class);
+            EnumProperty.create("scaling", Size.class, Size.FULL, Size.HALF, Size.QUARTER);
     
     public BeamBlock(Properties properties) {
         super(properties);

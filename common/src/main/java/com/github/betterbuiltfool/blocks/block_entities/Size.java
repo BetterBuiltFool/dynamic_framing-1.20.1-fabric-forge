@@ -10,7 +10,9 @@ import java.util.Locale;
 public enum Size implements StringRepresentable {
     QUARTER(0.25f),
     HALF(0.5f),
-    FULL(0.75f);
+    FULL(0.75f),
+    // NONE is a sentinel value, do not use it for actual block states!
+    NONE(0.0f);
     
     final float thickness;
     

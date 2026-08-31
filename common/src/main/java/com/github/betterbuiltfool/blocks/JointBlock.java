@@ -43,6 +43,7 @@ public class JointBlock extends FrameBlock {
     
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
+        super.createBlockStateDefinition(builder);
         builder.add(NORTH, SOUTH, EAST, WEST, UP, DOWN);
     }
 }

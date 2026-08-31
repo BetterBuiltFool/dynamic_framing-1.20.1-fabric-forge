@@ -1,22 +1,41 @@
 package com.github.betterbuiltfool.blocks;
 
+import com.github.betterbuiltfool.blocks.block_entities.Alignment;
 import com.github.betterbuiltfool.blocks.block_entities.StructureJointBlockEntity;
 import com.github.betterbuiltfool.blocks.block_entities.StructureMemberBlockEntity;
-import com.github.betterbuiltfool.helper.FrameEndpointHelper;
-import com.github.betterbuiltfool.registry.BlockRegistry;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.EntityBlock;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.state.properties.IntegerProperty;
+import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.world.level.block.state.properties.EnumProperty;
 
 public abstract class FrameBlock extends Block implements EntityBlock {
+    
+    public static EnumProperty<Direction.Axis> AXIS = BlockStateProperties.AXIS;
+    public static EnumProperty<Alignment> ALIGNMENT_PRIMARY =
+            EnumProperty.create("alignment_primary", Alignment.class);
+    public static EnumProperty<Alignment> ALIGNMENT_SECONDARY =
+            EnumProperty.create("alignment_secondary", Alignment.class);
+    
     public FrameBlock(Properties properties) {
         super(properties);
+        this.registerDefaultState(this.getStateDefinition()
+                                      .any()
+                                      .setValue(AXIS, Direction.Axis.X)
+                                      .setValue(ALIGNMENT_PRIMARY, Alignment.CENTER)
+                                      .setValue(ALIGNMENT_SECONDARY, Alignment.CENTER));
+    }
+    
+    @Override
+    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
+        builder.add(AXIS)
+               .add(ALIGNMENT_PRIMARY)
+               .add(ALIGNMENT_SECONDARY);
     }
     
     public BlockState getComposedMaterial(

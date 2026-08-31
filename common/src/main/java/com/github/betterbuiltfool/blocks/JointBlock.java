@@ -1,5 +1,6 @@
 package com.github.betterbuiltfool.blocks;
 
+import com.github.betterbuiltfool.blocks.block_entities.Size;
 import com.github.betterbuiltfool.blocks.block_entities.StructureJointBlockEntity;
 import com.github.betterbuiltfool.registry.BlockEntityRegistry;
 import net.minecraft.core.BlockPos;
@@ -7,30 +8,30 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
-import net.minecraft.world.level.block.state.properties.BlockStateProperties;
-import net.minecraft.world.level.block.state.properties.BooleanProperty;
+import net.minecraft.world.level.block.state.properties.EnumProperty;
 import org.jetbrains.annotations.Nullable;
 
 public class JointBlock extends FrameBlock {
     public static final String BLOCK_ID = "joint_block";
     
-    public static final BooleanProperty NORTH = BlockStateProperties.NORTH;
-    public static final BooleanProperty SOUTH = BlockStateProperties.SOUTH;
-    public static final BooleanProperty EAST = BlockStateProperties.EAST;
-    public static final BooleanProperty WEST = BlockStateProperties.WEST;
-    public static final BooleanProperty UP = BlockStateProperties.UP;
-    public static final BooleanProperty DOWN = BlockStateProperties.DOWN;
+    // Represents connections. Size.NONE means unconnected.
+    public static final EnumProperty<Size> NORTH = EnumProperty.create("north", Size.class);
+    public static final EnumProperty<Size> SOUTH = EnumProperty.create("south", Size.class);
+    public static final EnumProperty<Size> EAST = EnumProperty.create("east", Size.class);
+    public static final EnumProperty<Size> WEST = EnumProperty.create("west", Size.class);
+    public static final EnumProperty<Size> UP = EnumProperty.create("up", Size.class);
+    public static final EnumProperty<Size> DOWN = EnumProperty.create("down", Size.class);
     
     public JointBlock(Properties properties) {
         super(properties);
         this.registerDefaultState(this.getStateDefinition()
                                       .any()
-                                      .setValue(NORTH, false)
-                                      .setValue(SOUTH, false)
-                                      .setValue(EAST, false)
-                                      .setValue(WEST, false)
-                                      .setValue(UP, false)
-                                      .setValue(DOWN, false)
+                                      .setValue(NORTH, Size.NONE)
+                                      .setValue(SOUTH, Size.NONE)
+                                      .setValue(EAST, Size.NONE)
+                                      .setValue(WEST, Size.NONE)
+                                      .setValue(UP, Size.NONE)
+                                      .setValue(DOWN, Size.NONE)
         );
     }
     

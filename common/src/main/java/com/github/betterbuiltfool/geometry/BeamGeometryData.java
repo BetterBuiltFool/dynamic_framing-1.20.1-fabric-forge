@@ -61,8 +61,8 @@ public record BeamGeometryData(
             Size size
     ) {
         var scale = size.getThickness();
-        var primaryBounds = calcAxis(primary, scale);
-        var secondaryBounds = calcAxis(secondary, scale);
+        var primaryBounds = CommonGeometry.calcAxis(primary, scale);
+        var secondaryBounds = CommonGeometry.calcAxis(secondary, scale);
         Direction.Axis primaryAxis, secondaryAxis;
         
         switch (axis) {
@@ -81,18 +81,5 @@ public record BeamGeometryData(
         }
         
         return from(primaryBounds, primaryAxis, secondaryBounds, secondaryAxis);
-    }
-    
-    private static float[] calcAxis(Alignment alignment,
-                                    float scale
-    ) {
-        float start;
-        
-        switch (alignment) {
-            case NEGATIVE -> start = 0.0f;
-            case POSITIVE -> start = 1.0f - scale;
-            default -> start = 0.5f - (scale / 2.0f);
-        }
-        return new float[]{start, start + scale};
     }
 }

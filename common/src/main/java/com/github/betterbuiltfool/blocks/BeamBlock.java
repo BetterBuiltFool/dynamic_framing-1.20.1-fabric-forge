@@ -1,12 +1,10 @@
 package com.github.betterbuiltfool.blocks;
 
-import com.github.betterbuiltfool.blocks.block_entities.Alignment;
 import com.github.betterbuiltfool.blocks.block_entities.Size;
 import com.github.betterbuiltfool.blocks.block_entities.StructureMemberBlockEntity;
 import com.github.betterbuiltfool.geometry.BeamGeometryData;
 import com.github.betterbuiltfool.registry.BlockEntityRegistry;
 import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -19,10 +17,15 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class BeamBlock extends FrameBlock {
     public static final String BLOCK_ID = "beam_block";
     public static EnumProperty<Size> SCALING =
             EnumProperty.create("scaling", Size.class, Size.FULL, Size.HALF, Size.QUARTER);
+    
+    private final Map<BlockState, VoxelShape> shapeCache = new HashMap<>();
     
     public BeamBlock(Properties properties) {
         super(properties);
@@ -45,30 +48,31 @@ public class BeamBlock extends FrameBlock {
     }
     
     @Override
-    @Deprecated
+    @SuppressWarnings("deprecation")
     public @NotNull VoxelShape getShape(BlockState state,
                                         BlockGetter level,
                                         BlockPos pos,
                                         CollisionContext context
     ) {
-        return calcShape(state);
+        return shapeCache.computeIfAbsent(state, this::calcShape);
     }
     
     @Override
-    @Deprecated
+    @SuppressWarnings("deprecation")
     public @NotNull VoxelShape getOcclusionShape(BlockState state,
                                                  BlockGetter level,
                                                  BlockPos pos
     ) {
-        return calcShape(state);
+        return shapeCache.computeIfAbsent(state, this::calcShape);
     }
     
     @Override
+    @SuppressWarnings("deprecation")
     public boolean useShapeForLightOcclusion(BlockState state) {
         return true;
     }
     
-    private static VoxelShape calcShape(BlockState state) {
+    private VoxelShape calcShape(BlockState state) {
         var geometry = calcGeometry(state);
         
         return Shapes.create(

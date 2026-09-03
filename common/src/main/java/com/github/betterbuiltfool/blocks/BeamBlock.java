@@ -5,11 +5,13 @@ import com.github.betterbuiltfool.blocks.block_entities.StructureMemberBlockEnti
 import com.github.betterbuiltfool.geometry.BeamGeometryData;
 import com.github.betterbuiltfool.registry.BlockEntityRegistry;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
@@ -22,6 +24,7 @@ import java.util.Map;
 
 public class BeamBlock extends FrameBlock {
     public static final String BLOCK_ID = "beam_block";
+    public static EnumProperty<Direction.Axis> AXIS = BlockStateProperties.AXIS;
     public static EnumProperty<Size> SCALING =
             EnumProperty.create("scaling", Size.class, Size.FULL, Size.HALF, Size.QUARTER);
     
@@ -31,13 +34,15 @@ public class BeamBlock extends FrameBlock {
         super(properties);
         this.registerDefaultState(this.getStateDefinition()
                                       .any()
+                                      .setValue(AXIS, Direction.Axis.X)
                                       .setValue(SCALING, Size.FULL));
     }
     
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
         super.createBlockStateDefinition(builder);
-        builder.add(SCALING);
+        builder.add(AXIS)
+               .add(SCALING);
     }
     
     @Override

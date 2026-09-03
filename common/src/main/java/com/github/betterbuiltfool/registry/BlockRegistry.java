@@ -28,13 +28,14 @@ public class BlockRegistry {
                 // TODO: Temp fix, do actual fix for particles at some point
                 () -> new BeamBlock(
                         BlockBehaviour.Properties.of()
+                                                 .dynamicShape()
                                                  .noParticlesOnBreak()
                 )
         );
         
         JOINT_BLOCK = register(
                 JointBlock.BLOCK_ID,
-                () -> new JointBlock(BlockBehaviour.Properties.of())
+                () -> new JointBlock(BlockBehaviour.Properties.of().dynamicShape())
         );
         BLOCKS.register();
     }

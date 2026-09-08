@@ -35,7 +35,10 @@ public class BlockRegistry {
         
         JOINT_BLOCK = register(
                 JointBlock.BLOCK_ID,
-                () -> new JointBlock(BlockBehaviour.Properties.of().dynamicShape())
+                // TODO: Temp fix, do actual fix for particles at some point
+                () -> new JointBlock(BlockBehaviour.Properties.of()
+                                                              .dynamicShape()
+                                                              .noParticlesOnBreak())
         );
         BLOCKS.register();
     }

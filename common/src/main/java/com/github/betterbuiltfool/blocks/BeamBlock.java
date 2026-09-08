@@ -80,7 +80,7 @@ public class BeamBlock extends FrameBlock {
     private VoxelShape calcShape(BlockState state) {
         var geometry = calcGeometry(state);
         
-        return Shapes.create(
+        return Shapes.box(
                 geometry.minX(),
                 geometry.minY(),
                 geometry.minZ(),

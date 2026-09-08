@@ -1,6 +1,5 @@
 package com.github.betterbuiltfool.blocks;
 
-import com.github.betterbuiltfool.DynamicFraming;
 import com.github.betterbuiltfool.blocks.block_entities.Alignment;
 import com.github.betterbuiltfool.blocks.block_entities.Size;
 import com.github.betterbuiltfool.blocks.block_entities.StructureJointBlockEntity;
@@ -23,12 +22,9 @@ import org.jetbrains.annotations.Nullable;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
 
 public class JointBlock extends FrameBlock {
     public static final String BLOCK_ID = "joint_block";
-    private static final AtomicInteger CALLS = new AtomicInteger();
-    private static int shapeBuilds = 0;
     private final Map<BlockState, VoxelShape> shapeCache = new HashMap<>();
     
     // Represents connections. Size.NONE means unconnected.
@@ -42,7 +38,7 @@ public class JointBlock extends FrameBlock {
     public static final EnumProperty<Alignment> ALIGNMENT_TERTIARY =
             EnumProperty.create("alignment_tertiary", Alignment.class);
     
-    private final Map<Direction, EnumProperty<Size>> connectionProperties = Map.of(
+    public static final Map<Direction, EnumProperty<Size>> connectionProperties = Map.of(
             Direction.NORTH, NORTH,
             Direction.SOUTH, SOUTH,
             Direction.EAST, EAST,

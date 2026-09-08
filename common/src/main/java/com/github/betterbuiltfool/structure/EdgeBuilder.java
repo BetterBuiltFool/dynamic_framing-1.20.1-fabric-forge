@@ -1,6 +1,7 @@
 package com.github.betterbuiltfool.structure;
 
 import com.github.betterbuiltfool.blocks.BeamBlock;
+import com.github.betterbuiltfool.blocks.JointBlock;
 import com.github.betterbuiltfool.blocks.block_entities.Size;
 import com.github.betterbuiltfool.blocks.block_entities.StructureJointBlockEntity;
 import com.github.betterbuiltfool.blocks.block_entities.StructureMemberBlockEntity;
@@ -37,9 +38,6 @@ public class EdgeBuilder {
         
         var edgeMaterialBlockState = edgeMaterial.defaultBlockState()
                                      .setValue(BlockStateProperties.AXIS, facing.getAxis());
-        
-        BlockPos.betweenClosedStream(BlockPos.of(firstPos), BlockPos.of(secondPos))
-                .forEach(pos -> level.setBlockAndUpdate(pos, edgeMaterialBlockState));
         
         setEndJoint(level, startPos, endPos, edgeMaterialBlockState);
         setEndJoint(level, endPos, startPos, edgeMaterialBlockState);
@@ -92,16 +90,21 @@ public class EdgeBuilder {
         
         Block jointBlock = BlockRegistry.JOINT_BLOCK.get();
         if (!state.is(jointBlock)) {
-            var jointState = jointBlock.defaultBlockState();
-            level.setBlock(pos, jointState, Block.UPDATE_ALL);
+            state = jointBlock.defaultBlockState();
         }
+        var directionVector = connectedPos.subtract(pos);
+        var direction = Direction.getNearest(directionVector.getX(), directionVector.getY(), directionVector.getZ());
+        
+        var connectionProperty = JointBlock.connectionProperties.get(direction);
+        state = state.setValue(connectionProperty, Size.FULL);
+        
+        level.setBlockAndUpdate(pos, state);
         
         if (!(level.getBlockEntity(pos) instanceof StructureJointBlockEntity be)) {
             return;
         }
         
         be.registerConnection(connectedPos, material, Size.FULL);
-        level.sendBlockUpdated(pos, state, state, Block.UPDATE_CLIENTS);
         
     }
     

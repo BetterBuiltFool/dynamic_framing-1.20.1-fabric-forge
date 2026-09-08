@@ -32,8 +32,7 @@ public class BeamBlock extends FrameBlock {
     
     public BeamBlock(Properties properties) {
         super(properties);
-        this.registerDefaultState(this.getStateDefinition()
-                                      .any()
+        this.registerDefaultState(this.defaultBlockState()
                                       .setValue(AXIS, Direction.Axis.X)
                                       .setValue(SCALING, Size.FULL));
     }

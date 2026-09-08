@@ -49,8 +49,7 @@ public class JointBlock extends FrameBlock {
     
     public JointBlock(Properties properties) {
         super(properties);
-        this.registerDefaultState(this.getStateDefinition()
-                                      .any()
+        this.registerDefaultState(this.defaultBlockState()
                                       .setValue(NORTH, Size.NONE)
                                       .setValue(SOUTH, Size.NONE)
                                       .setValue(EAST, Size.NONE)

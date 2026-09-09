@@ -48,11 +48,11 @@ public class EdgeBuilder {
         var opposite = facing.getOpposite();
         for (int step = 0; step < halfway; step++) {
             current = current.move(facing);
-            setFrameBlock(level, current, startPos, facing);
+            setFrameBlock(level, current, startPos, facing, edgeMaterialBlockState);
         }
         for (int step = halfway; step < dist - 1; step++) {
             current = current.move(facing);
-            setFrameBlock(level, current, endPos, opposite);
+            setFrameBlock(level, current, endPos, opposite, edgeMaterialBlockState);
         }
         
     }
@@ -61,7 +61,8 @@ public class EdgeBuilder {
             Level level,
             BlockPos.MutableBlockPos pos,
             BlockPos jointPos,
-            Direction facing
+            Direction facing,
+            BlockState material
     ) {
         var axis = facing.getAxis();
         BlockState state = BlockRegistry.BEAM_BLOCK.get()
@@ -70,12 +71,11 @@ public class EdgeBuilder {
         
         level.setBlock(pos, state, Block.UPDATE_ALL);
         
-        var blockEntity = level.getBlockEntity(pos);
-        if (blockEntity instanceof StructureMemberBlockEntity be) {
+        if (level.getBlockEntity(pos) instanceof StructureMemberBlockEntity be) {
             be.setJointPos(jointPos);
             be.setDirection(facing);
+            be.setMaterial(material);
             be.setChanged();
-            level.sendBlockUpdated(pos, state, state, Block.UPDATE_CLIENTS);
         }
         
     }

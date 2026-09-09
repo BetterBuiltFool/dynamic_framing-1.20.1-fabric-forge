@@ -1,12 +1,10 @@
 package com.github.betterbuiltfool.forge.client;
 
 import com.github.betterbuiltfool.blocks.BeamBlock;
-import com.github.betterbuiltfool.blocks.FrameBlockStateData;
 import com.github.betterbuiltfool.blocks.block_entities.Alignment;
 import com.github.betterbuiltfool.blocks.block_entities.Size;
 import com.github.betterbuiltfool.blocks.block_entities.StructureMemberBlockEntity;
 import com.github.betterbuiltfool.client.ProceduralFrameModel;
-import com.github.betterbuiltfool.registry.BlockEntityRegistry;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.block.model.ItemOverrides;
@@ -29,9 +27,6 @@ import java.util.List;
 
 public class ForgeBakedFrameProceduralModel implements IForgeBakedModel, BakedModel {
     
-    private static final ModelProperty<Alignment> ALIGN_X_PROPERTY = new ModelProperty<>();
-    private static final ModelProperty<Alignment> ALIGN_Y_PROPERTY = new ModelProperty<>();
-    private static final ModelProperty<Alignment> ALIGN_Z_PROPERTY = new ModelProperty<>();
     private static final ModelProperty<Size> SIZE_PROPERTY = new ModelProperty<>();
     private static final ModelProperty<Direction.Axis> AXIS_PROPERTY = new ModelProperty<>();
     private static final ModelProperty<Alignment> ALIGN_PRIMARY_PROPERTY = new ModelProperty<>();
@@ -52,40 +47,28 @@ public class ForgeBakedFrameProceduralModel implements IForgeBakedModel, BakedMo
             @NotNull ModelData data,
             @Nullable RenderType renderType
     ) {
-        var alignX = data.get(ALIGN_X_PROPERTY);
-        var alignY = data.get(ALIGN_Y_PROPERTY);
-        var alignZ = data.get(ALIGN_Z_PROPERTY);
+        var alignPrimary = data.get(ALIGN_PRIMARY_PROPERTY);
+        var alignSecondary = data.get(ALIGN_SECONDARY_PROPERTY);
         var size = data.get(SIZE_PROPERTY);
         var axis = data.get(AXIS_PROPERTY);
         var copyMaterial = data.get(COPY_MATERIAL_PROPERTY);
         
-        if (alignX == null || alignY == null || alignZ == null || size == null || copyMaterial == null || axis == null) {
+        if (
+                alignPrimary == null ||
+                alignSecondary == null ||
+                size == null ||
+                axis == null ||
+                copyMaterial == null
+        ) {
             DynamicFramingClientForge.LOGGER.info(
                     "Data failure; ModelData was not properly packed. Returning empty list.");
+            DynamicFramingClientForge.LOGGER.info(
+                    "Bad info alignPrimary={}, alignSecondary={}, size={}, copyMaterial={}, axis={}", alignPrimary,
+                    alignSecondary, size, copyMaterial, axis
+            );
             return List.of();
         }
-        Alignment primary;
-        Alignment secondary;
-        
-        switch (axis) {
-            case X -> {
-                primary = alignY;
-                secondary = alignZ;
-            }
-            case Y -> {
-                primary = alignX;
-                secondary = alignZ;
-            }
-            default -> {
-                primary = alignX;
-                secondary = alignY;
-            }
-        }
-        
-        DynamicFramingClientForge.LOGGER.info("Creating model quads");
-        
-//        return ProceduralFrameModel.generateQuads(side, rand, alignX, alignY, alignZ, size, copyMaterial);
-        return ProceduralFrameModel.generateQuads(side, rand, primary, secondary, axis, size, copyMaterial);
+        return ProceduralFrameModel.generateQuads(side, rand, alignPrimary, alignSecondary, axis, size, copyMaterial);
     }
     
     @Override
@@ -95,64 +78,18 @@ public class ForgeBakedFrameProceduralModel implements IForgeBakedModel, BakedMo
             @NotNull BlockState state,
             @NotNull ModelData modelData
     ) {
-        var defaultData = FrameBlockStateData.DEFAULT;
-        var alignX = defaultData.alignX();
-        var alignY = defaultData.alignY();
-        var alignZ = defaultData.alignZ();
-        var size = defaultData.size();
-        var axis = state.getValue(BeamBlock.AXIS);
-        var copyMaterial = Blocks.OAK_LOG.defaultBlockState().setValue(BlockStateProperties.AXIS, axis);
-        
-        DynamicFramingClientForge.LOGGER.info("Getting model data...");
-        var blockEntityResult = level.getBlockEntity(pos, BlockEntityRegistry.MEMBER_ENTITY.get());
-        if (blockEntityResult.isPresent()) {
-            DynamicFramingClientForge.LOGGER.info("Found block entity for member.");
-            var blockEntity = blockEntityResult.get();
-            
-            BlockPos jointPos = blockEntity.getJointPos();
-            if (jointPos != null) {
-                DynamicFramingClientForge.LOGGER.info("Joint pos: {}", jointPos);
-                var jointEntityResult = level.getBlockEntity(jointPos, BlockEntityRegistry.JOINT_ENTITY.get());
-                if (jointEntityResult.isPresent()) {
-                    DynamicFramingClientForge.LOGGER.info("Found joint entity.");
-                    var jointEntity = jointEntityResult.get();
-                    
-                    var edgeDirection = blockEntity.getDirection();
-                    var edgeData = jointEntity.getEdgeData(edgeDirection);
-                    copyMaterial = jointEntity.getEdgeMaterial(edgeDirection);
-                    alignX = edgeData.alignX();
-                    alignY = edgeData.alignY();
-                    alignZ = edgeData.alignZ();
-                    size = edgeData.size();
-                    axis = edgeDirection.getAxis();
-                }
-            }
-        }
-        return ModelData.builder()
-                        .with(ALIGN_X_PROPERTY, alignX)
-                        .with(ALIGN_Y_PROPERTY, alignY)
-                        .with(ALIGN_Z_PROPERTY, alignZ)
-                        .with(SIZE_PROPERTY, size)
-                        .with(COPY_MATERIAL_PROPERTY, copyMaterial)
-                        .with(AXIS_PROPERTY, axis)
-                        .build();
-    }
-    
-//    @Override
-    public @NotNull ModelData getModelDataNew(
-            @NotNull BlockAndTintGetter level,
-            @NotNull BlockPos pos,
-            @NotNull BlockState state,
-            @NotNull ModelData modelData
-    ) {
         var primary = state.getValue(BeamBlock.ALIGNMENT_PRIMARY);
         var secondary = state.getValue(BeamBlock.ALIGNMENT_PRIMARY);
         var scaling = state.getValue(BeamBlock.SCALING);
         var axis = state.getValue(BeamBlock.AXIS);
+        var copyMaterial = Blocks.OAK_LOG.defaultBlockState()
+                                         .setValue(BlockStateProperties.AXIS, axis);
         
-        if (!(level.getBlockEntity(pos) instanceof StructureMemberBlockEntity be)) return modelData;
-        
-        var copyMaterial = be.getMaterial();
+        if ((level.getBlockEntity(pos) instanceof StructureMemberBlockEntity be)) {
+            var material = be.getMaterial();
+            
+            copyMaterial = material != null ? material : copyMaterial;
+        }
         
         return ModelData.builder()
                        .with(ALIGN_PRIMARY_PROPERTY, primary)
@@ -193,12 +130,12 @@ public class ForgeBakedFrameProceduralModel implements IForgeBakedModel, BakedMo
     }
     
     @Override
-    public TextureAtlasSprite getParticleIcon() {
+    public @NotNull TextureAtlasSprite getParticleIcon() {
         return null;
     }
     
     @Override
-    public ItemOverrides getOverrides() {
+    public @NotNull ItemOverrides getOverrides() {
         return null;
     }
 }

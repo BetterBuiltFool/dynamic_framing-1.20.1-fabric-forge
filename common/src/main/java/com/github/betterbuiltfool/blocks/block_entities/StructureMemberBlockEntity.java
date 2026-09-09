@@ -59,6 +59,7 @@ public class StructureMemberBlockEntity extends BlockEntity {
             return material;
         }
         assert level != null;
+        if (jointPos == null) return null;
         var be = level.getBlockEntity(jointPos);
         if (be instanceof StructureJointBlockEntity jointEntity) {
             return jointEntity.getEdgeMaterial(direction);

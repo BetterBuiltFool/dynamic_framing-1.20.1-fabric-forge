@@ -9,6 +9,8 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
@@ -30,14 +32,18 @@ public class StructureMemberBlockEntity extends BlockEntity {
     
     public void setDirection(Direction direction) {
         this.direction = direction;
+        setChanged();
     }
     
     public void setJointPos(BlockPos jointPos) {
         this.jointPos = jointPos;
+        setChanged();
     }
     
     public void setMaterial(@Nullable BlockState material) {
         this.material = material;
+        setChanged();
+        requestRenderUpdate();
     }
     
     public Direction getDirection() {
@@ -61,6 +67,23 @@ public class StructureMemberBlockEntity extends BlockEntity {
         return null;
     }
     
+    private void requestRenderUpdate() {
+        if (level == null) {
+            return;
+        }
+        var state = getBlockState();
+        level.sendBlockUpdated(this.worldPosition, state, state, Block.UPDATE_CLIENTS);
+    }
+    
+    @Override
+    public void setLevel(Level level) {
+        super.setLevel(level);
+        
+        if (!level.isClientSide() && material != null) {
+            requestRenderUpdate();
+        }
+    }
+    
     //region Serialization
     
     @Override
@@ -68,8 +91,8 @@ public class StructureMemberBlockEntity extends BlockEntity {
         super.saveAdditional(tag);
         tag.put("joint_pos", NbtUtils.writeBlockPos(jointPos));
         tag.putString("facing", direction.getName());
-        if (material != null) {
-            tag.put("material", NbtUtils.writeBlockState(material));
+        if (getMaterial() != null) {
+            tag.put("material", NbtUtils.writeBlockState(getMaterial()));
         }
     }
     

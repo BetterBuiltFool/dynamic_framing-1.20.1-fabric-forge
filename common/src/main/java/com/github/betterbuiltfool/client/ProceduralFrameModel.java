@@ -54,7 +54,7 @@ public class ProceduralFrameModel {
     
     private static void adjustBounds(
             int[] vertices,
-            Bounds bounds,
+            CommonGeometry.Bounds bounds,
             int vertexOffset
     ) {
         for (var axis : Direction.Axis.values()) {
@@ -64,7 +64,7 @@ public class ProceduralFrameModel {
     
     private static void adjustBound(
             int[] vertices,
-            Bounds bounds,
+            CommonGeometry.Bounds bounds,
             int vertexOffset,
             Direction.Axis axis
     ) {
@@ -125,7 +125,7 @@ public class ProceduralFrameModel {
         vertices[offset + 5] = Float.floatToRawIntBits(vMin + localV * (vMax - vMin));
     }
     
-    private static Bounds calcAxisBounds(
+    private static CommonGeometry.Bounds calcAxisBounds(
             Alignment primary,
             Alignment secondary,
             Direction.Axis axis,
@@ -135,22 +135,20 @@ public class ProceduralFrameModel {
         
         switch (axis) {
             case X -> {
-                return new Bounds(FULL, CommonGeometry.calcAxis(primary, scale),
+                return new CommonGeometry.Bounds(FULL, CommonGeometry.calcAxis(primary, scale),
                                   CommonGeometry.calcAxis(secondary, scale)
                 );
             }
             case Y -> {
-                return new Bounds(CommonGeometry.calcAxis(primary, scale), FULL,
+                return new CommonGeometry.Bounds(CommonGeometry.calcAxis(primary, scale), FULL,
                                   CommonGeometry.calcAxis(secondary, scale)
                 );
             }
             default -> {
-                return new Bounds(CommonGeometry.calcAxis(primary, scale), CommonGeometry.calcAxis(secondary, scale),
-                                  FULL
+                return new CommonGeometry.Bounds(CommonGeometry.calcAxis(primary, scale), CommonGeometry.calcAxis(secondary, scale),
+                                                 FULL
                 );
             }
         }
     }
-    
-    private record Bounds(float[] x, float[] y, float[] z) {}
 }

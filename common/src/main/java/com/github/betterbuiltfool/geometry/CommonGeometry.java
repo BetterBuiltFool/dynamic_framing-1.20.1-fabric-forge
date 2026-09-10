@@ -16,4 +16,6 @@ public class CommonGeometry {
         }
         return new float[]{start, start + scale};
     }
+    
+    public record Bounds(float[] x, float[] y, float[] z) {}
 }

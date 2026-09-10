@@ -2,6 +2,7 @@ package com.github.betterbuiltfool.client;
 
 import com.github.betterbuiltfool.blocks.block_entities.Alignment;
 import com.github.betterbuiltfool.blocks.block_entities.Size;
+import com.github.betterbuiltfool.geometry.CommonGeometry;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.core.Direction;
@@ -134,28 +135,21 @@ public class ProceduralFrameModel {
         
         switch (axis) {
             case X -> {
-                return new Bounds(FULL, calcAxis(primary, scale), calcAxis(secondary, scale));
+                return new Bounds(FULL, CommonGeometry.calcAxis(primary, scale),
+                                  CommonGeometry.calcAxis(secondary, scale)
+                );
             }
             case Y -> {
-                return new Bounds(calcAxis(primary, scale), FULL, calcAxis(secondary, scale));
+                return new Bounds(CommonGeometry.calcAxis(primary, scale), FULL,
+                                  CommonGeometry.calcAxis(secondary, scale)
+                );
             }
             default -> {
-                return new Bounds(calcAxis(primary, scale), calcAxis(secondary, scale), FULL);
+                return new Bounds(CommonGeometry.calcAxis(primary, scale), CommonGeometry.calcAxis(secondary, scale),
+                                  FULL
+                );
             }
         }
-    }
-    
-    private static float[] calcAxis(Alignment alignment,
-                                    float scale
-    ) {
-        float start;
-        
-        switch (alignment) {
-            case NEGATIVE -> start = 0.0f;
-            case POSITIVE -> start = 1.0f - scale;
-            default -> start = 0.5f - (scale / 2.0f);
-        }
-        return new float[]{start, start + scale};
     }
     
     private record Bounds(float[] x, float[] y, float[] z) {}

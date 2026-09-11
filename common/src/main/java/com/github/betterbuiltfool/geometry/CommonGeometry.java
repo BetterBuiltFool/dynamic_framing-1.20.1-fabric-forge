@@ -2,6 +2,7 @@ package com.github.betterbuiltfool.geometry;
 
 import com.github.betterbuiltfool.blocks.block_entities.Alignment;
 import net.minecraft.client.renderer.block.model.BakedQuad;
+import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.core.Direction;
 import net.minecraft.util.Mth;
 
@@ -71,23 +72,19 @@ public class CommonGeometry {
         float u = Float.intBitsToFloat(vertices[offset + 4]);
         float v = Float.intBitsToFloat(vertices[offset + 5]);
         
-        float uMin = quad.getSprite()
-                         .getU0();
-        float uMax = quad.getSprite()
-                         .getU1();
-        float vMin = quad.getSprite()
-                         .getV0();
-        float vMax = quad.getSprite()
-                         .getV1();
+        TextureAtlasSprite sprite = quad.getSprite();
+        float uMin = sprite.getU0();
+        float uMax = sprite.getU1();
+        float vMin = sprite.getV0();
+        float vMax = sprite.getV1();
         
         float localU = (u - uMin) / (uMax - uMin);
         float localV = (v - vMin) / (vMax - vMin);
         
         localU = uBounds[0] + (localU * scale);
+        localV = vBounds[0] + (localV * scale);
         if (invertV) {
-            localV = 1.0f - (vBounds[0] + (localV * scale));
-        } else {
-            localV = vBounds[0] + (localV * scale);
+            localV = 1.0f - localV;
         }
         
         vertices[offset + 4] = Float.floatToRawIntBits(uMin + localU * (uMax - uMin));

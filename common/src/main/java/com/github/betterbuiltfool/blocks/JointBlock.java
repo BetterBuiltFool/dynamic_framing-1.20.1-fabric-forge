@@ -122,7 +122,7 @@ public class JointBlock extends FrameBlock {
         return shape;
     }
     
-    private Map<Direction, Size> getConnectionSizes(BlockState state) {
+    public static Map<Direction, Size> getConnectionSizes(BlockState state) {
         var sizeMap = new HashMap<Direction, Size>();
         
         for (var entrySet : connectionProperties.entrySet()) {

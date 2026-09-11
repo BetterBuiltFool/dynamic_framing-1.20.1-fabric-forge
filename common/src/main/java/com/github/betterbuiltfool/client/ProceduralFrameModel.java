@@ -6,7 +6,6 @@ import com.github.betterbuiltfool.geometry.CommonGeometry;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.core.Direction;
-import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.NotNull;
@@ -39,90 +38,17 @@ public class ProceduralFrameModel {
             for (int i = 0; i < 4; i++) {
                 int offset = i * 8;
                 
-                adjustBounds(vertices, bounds, offset);
+                CommonGeometry.adjustBounds(vertices, bounds, offset);
                 
                 switch (facing.getAxis()) {
-                    case X -> adjustUV(vertices, quad, offset, scale, bounds.z(), bounds.y(), true);
-                    case Y -> adjustUV(vertices, quad, offset, scale, bounds.x(), bounds.z(), false);
-                    default -> adjustUV(vertices, quad, offset, scale, bounds.x(), bounds.y(), true);
+                    case X -> CommonGeometry.adjustUV(vertices, quad, offset, scale, bounds.z(), bounds.y(), true);
+                    case Y -> CommonGeometry.adjustUV(vertices, quad, offset, scale, bounds.x(), bounds.z(), false);
+                    default -> CommonGeometry.adjustUV(vertices, quad, offset, scale, bounds.x(), bounds.y(), true);
                 }
             }
             faces.add(new BakedQuad(vertices, quad.getTintIndex(), facing, quad.getSprite(), quad.isShade()));
         }
         return faces;
-    }
-    
-    private static void adjustBounds(
-            int[] vertices,
-            CommonGeometry.Bounds bounds,
-            int vertexOffset
-    ) {
-        for (var axis : Direction.Axis.values()) {
-            adjustBound(vertices, bounds, vertexOffset, axis);
-        }
-    }
-    
-    private static void adjustBound(
-            int[] vertices,
-            CommonGeometry.Bounds bounds,
-            int vertexOffset,
-            Direction.Axis axis
-    ) {
-        int positionOffset;
-        float[] axisBounds;
-        switch (axis) {
-            case X -> {
-                positionOffset = 0;
-                axisBounds = bounds.x();
-            }
-            case Y -> {
-                positionOffset = 1;
-                axisBounds = bounds.y();
-            }
-            default -> {
-                positionOffset = 2;
-                axisBounds = bounds.z();
-            }
-        }
-        float original = Float.intBitsToFloat(vertices[vertexOffset + positionOffset]);
-        float modified = Mth.clamp(original, axisBounds[0], axisBounds[1]);
-        vertices[vertexOffset + positionOffset] = Float.floatToRawIntBits(modified);
-    }
-    
-    private static void adjustUV(
-            int[] vertices,
-            BakedQuad quad,
-            int offset,
-            float scale,
-            float[] uBounds,
-            float[] vBounds,
-            boolean invertV
-    ) {
-        
-        float u = Float.intBitsToFloat(vertices[offset + 4]);
-        float v = Float.intBitsToFloat(vertices[offset + 5]);
-        
-        float uMin = quad.getSprite()
-                         .getU0();
-        float uMax = quad.getSprite()
-                         .getU1();
-        float vMin = quad.getSprite()
-                         .getV0();
-        float vMax = quad.getSprite()
-                         .getV1();
-        
-        float localU = (u - uMin) / (uMax - uMin);
-        float localV = (v - vMin) / (vMax - vMin);
-        
-        localU = uBounds[0] + (localU * scale);
-        if (invertV) {
-            localV = 1.0f - (vBounds[0] + (localV * scale));
-        } else {
-            localV = vBounds[0] + (localV * scale);
-        }
-        
-        vertices[offset + 4] = Float.floatToRawIntBits(uMin + localU * (uMax - uMin));
-        vertices[offset + 5] = Float.floatToRawIntBits(vMin + localV * (vMax - vMin));
     }
     
     private static CommonGeometry.Bounds calcAxisBounds(

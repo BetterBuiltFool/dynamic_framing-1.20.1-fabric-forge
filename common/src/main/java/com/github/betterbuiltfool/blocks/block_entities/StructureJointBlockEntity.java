@@ -22,6 +22,9 @@ import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class StructureJointBlockEntity extends BlockEntity {
     
     private Alignment alignX = Alignment.CENTER;
@@ -97,6 +100,19 @@ public class StructureJointBlockEntity extends BlockEntity {
     public BlockState getEdgeMaterial(Direction direction) {
         var edgeProfile = getEdgeProfile(direction);
         return edgeProfile != null ? edgeProfile.material(): null;
+    }
+    
+    public Map<Direction, BlockState> getEdgeMaterials() {
+        Map<Direction, BlockState> materials = new HashMap<>();
+        
+        for (var entrySet : connections.object2LongEntrySet()) {
+            var direction = entrySet.getKey();
+            var connectionPos = entrySet.getLongValue();
+            var edgeProfile = edges.get(connectionPos);
+            
+            materials.put(direction, edgeProfile != null ? edgeProfile.material(): null);
+        }
+        return materials;
     }
     
     public void setEdgeProfile(BlockPos connectedPos,

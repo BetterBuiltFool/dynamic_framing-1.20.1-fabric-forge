@@ -1,6 +1,7 @@
 package com.github.betterbuiltfool.geometry;
 
 import com.github.betterbuiltfool.blocks.block_entities.Alignment;
+import net.minecraft.core.Direction;
 
 public class CommonGeometry {
     
@@ -17,5 +18,18 @@ public class CommonGeometry {
         return new float[]{start, start + scale};
     }
     
-    public record Bounds(float[] x, float[] y, float[] z) {}
+    public record Bounds(float[] x, float[] y, float[] z) {
+        
+        public Bounds(Bounds original) {
+            this(original.x, original.y, original.z);
+        }
+        
+        public float[] get(Direction.Axis axis) {
+            return switch (axis) {
+                case X -> x;
+                case Y -> y;
+                default -> z;
+            };
+        }
+    }
 }

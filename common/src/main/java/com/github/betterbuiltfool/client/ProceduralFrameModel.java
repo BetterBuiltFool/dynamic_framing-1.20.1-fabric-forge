@@ -38,7 +38,7 @@ public class ProceduralFrameModel {
             for (int i = 0; i < 4; i++) {
                 int offset = i * 8;
                 
-                CommonGeometry.adjustBounds(vertices, bounds, offset);
+                CommonGeometry.adjustToBounds(vertices, bounds, offset);
                 
                 switch (facing.getAxis()) {
                     case X -> CommonGeometry.adjustUV(vertices, quad, offset, scale, bounds.z(), bounds.y(), true);

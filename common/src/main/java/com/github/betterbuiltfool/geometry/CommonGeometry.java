@@ -21,17 +21,17 @@ public class CommonGeometry {
     }
     
     
-    public static void adjustBounds(
+    public static void adjustToBounds(
             int[] vertices,
             CommonGeometry.Bounds bounds,
             int vertexOffset
     ) {
         for (var axis : Direction.Axis.values()) {
-            adjustBound(vertices, bounds, vertexOffset, axis);
+            adjustBoundAxis(vertices, bounds, vertexOffset, axis);
         }
     }
     
-    private static void adjustBound(
+    private static void adjustBoundAxis(
             int[] vertices,
             CommonGeometry.Bounds bounds,
             int vertexOffset,

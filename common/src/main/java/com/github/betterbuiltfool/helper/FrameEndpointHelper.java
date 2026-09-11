@@ -7,6 +7,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.block.state.BlockState;
 
+// TODO: Remove unused class
 public class FrameEndpointHelper {
     
     public static BlockPos findEndPoint(BlockAndTintGetter level,

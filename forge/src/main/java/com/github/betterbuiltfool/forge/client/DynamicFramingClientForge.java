@@ -17,5 +17,7 @@ public class DynamicFramingClientForge {
     public static void registerGeometryLoader(ModelEvent.RegisterGeometryLoaders event) {
         LOGGER.info("Registering Framing member loader");
         event.register("framing_member_loader", ForgeFrameGeometryLoader.INSTANCE);
+        LOGGER.info("Registering Framing joint loader");
+        event.register("framing_joint_loader", ForgeJointGeometryLoader.INSTANCE);
     }
 }

@@ -80,11 +80,12 @@ public class ProceduralJointModel {
                                  .clone();
             var facing = quad.getDirection();
             
-            if (facing.getOpposite() == direction) {
-                // Opposite of direction will always be facing the center.
-                // The center will always be at least as large as the subpart, so it will never show.
-                continue;
-            }
+            // TODO: This doesn't seem to be quite working out as expected.
+//            if (facing == direction) {
+//                // Opposite of direction will always be facing the center.
+//                // The center will always be at least as large as the subpart, so it will never show.
+//                continue;
+//            }
             for (int i = 0; i < 4; i++) {
                 int offset = i * 8;
                 

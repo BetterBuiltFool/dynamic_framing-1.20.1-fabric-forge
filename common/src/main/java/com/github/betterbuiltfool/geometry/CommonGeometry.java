@@ -63,10 +63,8 @@ public class CommonGeometry {
             int[] vertices,
             BakedQuad quad,
             int offset,
-            float scale,
             float[] uBounds,
-            float[] vBounds,
-            boolean invertV
+            float[] vBounds
     ) {
         
         float u = Float.intBitsToFloat(vertices[offset + 4]);
@@ -81,14 +79,11 @@ public class CommonGeometry {
         float localU = (u - uMin) / (uMax - uMin);
         float localV = (v - vMin) / (vMax - vMin);
         
-        localU = uBounds[0] + (localU * scale);
-        localV = vBounds[0] + (localV * scale);
-        if (invertV) {
-            localV = 1.0f - localV;
-        }
+        float mappedU = uBounds[0] + (localU * (uBounds[1] - uBounds[0]));
+        float mappedV = vBounds[0] + (localV * (vBounds[1] - vBounds[0]));
         
-        vertices[offset + 4] = Float.floatToRawIntBits(uMin + localU * (uMax - uMin));
-        vertices[offset + 5] = Float.floatToRawIntBits(vMin + localV * (vMax - vMin));
+        vertices[offset + 4] = Float.floatToRawIntBits(uMin + mappedU * (uMax - uMin));
+        vertices[offset + 5] = Float.floatToRawIntBits(vMin + mappedV * (vMax - vMin));
     }
     
     public record Bounds(float[] x, float[] y, float[] z) {

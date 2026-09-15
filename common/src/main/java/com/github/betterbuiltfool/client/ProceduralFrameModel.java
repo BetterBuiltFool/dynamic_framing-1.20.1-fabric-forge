@@ -41,9 +41,9 @@ public class ProceduralFrameModel {
                 CommonGeometry.adjustToBounds(vertices, bounds, offset);
                 
                 switch (facing.getAxis()) {
-                    case X -> CommonGeometry.adjustUV(vertices, quad, offset, scale, bounds.z(), bounds.y(), true);
-                    case Y -> CommonGeometry.adjustUV(vertices, quad, offset, scale, bounds.x(), bounds.z(), false);
-                    default -> CommonGeometry.adjustUV(vertices, quad, offset, scale, bounds.x(), bounds.y(), true);
+                    case X -> CommonGeometry.adjustUV(vertices, quad, offset, bounds.z(), bounds.y());
+                    case Y -> CommonGeometry.adjustUV(vertices, quad, offset, bounds.x(), bounds.z());
+                    default -> CommonGeometry.adjustUV(vertices, quad, offset, bounds.x(), bounds.y());
                 }
             }
             faces.add(new BakedQuad(vertices, quad.getTintIndex(), facing, quad.getSprite(), quad.isShade()));

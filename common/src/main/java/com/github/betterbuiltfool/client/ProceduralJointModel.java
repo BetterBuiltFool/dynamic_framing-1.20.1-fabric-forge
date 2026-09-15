@@ -70,7 +70,6 @@ public class ProceduralJointModel {
             BlockState material
     ) {
         var materialModel = dispatcher.getBlockModel(material);
-        var scale = size.getThickness();
         var faces = new ArrayList<BakedQuad>();
         
         bounds = subpartTransformer.apply(bounds, direction);
@@ -91,11 +90,11 @@ public class ProceduralJointModel {
                 
                 CommonGeometry.adjustToBounds(vertices, bounds, offset);
                 
-                // Move adjustUV to CommonGeometry from ProceduralFrameModel
+                // Move adjustUV to CommonGeometry
                 switch (facing.getAxis()) {
-                    case X -> CommonGeometry.adjustUV(vertices, quad, offset, scale, bounds.z(), bounds.y(), true);
-                    case Y -> CommonGeometry.adjustUV(vertices, quad, offset, scale, bounds.x(), bounds.z(), false);
-                    default -> CommonGeometry.adjustUV(vertices, quad, offset, scale, bounds.x(), bounds.y(), true);
+                    case X -> CommonGeometry.adjustUV(vertices, quad, offset, bounds.z(), bounds.y());
+                    case Y -> CommonGeometry.adjustUV(vertices, quad, offset, bounds.x(), bounds.z());
+                    default -> CommonGeometry.adjustUV(vertices, quad, offset, bounds.x(), bounds.y());
                 }
             }
             faces.add(new BakedQuad(vertices, quad.getTintIndex(), facing, quad.getSprite(), quad.isShade()));

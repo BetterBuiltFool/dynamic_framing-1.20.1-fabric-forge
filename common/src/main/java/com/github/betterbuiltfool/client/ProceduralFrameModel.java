@@ -2,6 +2,7 @@ package com.github.betterbuiltfool.client;
 
 import com.github.betterbuiltfool.blocks.block_entities.Alignment;
 import com.github.betterbuiltfool.blocks.block_entities.Size;
+import com.github.betterbuiltfool.geometry.Bounds;
 import com.github.betterbuiltfool.geometry.CommonGeometry;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.model.BakedQuad;
@@ -51,7 +52,7 @@ public class ProceduralFrameModel {
         return faces;
     }
     
-    private static CommonGeometry.Bounds calcAxisBounds(
+    private static Bounds calcAxisBounds(
             Alignment primary,
             Alignment secondary,
             Direction.Axis axis,
@@ -61,17 +62,17 @@ public class ProceduralFrameModel {
         
         switch (axis) {
             case X -> {
-                return new CommonGeometry.Bounds(FULL, CommonGeometry.calcAxis(primary, scale),
+                return new Bounds(FULL, CommonGeometry.calcAxis(primary, scale),
                                   CommonGeometry.calcAxis(secondary, scale)
                 );
             }
             case Y -> {
-                return new CommonGeometry.Bounds(CommonGeometry.calcAxis(primary, scale), FULL,
+                return new Bounds(CommonGeometry.calcAxis(primary, scale), FULL,
                                   CommonGeometry.calcAxis(secondary, scale)
                 );
             }
             default -> {
-                return new CommonGeometry.Bounds(CommonGeometry.calcAxis(primary, scale), CommonGeometry.calcAxis(secondary, scale),
+                return new Bounds(CommonGeometry.calcAxis(primary, scale), CommonGeometry.calcAxis(secondary, scale),
                                                  FULL
                 );
             }

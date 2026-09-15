@@ -2,6 +2,7 @@ package com.github.betterbuiltfool.client;
 
 import com.github.betterbuiltfool.blocks.block_entities.Alignment;
 import com.github.betterbuiltfool.blocks.block_entities.Size;
+import com.github.betterbuiltfool.geometry.Bounds;
 import com.github.betterbuiltfool.geometry.CommonGeometry;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.block.BlockRenderDispatcher;
@@ -39,7 +40,7 @@ public class ProceduralJointModel {
             var material = materials.get(direction);
             var bounds = calcAxisBounds(x, y, z, size);
             
-            BiFunction<CommonGeometry.Bounds, Direction, CommonGeometry.Bounds> subpartTransformer =
+            BiFunction<Bounds, Direction, Bounds> subpartTransformer =
                     (direction == centerDirection) ?
                     ProceduralJointModel::calcSubpartBoundsWithCenter
                                                    :
@@ -52,7 +53,6 @@ public class ProceduralJointModel {
                     subpartTransformer,
                     bounds,
                     direction,
-                    size,
                     material
             ));
         }
@@ -63,16 +63,15 @@ public class ProceduralJointModel {
             Direction side,
             RandomSource rand,
             BlockRenderDispatcher dispatcher,
-            BiFunction<CommonGeometry.Bounds, Direction, CommonGeometry.Bounds> subpartTransformer,
-            CommonGeometry.Bounds bounds,
+            BiFunction<Bounds, Direction, Bounds> subpartTransformer,
+            Bounds bounds,
             Direction direction,
-            Size size,
             BlockState material
     ) {
         var materialModel = dispatcher.getBlockModel(material);
         var faces = new ArrayList<BakedQuad>();
         
-        bounds = subpartTransformer.apply(bounds, direction);
+        var modifedBounds = subpartTransformer.apply(bounds, direction);
         
         for (var quad : materialModel.getQuads(material, side, rand)) {
             int[] vertices = quad.getVertices()
@@ -88,39 +87,48 @@ public class ProceduralJointModel {
             for (int i = 0; i < 4; i++) {
                 int offset = i * 8;
                 
-                CommonGeometry.adjustToBounds(vertices, bounds, offset);
+                CommonGeometry.adjustToBounds(vertices, modifedBounds, offset);
                 
                 // Move adjustUV to CommonGeometry
-                switch (facing.getAxis()) {
-                    case X -> CommonGeometry.adjustUV(vertices, quad, offset, bounds.z(), bounds.y());
-                    case Y -> CommonGeometry.adjustUV(vertices, quad, offset, bounds.x(), bounds.z());
-                    default -> CommonGeometry.adjustUV(vertices, quad, offset, bounds.x(), bounds.y());
-                }
+                adjustUV(quad, facing, vertices, offset, modifedBounds);
             }
             faces.add(new BakedQuad(vertices, quad.getTintIndex(), facing, quad.getSprite(), quad.isShade()));
         }
         return faces;
     }
     
-    private static CommonGeometry.Bounds calcAxisBounds(
+    private static void adjustUV(BakedQuad quad,
+                                 Direction facing,
+                                 int[] vertices,
+                                 int offset,
+                                 Bounds bounds
+    ) {
+        switch (facing.getAxis()) {
+            case X -> CommonGeometry.adjustUV(vertices, quad, offset, bounds.z(), bounds.y());
+            case Y -> CommonGeometry.adjustUV(vertices, quad, offset, bounds.x(), bounds.z());
+            default -> CommonGeometry.adjustUV(vertices, quad, offset, bounds.x(), bounds.y());
+        }
+    }
+    
+    private static Bounds calcAxisBounds(
             Alignment x,
             Alignment y,
             Alignment z,
             Size size
     ) {
         float scale = size.getThickness();
-        return new CommonGeometry.Bounds(
+        return new Bounds(
                 CommonGeometry.calcAxis(x, scale),
                 CommonGeometry.calcAxis(y, scale),
                 CommonGeometry.calcAxis(z, scale)
         );
     }
     
-    private static CommonGeometry.Bounds calcSubpartBounds(
-            CommonGeometry.Bounds bounds,
+    private static Bounds calcSubpartBounds(
+            Bounds bounds,
             Direction direction
     ) {
-        bounds = new CommonGeometry.Bounds(bounds);
+        bounds = new Bounds(bounds);
         float[] axisBounds = bounds.get(direction.getAxis());
         
         float lower = axisBounds[0];
@@ -136,11 +144,11 @@ public class ProceduralJointModel {
         return bounds;
     }
     
-    private static CommonGeometry.Bounds calcSubpartBoundsWithCenter(
-            CommonGeometry.Bounds bounds,
+    private static Bounds calcSubpartBoundsWithCenter(
+            Bounds bounds,
             Direction direction
     ) {
-        bounds = new CommonGeometry.Bounds(bounds);
+        bounds = new Bounds(bounds);
         float[] axisBounds = bounds.get(direction.getAxis());
         
         if (direction.getAxisDirection() == Direction.AxisDirection.POSITIVE) {

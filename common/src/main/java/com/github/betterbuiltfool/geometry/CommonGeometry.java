@@ -24,7 +24,7 @@ public class CommonGeometry {
     
     public static void adjustToBounds(
             int[] vertices,
-            CommonGeometry.Bounds bounds,
+            Bounds bounds,
             int vertexOffset
     ) {
         for (var axis : Direction.Axis.values()) {
@@ -34,7 +34,7 @@ public class CommonGeometry {
     
     private static void adjustBoundAxis(
             int[] vertices,
-            CommonGeometry.Bounds bounds,
+            Bounds bounds,
             int vertexOffset,
             Direction.Axis axis
     ) {
@@ -84,20 +84,5 @@ public class CommonGeometry {
         
         vertices[offset + 4] = Float.floatToRawIntBits(uMin + mappedU * (uMax - uMin));
         vertices[offset + 5] = Float.floatToRawIntBits(vMin + mappedV * (vMax - vMin));
-    }
-    
-    public record Bounds(float[] x, float[] y, float[] z) {
-        
-        public Bounds(Bounds original) {
-            this(original.x, original.y, original.z);
-        }
-        
-        public float[] get(Direction.Axis axis) {
-            return switch (axis) {
-                case X -> x;
-                case Y -> y;
-                default -> z;
-            };
-        }
     }
 }

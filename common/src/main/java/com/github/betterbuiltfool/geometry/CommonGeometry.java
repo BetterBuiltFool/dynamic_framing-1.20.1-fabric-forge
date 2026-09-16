@@ -59,6 +59,43 @@ public class CommonGeometry {
         vertices[vertexOffset + positionOffset] = Float.floatToRawIntBits(modified);
     }
     
+    public static float[][] getUVBounds(
+            Direction.Axis axis,
+            Direction.Axis facingAxis,
+            Bounds bounds
+    ) {
+        float[] uBounds;
+        float[] vBounds;
+        
+        switch (facingAxis) {
+            case X -> {
+                uBounds = bounds.z();
+                vBounds = bounds.y();
+            }
+            case Y -> {
+                uBounds = bounds.x();
+                vBounds = bounds.z();
+            }
+            default -> {
+                uBounds = bounds.x();
+                vBounds = bounds.y();
+            }
+        }
+        if (CommonGeometry.shouldFlip(axis, facingAxis)) {
+            var temp = uBounds;
+            uBounds = vBounds;
+            vBounds = temp;
+        }
+        return new float[][]{uBounds, vBounds};
+    }
+    
+    private static boolean shouldFlip(Direction.Axis axis,
+                                      Direction.Axis facingAxis
+    ) {
+        return ((axis == Direction.Axis.X && facingAxis != Direction.Axis.X) ||
+                (axis == Direction.Axis.Z && facingAxis == Direction.Axis.X));
+    }
+    
     public static void adjustUV(
             int[] vertices,
             BakedQuad quad,

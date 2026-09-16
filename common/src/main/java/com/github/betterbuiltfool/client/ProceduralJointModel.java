@@ -71,6 +71,8 @@ public class ProceduralJointModel {
         var materialModel = dispatcher.getBlockModel(material);
         var faces = new ArrayList<BakedQuad>();
         
+        var axis = direction.getAxis();
+        
         var modifedBounds = subpartTransformer.apply(bounds, direction);
         
         for (var quad : materialModel.getQuads(material, side, rand)) {
@@ -89,25 +91,14 @@ public class ProceduralJointModel {
                 
                 CommonGeometry.adjustToBounds(vertices, modifedBounds, offset);
                 
-                // Move adjustUV to CommonGeometry
-                adjustUV(quad, facing, vertices, offset, modifedBounds);
+                float[][] uvBounds = CommonGeometry.getUVBounds(axis, facing.getAxis(), bounds);
+                float[] uBounds = uvBounds[0];
+                float[] vBounds = uvBounds[1];
+                CommonGeometry.adjustUV(vertices, quad, offset, uBounds, vBounds);
             }
             faces.add(new BakedQuad(vertices, quad.getTintIndex(), facing, quad.getSprite(), quad.isShade()));
         }
         return faces;
-    }
-    
-    private static void adjustUV(BakedQuad quad,
-                                 Direction facing,
-                                 int[] vertices,
-                                 int offset,
-                                 Bounds bounds
-    ) {
-        switch (facing.getAxis()) {
-            case X -> CommonGeometry.adjustUV(vertices, quad, offset, bounds.z(), bounds.y());
-            case Y -> CommonGeometry.adjustUV(vertices, quad, offset, bounds.x(), bounds.z());
-            default -> CommonGeometry.adjustUV(vertices, quad, offset, bounds.x(), bounds.y());
-        }
     }
     
     private static Bounds calcAxisBounds(

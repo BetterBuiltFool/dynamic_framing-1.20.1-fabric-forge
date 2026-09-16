@@ -41,11 +41,10 @@ public class ProceduralFrameModel {
                 
                 CommonGeometry.adjustToBounds(vertices, bounds, offset);
                 
-                switch (facing.getAxis()) {
-                    case X -> CommonGeometry.adjustUV(vertices, quad, offset, bounds.z(), bounds.y());
-                    case Y -> CommonGeometry.adjustUV(vertices, quad, offset, bounds.x(), bounds.z());
-                    default -> CommonGeometry.adjustUV(vertices, quad, offset, bounds.x(), bounds.y());
-                }
+                float[][] uvBounds = CommonGeometry.getUVBounds(axis, facing.getAxis(), bounds);
+                float[] uBounds = uvBounds[0];
+                float[] vBounds = uvBounds[1];
+                CommonGeometry.adjustUV(vertices, quad, offset, uBounds, vBounds);
             }
             faces.add(new BakedQuad(vertices, quad.getTintIndex(), facing, quad.getSprite(), quad.isShade()));
         }

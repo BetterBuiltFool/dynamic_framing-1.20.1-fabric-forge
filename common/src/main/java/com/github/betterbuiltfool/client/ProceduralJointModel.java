@@ -14,6 +14,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.List;
 import java.util.Map;
 import java.util.function.BiFunction;
 
@@ -74,8 +75,11 @@ public class ProceduralJointModel {
         var axis = direction.getAxis();
         
         var modifedBounds = subpartTransformer.apply(bounds, direction);
-        
-        for (var quad : materialModel.getQuads(material, side, rand)) {
+        List<BakedQuad> quads = new ArrayList<>();
+        for (var dir:Direction.values()) {
+            quads.addAll(materialModel.getQuads(material, dir, rand));
+        }
+        for (var quad : quads) {
             int[] vertices = quad.getVertices()
                                  .clone();
             var facing = quad.getDirection();

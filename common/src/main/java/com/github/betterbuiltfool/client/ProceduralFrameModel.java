@@ -12,6 +12,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class ProceduralFrameModel {
     
@@ -31,7 +32,13 @@ public class ProceduralFrameModel {
         var bounds = calcAxisBounds(primary, secondary, axis, scale);
         var faces = new ArrayList<BakedQuad>();
         
-        for (var quad : materialModel.getQuads(material, side, rand)) {
+        List<BakedQuad> quads = new ArrayList<>();
+        
+        for (var dir: Direction.values()) {
+            quads.addAll(materialModel.getQuads(material, dir, rand));
+        }
+        
+        for (var quad : quads) {
             int[] vertices = quad.getVertices()
                                  .clone();
             var facing = quad.getDirection();

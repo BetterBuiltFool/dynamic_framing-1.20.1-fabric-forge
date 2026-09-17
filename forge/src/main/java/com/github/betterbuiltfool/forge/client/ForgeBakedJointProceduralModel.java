@@ -56,7 +56,7 @@ public class ForgeBakedJointProceduralModel implements IForgeBakedModel, BakedMo
                                              @NotNull ModelData data,
                                              @Nullable RenderType renderType
     ) {
-        
+        if (side != null) return List.of();
         var alignX = data.get(ALIGN_X_PROPERTY);
         var alignY = data.get(ALIGN_Y_PROPERTY);
         var alignZ = data.get(ALIGN_Z_PROPERTY);

@@ -159,7 +159,7 @@ public class ForgeBakedFrameProceduralModel implements IForgeBakedModel, BakedMo
     
     @Override
     public @NotNull ItemOverrides getOverrides() {
-        return null;
+        return ItemOverrides.EMPTY;
     }
     
     @SuppressWarnings("deprecation")

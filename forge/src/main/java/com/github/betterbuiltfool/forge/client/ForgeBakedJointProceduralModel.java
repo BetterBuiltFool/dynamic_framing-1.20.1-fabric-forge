@@ -156,7 +156,7 @@ public class ForgeBakedJointProceduralModel implements IForgeBakedModel, BakedMo
     
     @Override
     public @NotNull ItemOverrides getOverrides() {
-        return null;
+        return ItemOverrides.EMPTY;
     }
     
     @SuppressWarnings("deprecation")

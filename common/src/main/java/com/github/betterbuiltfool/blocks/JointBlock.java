@@ -7,7 +7,9 @@ import com.github.betterbuiltfool.geometry.CommonGeometry;
 import com.github.betterbuiltfool.registry.BlockEntityRegistry;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
@@ -97,6 +99,31 @@ public class JointBlock extends FrameBlock {
     @SuppressWarnings("deprecation")
     public boolean useShapeForLightOcclusion(BlockState state) {
         return true;
+    }
+    
+    @Override
+    protected void spawnDestroyParticles(Level level,
+                                         Player player,
+                                         BlockPos pos,
+                                         BlockState state
+    ) {
+        if (!level.isClientSide()) {
+            return;
+        }
+        
+        if (!(level.getBlockEntity(pos) instanceof StructureJointBlockEntity be)) {
+            super.spawnDestroyParticles(level, player, pos, state);
+            return;
+        }
+        
+        var material = be.getEdgeMaterials().values().stream().findAny().orElse(null);
+        
+        if (material == null || material.isAir()) {
+            super.spawnDestroyParticles(level, player, pos, state);
+            return;
+        }
+        
+        super.spawnDestroyParticles(level, player, pos, material);
     }
     
     private VoxelShape calcShape(BlockState state) {

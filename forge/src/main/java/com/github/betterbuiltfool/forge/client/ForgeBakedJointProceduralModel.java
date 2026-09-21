@@ -5,6 +5,7 @@ import com.github.betterbuiltfool.blocks.block_entities.Alignment;
 import com.github.betterbuiltfool.blocks.block_entities.Size;
 import com.github.betterbuiltfool.blocks.block_entities.StructureJointBlockEntity;
 import com.github.betterbuiltfool.client.ProceduralJointModel;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.block.model.ItemOverrides;
@@ -31,11 +32,14 @@ public class ForgeBakedJointProceduralModel implements IForgeBakedModel, BakedMo
     
     public ModelProperty<Map<Direction, Size>> SIZES_PROPERTY = new ModelProperty<>();
     public ModelProperty<Map<Direction, BlockState>> COPY_MATERIALS_PROPERTY = new ModelProperty<>();
+    public ModelProperty<TextureAtlasSprite> PARTICLE_SPRITE = new ModelProperty<>();
     private static final ModelProperty<Alignment> ALIGN_X_PROPERTY = new ModelProperty<>();
     private static final ModelProperty<Alignment> ALIGN_Y_PROPERTY = new ModelProperty<>();
     private static final ModelProperty<Alignment> ALIGN_Z_PROPERTY = new ModelProperty<>();
     
     public static final ForgeBakedJointProceduralModel INSTANCE = new ForgeBakedJointProceduralModel();
+    
+    private TextureAtlasSprite fallbackParticleSprite;
     
     private ForgeBakedJointProceduralModel() {
     }
@@ -75,6 +79,7 @@ public class ForgeBakedJointProceduralModel implements IForgeBakedModel, BakedMo
     }
     
     @Override
+    @SuppressWarnings("deprecation")
     public @NotNull ModelData getModelData(@NotNull BlockAndTintGetter level,
                                            @NotNull BlockPos pos,
                                            @NotNull BlockState state,
@@ -86,6 +91,7 @@ public class ForgeBakedJointProceduralModel implements IForgeBakedModel, BakedMo
         var alignZ = state.getValue(JointBlock.ALIGNMENT_TERTIARY);
         var sizes = JointBlock.getConnectionSizes(state);
         Map<Direction, BlockState> materials = new HashMap<>();
+        TextureAtlasSprite particleSprite = null;
         
         if ((level.getBlockEntity(pos) instanceof StructureJointBlockEntity be)) {
             materials = be.getEdgeMaterials();
@@ -94,6 +100,13 @@ public class ForgeBakedJointProceduralModel implements IForgeBakedModel, BakedMo
                 material != null ? material : Blocks.OAK_LOG.defaultBlockState()
                                                             .setValue(BlockStateProperties.AXIS, direction.getAxis())
             );
+            BlockState particleState = materials.values().stream().findAny().orElse(null);
+            if (particleState != null) {
+                particleSprite = Minecraft.getInstance()
+                                         .getBlockRenderer()
+                                         .getBlockModel(particleState)
+                                         .getParticleIcon();
+            }
         }
         
         return ModelData.builder()
@@ -102,6 +115,7 @@ public class ForgeBakedJointProceduralModel implements IForgeBakedModel, BakedMo
                         .with(ALIGN_Z_PROPERTY, alignZ)
                         .with(SIZES_PROPERTY, sizes)
                         .with(COPY_MATERIALS_PROPERTY, materials)
+                        .with(PARTICLE_SPRITE, particleSprite)
                         .build();
     }
     
@@ -127,11 +141,32 @@ public class ForgeBakedJointProceduralModel implements IForgeBakedModel, BakedMo
     
     @Override
     public @NotNull TextureAtlasSprite getParticleIcon() {
-        return null;
+        return getFallbackSprite();
+    }
+    
+    @Override
+    public @NotNull TextureAtlasSprite getParticleIcon(@NotNull ModelData data) {
+        var sprite = data.get(PARTICLE_SPRITE);
+        if (sprite == null) {
+            return getFallbackSprite();
+        }
+        
+        return sprite;
     }
     
     @Override
     public @NotNull ItemOverrides getOverrides() {
         return null;
+    }
+    
+    @SuppressWarnings("deprecation")
+    private TextureAtlasSprite getFallbackSprite() {
+        if (fallbackParticleSprite == null) {
+            fallbackParticleSprite = Minecraft.getInstance()
+                                              .getBlockRenderer()
+                                              .getBlockModel(Blocks.STRIPPED_OAK_LOG.defaultBlockState())
+                                              .getParticleIcon();
+        }
+        return fallbackParticleSprite;
     }
 }

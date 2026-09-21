@@ -5,6 +5,7 @@ import com.github.betterbuiltfool.blocks.block_entities.Alignment;
 import com.github.betterbuiltfool.blocks.block_entities.Size;
 import com.github.betterbuiltfool.blocks.block_entities.StructureMemberBlockEntity;
 import com.github.betterbuiltfool.client.ProceduralFrameModel;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.block.model.BakedQuad;
 import net.minecraft.client.renderer.block.model.ItemOverrides;
@@ -32,8 +33,11 @@ public class ForgeBakedFrameProceduralModel implements IForgeBakedModel, BakedMo
     private static final ModelProperty<Alignment> ALIGN_PRIMARY_PROPERTY = new ModelProperty<>();
     private static final ModelProperty<Alignment> ALIGN_SECONDARY_PROPERTY = new ModelProperty<>();
     private static final ModelProperty<BlockState> COPY_MATERIAL_PROPERTY = new ModelProperty<>();
+    public ModelProperty<TextureAtlasSprite> PARTICLE_SPRITE = new ModelProperty<>();
     
     public static final ForgeBakedFrameProceduralModel INSTANCE = new ForgeBakedFrameProceduralModel();
+    
+    private TextureAtlasSprite fallbackParticleSprite;
     
     private ForgeBakedFrameProceduralModel() {
     
@@ -72,6 +76,7 @@ public class ForgeBakedFrameProceduralModel implements IForgeBakedModel, BakedMo
     }
     
     @Override
+    @SuppressWarnings("deprecation")
     public @NotNull ModelData getModelData(
             @NotNull BlockAndTintGetter level,
             @NotNull BlockPos pos,
@@ -84,10 +89,17 @@ public class ForgeBakedFrameProceduralModel implements IForgeBakedModel, BakedMo
         var axis = state.getValue(BeamBlock.AXIS);
         var copyMaterial = Blocks.OAK_LOG.defaultBlockState()
                                          .setValue(BlockStateProperties.AXIS, axis);
+        TextureAtlasSprite particleSprite = null;
         
         if ((level.getBlockEntity(pos) instanceof StructureMemberBlockEntity be)) {
             var material = be.getMaterial();
             
+            if (material != null) {
+                particleSprite = Minecraft.getInstance()
+                                          .getBlockRenderer()
+                                          .getBlockModel(material)
+                                          .getParticleIcon();
+            }
             copyMaterial = material != null ? material : copyMaterial;
         }
         
@@ -97,6 +109,7 @@ public class ForgeBakedFrameProceduralModel implements IForgeBakedModel, BakedMo
                        .with(AXIS_PROPERTY, axis)
                        .with(SIZE_PROPERTY, scaling)
                        .with(COPY_MATERIAL_PROPERTY, copyMaterial)
+                        .with(PARTICLE_SPRITE, particleSprite)
                        .build();
     }
     
@@ -131,11 +144,32 @@ public class ForgeBakedFrameProceduralModel implements IForgeBakedModel, BakedMo
     
     @Override
     public @NotNull TextureAtlasSprite getParticleIcon() {
-        return null;
+        return getFallbackSprite();
+    }
+    
+    @Override
+    public @NotNull TextureAtlasSprite getParticleIcon(@NotNull ModelData data) {
+        var sprite = data.get(PARTICLE_SPRITE);
+        if (sprite == null) {
+            return getFallbackSprite();
+        }
+        
+        return sprite;
     }
     
     @Override
     public @NotNull ItemOverrides getOverrides() {
         return null;
+    }
+    
+    @SuppressWarnings("deprecation")
+    private TextureAtlasSprite getFallbackSprite() {
+        if (fallbackParticleSprite == null) {
+            fallbackParticleSprite = Minecraft.getInstance()
+                                              .getBlockRenderer()
+                                              .getBlockModel(Blocks.STRIPPED_OAK_LOG.defaultBlockState())
+                                              .getParticleIcon();
+        }
+        return fallbackParticleSprite;
     }
 }

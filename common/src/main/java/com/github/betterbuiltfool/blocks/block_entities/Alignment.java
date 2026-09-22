@@ -23,7 +23,7 @@ public enum Alignment implements StringRepresentable {
         return alignment;
     }
     
-    public Alignment push() {
+    public Alignment cycle() {
         return CACHE[Math.floorMod(this.ordinal() - 1, CACHE.length)];
     }
     

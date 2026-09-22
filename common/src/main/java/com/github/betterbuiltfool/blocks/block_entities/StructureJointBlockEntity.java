@@ -158,30 +158,33 @@ public class StructureJointBlockEntity extends BlockEntity {
         
         while (!toProcess.isEmpty()) {
             var pos = toProcess.dequeueLong();
-            if (visited.contains(pos)) {
-                continue;
-            }
-            if (!CoaxSelection.isCoplanar(thisPos, pos, axis)) {
-                continue;
-            }
             var blockEntity = this.level.getBlockEntity(BlockPos.of(pos));
             if (!(blockEntity instanceof StructureJointBlockEntity structureJointBlockEntity)) {
                 continue;
             }
             for (long connectedPos : structureJointBlockEntity.edges.keySet()) {
+                if (!CoaxSelection.isCoplanar(thisPos, connectedPos, axis) || visited.contains(connectedPos)) {
+                    continue;
+                }
                 toProcess.enqueue(connectedPos);
             }
             structureJointBlockEntity.push(axis);
+            visited.add(structureJointBlockEntity.worldPosition.asLong());
         }
+        visited.forEach((long jointPos) -> {
+            if (!(level.getBlockEntity(BlockPos.of(jointPos)) instanceof StructureJointBlockEntity jbe)) {
+                return;
+            }
+            jbe.sync();
+        });
     }
     
-    public void push(Direction.Axis axis) {
+    private void push(Direction.Axis axis) {
         switch (axis) {
             case X -> alignX = alignX.push();
             case Y -> alignY = alignY.push();
             case Z -> alignZ = alignZ.push();
         }
-        sync();
     }
     //endregion
     
@@ -249,8 +252,6 @@ public class StructureJointBlockEntity extends BlockEntity {
                     }
                     be.setMaterial(material);
                     be.setChanged();
-                    
-                    level.sendBlockUpdated(pos, state, state, BeamBlock.UPDATE_CLIENTS);
                 });
         
     }

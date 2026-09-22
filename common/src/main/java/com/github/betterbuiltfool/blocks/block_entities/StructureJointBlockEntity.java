@@ -145,6 +145,30 @@ public class StructureJointBlockEntity extends BlockEntity {
     
     //endregion
     //region Mutators
+    public void cycleEdgeScale(Direction direction) {
+        
+        assert this.level != null;
+        
+        var connectionPos = connections.getLong(direction);
+        var edgeProfile = getEdgeProfile(direction);
+        
+        var size = edgeProfile.size().cycle();
+        
+        var newProfile = edgeProfile.setSize(size);
+        
+        setEdgeProfile(BlockPos.of(connectionPos), newProfile);
+        setChanged();
+        sync();
+        
+        var connectedBE = level.getBlockEntity(BlockPos.of(connectionPos));
+        if (!(connectedBE instanceof StructureJointBlockEntity jbe)) return;
+        
+        jbe.setEdgeProfile(this.worldPosition, newProfile);
+        jbe.setChanged();
+        jbe.sync();
+        
+    }
+    
     public void pushAxis(Direction.Axis axis) {
         
         assert this.level != null;
@@ -181,9 +205,9 @@ public class StructureJointBlockEntity extends BlockEntity {
     
     private void push(Direction.Axis axis) {
         switch (axis) {
-            case X -> alignX = alignX.push();
-            case Y -> alignY = alignY.push();
-            case Z -> alignZ = alignZ.push();
+            case X -> alignX = alignX.cycle();
+            case Y -> alignY = alignY.cycle();
+            case Z -> alignZ = alignZ.cycle();
         }
     }
     //endregion

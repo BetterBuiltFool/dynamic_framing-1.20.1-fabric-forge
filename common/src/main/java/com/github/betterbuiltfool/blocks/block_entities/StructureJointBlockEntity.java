@@ -149,6 +149,8 @@ public class StructureJointBlockEntity extends BlockEntity {
         
         assert this.level != null;
         
+        if (!connections.containsKey(direction)) return;
+        
         var connectionPos = connections.getLong(direction);
         var edgeProfile = getEdgeProfile(direction);
         

@@ -84,7 +84,7 @@ public class ForgeBakedFrameProceduralModel implements IForgeBakedModel, BakedMo
             @NotNull ModelData modelData
     ) {
         var primary = state.getValue(BeamBlock.ALIGNMENT_PRIMARY);
-        var secondary = state.getValue(BeamBlock.ALIGNMENT_PRIMARY);
+        var secondary = state.getValue(BeamBlock.ALIGNMENT_SECONDARY);
         var scaling = state.getValue(BeamBlock.SCALING);
         var axis = state.getValue(BeamBlock.AXIS);
         var copyMaterial = Blocks.OAK_LOG.defaultBlockState()
@@ -102,7 +102,6 @@ public class ForgeBakedFrameProceduralModel implements IForgeBakedModel, BakedMo
             }
             copyMaterial = material != null ? material : copyMaterial;
         }
-        
         return ModelData.builder()
                        .with(ALIGN_PRIMARY_PROPERTY, primary)
                        .with(ALIGN_SECONDARY_PROPERTY, secondary)

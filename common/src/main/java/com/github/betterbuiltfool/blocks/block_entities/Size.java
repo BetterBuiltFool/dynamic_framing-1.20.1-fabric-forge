@@ -35,4 +35,8 @@ public enum Size implements StringRepresentable {
         return this.name()
                    .toLowerCase(Locale.ROOT);
     }
+    
+    public Size cycle() {
+        return CACHE[Math.floorMod(this.ordinal() - 1, CACHE.length)];
+    }
 }

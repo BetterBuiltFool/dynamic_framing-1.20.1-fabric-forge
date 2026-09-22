@@ -2,6 +2,7 @@ package com.github.betterbuiltfool.blocks.block_entities;
 
 import com.github.betterbuiltfool.blocks.BeamBlock;
 import com.github.betterbuiltfool.blocks.FrameBlockStateData;
+import com.github.betterbuiltfool.blocks.JointBlock;
 import com.github.betterbuiltfool.data.CoaxSelection;
 import it.unimi.dsi.fastutil.longs.*;
 import it.unimi.dsi.fastutil.objects.Object2LongMap;
@@ -16,6 +17,7 @@ import net.minecraft.nbt.Tag;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
@@ -191,8 +193,14 @@ public class StructureJointBlockEntity extends BlockEntity {
         for (var direction : this.connections.keySet()) {
             syncEdge(direction);
         }
-        this.level.sendBlockUpdated(this.worldPosition, this.getBlockState(), this.getBlockState(),
-                                    BeamBlock.UPDATE_ALL
+        var newState = this.getBlockState()
+                           .setValue(JointBlock.ALIGNMENT_PRIMARY, this.alignX)
+                           .setValue(JointBlock.ALIGNMENT_SECONDARY, this.alignY)
+                           .setValue(JointBlock.ALIGNMENT_TERTIARY, this.alignZ);
+        this.level.setBlock(
+                this.worldPosition,
+                newState,
+                Block.UPDATE_ALL
         );
     }
     
@@ -230,9 +238,11 @@ public class StructureJointBlockEntity extends BlockEntity {
                             secondary = this.alignY;
                         }
                     }
-                    state.setValue(BeamBlock.ALIGNMENT_PRIMARY, primary);
-                    state.setValue(BeamBlock.ALIGNMENT_SECONDARY, secondary);
-                    state.setValue(BeamBlock.SCALING, edgeProfile.size());
+                    var newState = state.setValue(BeamBlock.ALIGNMENT_PRIMARY, primary)
+                                        .setValue(BeamBlock.ALIGNMENT_SECONDARY, secondary)
+                                        .setValue(BeamBlock.SCALING, edgeProfile.size());
+                    
+                    level.setBlock(pos, newState, Block.UPDATE_CLIENTS);
                     
                     if (!(level.getBlockEntity(pos) instanceof StructureMemberBlockEntity be)) {
                         return;

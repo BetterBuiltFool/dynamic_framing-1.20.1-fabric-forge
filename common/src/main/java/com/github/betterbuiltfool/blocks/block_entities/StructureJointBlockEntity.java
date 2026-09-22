@@ -152,7 +152,8 @@ public class StructureJointBlockEntity extends BlockEntity {
         var connectionPos = connections.getLong(direction);
         var edgeProfile = getEdgeProfile(direction);
         
-        var size = edgeProfile.size().cycle();
+        var size = edgeProfile.size()
+                              .cycle();
         
         var newProfile = edgeProfile.setSize(size);
         
@@ -161,7 +162,9 @@ public class StructureJointBlockEntity extends BlockEntity {
         sync();
         
         var connectedBE = level.getBlockEntity(BlockPos.of(connectionPos));
-        if (!(connectedBE instanceof StructureJointBlockEntity jbe)) return;
+        if (!(connectedBE instanceof StructureJointBlockEntity jbe)) {
+            return;
+        }
         
         jbe.setEdgeProfile(this.worldPosition, newProfile);
         jbe.setChanged();
@@ -169,7 +172,7 @@ public class StructureJointBlockEntity extends BlockEntity {
         
     }
     
-    public void pushAxis(Direction.Axis axis) {
+    public void cycleAxisAlignment(Direction.Axis axis) {
         
         assert this.level != null;
         
@@ -192,7 +195,7 @@ public class StructureJointBlockEntity extends BlockEntity {
                 }
                 toProcess.enqueue(connectedPos);
             }
-            structureJointBlockEntity.push(axis);
+            structureJointBlockEntity.cycleAlignment(axis);
             visited.add(structureJointBlockEntity.worldPosition.asLong());
         }
         visited.forEach((long jointPos) -> {
@@ -203,7 +206,7 @@ public class StructureJointBlockEntity extends BlockEntity {
         });
     }
     
-    private void push(Direction.Axis axis) {
+    private void cycleAlignment(Direction.Axis axis) {
         switch (axis) {
             case X -> alignX = alignX.cycle();
             case Y -> alignY = alignY.cycle();

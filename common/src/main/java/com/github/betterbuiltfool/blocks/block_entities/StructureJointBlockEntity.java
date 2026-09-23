@@ -229,6 +229,11 @@ public class StructureJointBlockEntity extends BlockEntity {
                            .setValue(JointBlock.ALIGNMENT_PRIMARY, this.alignX)
                            .setValue(JointBlock.ALIGNMENT_SECONDARY, this.alignY)
                            .setValue(JointBlock.ALIGNMENT_TERTIARY, this.alignZ);
+        
+        for (var direction : Direction.values()) {
+            newState = setDirectionSize(newState, direction);
+        }
+        
         this.level.setBlock(
                 this.worldPosition,
                 newState,
@@ -382,4 +387,18 @@ public class StructureJointBlockEntity extends BlockEntity {
     }
     
     //endregion
+    
+    private BlockState setDirectionSize(BlockState initial,
+                                        Direction direction
+    ) {
+        var edgeProfile = getEdgeProfile(direction);
+        Size size;
+        if (edgeProfile != null) {
+            size = edgeProfile.size();
+        } else {
+            size = Size.NONE;
+        }
+        var property = JointBlock.connectionProperties.get(direction);
+        return initial.setValue(property, size);
+    }
 }

@@ -37,6 +37,10 @@ public enum Size implements StringRepresentable {
     }
     
     public Size cycle() {
-        return CACHE[Math.floorMod(this.ordinal() - 1, CACHE.length)];
+        var newSize = CACHE[Math.floorMod(this.ordinal() - 1, CACHE.length)];
+        if (newSize == NONE) {
+            newSize = newSize.cycle();
+        }
+        return newSize;
     }
 }

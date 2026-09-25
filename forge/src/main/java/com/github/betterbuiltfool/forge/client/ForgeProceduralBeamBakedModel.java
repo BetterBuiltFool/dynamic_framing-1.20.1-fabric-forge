@@ -26,7 +26,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
-public class ForgeBakedFrameProceduralModel implements IForgeBakedModel, BakedModel {
+public class ForgeProceduralBeamBakedModel implements IForgeBakedModel, BakedModel {
     
     private static final ModelProperty<Size> SIZE_PROPERTY = new ModelProperty<>();
     private static final ModelProperty<Direction.Axis> AXIS_PROPERTY = new ModelProperty<>();
@@ -35,11 +35,11 @@ public class ForgeBakedFrameProceduralModel implements IForgeBakedModel, BakedMo
     private static final ModelProperty<BlockState> COPY_MATERIAL_PROPERTY = new ModelProperty<>();
     public ModelProperty<TextureAtlasSprite> PARTICLE_SPRITE = new ModelProperty<>();
     
-    public static final ForgeBakedFrameProceduralModel INSTANCE = new ForgeBakedFrameProceduralModel();
+    public static final ForgeProceduralBeamBakedModel INSTANCE = new ForgeProceduralBeamBakedModel();
     
     private TextureAtlasSprite fallbackParticleSprite;
     
-    private ForgeBakedFrameProceduralModel() {
+    private ForgeProceduralBeamBakedModel() {
     
     }
     

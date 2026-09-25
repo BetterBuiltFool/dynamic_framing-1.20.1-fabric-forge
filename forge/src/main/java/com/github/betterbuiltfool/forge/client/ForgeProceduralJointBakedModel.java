@@ -28,7 +28,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class ForgeBakedJointProceduralModel implements IForgeBakedModel, BakedModel {
+public class ForgeProceduralJointBakedModel implements IForgeBakedModel, BakedModel {
     
     public ModelProperty<Map<Direction, Size>> SIZES_PROPERTY = new ModelProperty<>();
     public ModelProperty<Map<Direction, BlockState>> COPY_MATERIALS_PROPERTY = new ModelProperty<>();
@@ -37,11 +37,11 @@ public class ForgeBakedJointProceduralModel implements IForgeBakedModel, BakedMo
     private static final ModelProperty<Alignment> ALIGN_Y_PROPERTY = new ModelProperty<>();
     private static final ModelProperty<Alignment> ALIGN_Z_PROPERTY = new ModelProperty<>();
     
-    public static final ForgeBakedJointProceduralModel INSTANCE = new ForgeBakedJointProceduralModel();
+    public static final ForgeProceduralJointBakedModel INSTANCE = new ForgeProceduralJointBakedModel();
     
     private TextureAtlasSprite fallbackParticleSprite;
     
-    private ForgeBakedJointProceduralModel() {
+    private ForgeProceduralJointBakedModel() {
     }
     
     @Override

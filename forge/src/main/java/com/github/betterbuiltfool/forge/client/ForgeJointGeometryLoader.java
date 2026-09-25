@@ -41,7 +41,7 @@ public class ForgeJointGeometryLoader implements IGeometryLoader<ForgeJointGeome
                                ResourceLocation resourceLocation
         ) {
             DynamicFramingClientForge.LOGGER.info("Getting baked model instance");
-            return ForgeBakedJointProceduralModel.INSTANCE;
+            return ForgeProceduralJointBakedModel.INSTANCE;
         }
     }
 }

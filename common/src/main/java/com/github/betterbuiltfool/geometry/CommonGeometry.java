@@ -116,8 +116,14 @@ public class CommonGeometry {
         float localU = (u - uMin) / (uMax - uMin);
         float localV = (v - vMin) / (vMax - vMin);
         
-        float mappedU = uBounds[0] + (localU * (uBounds[1] - uBounds[0]));
-        float mappedV = vBounds[0] + (localV * (vBounds[1] - vBounds[0]));
+        float deltaU = uBounds[1] - uBounds[0];
+        float deltaV = vBounds[1] - vBounds[0];
+        
+        float centeredU = 0.5f - (deltaU/2);
+        float centeredV = 0.5f - (deltaV/2);
+        
+        float mappedU = centeredU + (localU * deltaU);
+        float mappedV = centeredV + (localV * deltaV);
         
         vertices[offset + 4] = Float.floatToRawIntBits(uMin + mappedU * (uMax - uMin));
         vertices[offset + 5] = Float.floatToRawIntBits(vMin + mappedV * (vMax - vMin));

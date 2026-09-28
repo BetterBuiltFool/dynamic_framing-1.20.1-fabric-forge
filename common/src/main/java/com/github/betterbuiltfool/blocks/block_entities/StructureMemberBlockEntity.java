@@ -68,6 +68,10 @@ public class StructureMemberBlockEntity extends BlockEntity {
         return null;
     }
     
+    public RenderData getRenderData() {
+        return new RenderData(getMaterial());
+    }
+    
     private void requestRenderUpdate() {
         if (level == null) {
             return;
@@ -120,4 +124,6 @@ public class StructureMemberBlockEntity extends BlockEntity {
     }
     
     //endregion
+    
+    public record RenderData(BlockState material) {}
 }

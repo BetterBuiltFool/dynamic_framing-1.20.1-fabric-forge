@@ -18,9 +18,11 @@ import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
 import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -115,6 +117,19 @@ public class StructureJointBlockEntity extends BlockEntity {
             materials.put(direction, edgeProfile != null ? edgeProfile.material(): null);
         }
         return materials;
+    }
+    
+    public RenderData getRenderData() {
+        var materials = getEdgeMaterials();
+        
+        materials.replaceAll((direction, material) ->
+                                     material != null ? material : Blocks.OAK_LOG.defaultBlockState()
+                                                                                 .setValue(BlockStateProperties.AXIS,
+                                                                                           direction.getAxis()
+                                                                                 )
+        );
+        
+        return new RenderData(materials);
     }
     
     public void setEdgeProfile(BlockPos connectedPos,
@@ -401,4 +416,6 @@ public class StructureJointBlockEntity extends BlockEntity {
         var property = JointBlock.connectionProperties.get(direction);
         return initial.setValue(property, size);
     }
+    
+    public record RenderData(Map<Direction, BlockState> renderMap) {}
 }

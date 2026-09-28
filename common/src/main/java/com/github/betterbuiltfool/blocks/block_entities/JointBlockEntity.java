@@ -29,7 +29,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.HashMap;
 import java.util.Map;
 
-public class StructureJointBlockEntity extends BlockEntity {
+public class JointBlockEntity extends BlockEntity {
     
     private Alignment alignX = Alignment.CENTER;
     private Alignment alignY = Alignment.CENTER;
@@ -38,9 +38,9 @@ public class StructureJointBlockEntity extends BlockEntity {
     private final Long2ObjectMap<EdgeProfile> edges = new Long2ObjectOpenHashMap<>();
     private final Object2LongMap<Direction> connections = new Object2LongOpenHashMap<>();
     
-    public StructureJointBlockEntity(BlockEntityType<?> type,
-                                     BlockPos pos,
-                                     BlockState blockState
+    public JointBlockEntity(BlockEntityType<?> type,
+                            BlockPos pos,
+                            BlockState blockState
     ) {
         super(type, pos, blockState);
     }
@@ -179,7 +179,7 @@ public class StructureJointBlockEntity extends BlockEntity {
         sync();
         
         var connectedBE = level.getBlockEntity(BlockPos.of(connectionPos));
-        if (!(connectedBE instanceof StructureJointBlockEntity jbe)) {
+        if (!(connectedBE instanceof JointBlockEntity jbe)) {
             return;
         }
         
@@ -203,20 +203,20 @@ public class StructureJointBlockEntity extends BlockEntity {
         while (!toProcess.isEmpty()) {
             var pos = toProcess.dequeueLong();
             var blockEntity = this.level.getBlockEntity(BlockPos.of(pos));
-            if (!(blockEntity instanceof StructureJointBlockEntity structureJointBlockEntity)) {
+            if (!(blockEntity instanceof JointBlockEntity jointBlockEntity)) {
                 continue;
             }
-            for (long connectedPos : structureJointBlockEntity.edges.keySet()) {
+            for (long connectedPos : jointBlockEntity.edges.keySet()) {
                 if (!CoaxSelection.isCoplanar(thisPos, connectedPos, axis) || visited.contains(connectedPos)) {
                     continue;
                 }
                 toProcess.enqueue(connectedPos);
             }
-            structureJointBlockEntity.cycleAlignment(axis);
-            visited.add(structureJointBlockEntity.worldPosition.asLong());
+            jointBlockEntity.cycleAlignment(axis);
+            visited.add(jointBlockEntity.worldPosition.asLong());
         }
         visited.forEach((long jointPos) -> {
-            if (!(level.getBlockEntity(BlockPos.of(jointPos)) instanceof StructureJointBlockEntity jbe)) {
+            if (!(level.getBlockEntity(BlockPos.of(jointPos)) instanceof JointBlockEntity jbe)) {
                 return;
             }
             jbe.sync();
@@ -296,7 +296,7 @@ public class StructureJointBlockEntity extends BlockEntity {
                     
                     level.setBlock(pos, newState, Block.UPDATE_CLIENTS);
                     
-                    if (!(level.getBlockEntity(pos) instanceof StructureMemberBlockEntity be)) {
+                    if (!(level.getBlockEntity(pos) instanceof BeamBlockEntity be)) {
                         return;
                     }
                     be.setMaterial(material);

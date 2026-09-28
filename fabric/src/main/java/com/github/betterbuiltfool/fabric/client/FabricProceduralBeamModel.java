@@ -1,8 +1,7 @@
 package com.github.betterbuiltfool.fabric.client;
 
 import com.github.betterbuiltfool.blocks.BeamBlock;
-import com.github.betterbuiltfool.blocks.block_entities.StructureJointBlockEntity;
-import com.github.betterbuiltfool.blocks.block_entities.StructureMemberBlockEntity;
+import com.github.betterbuiltfool.blocks.block_entities.BeamBlockEntity;
 import com.github.betterbuiltfool.client.ProceduralFrameModel;
 import net.fabricmc.fabric.api.renderer.v1.RendererAccess;
 import net.fabricmc.fabric.api.renderer.v1.model.FabricBakedModel;
@@ -54,7 +53,7 @@ public class FabricProceduralBeamModel implements UnbakedModel, BakedModel, Fabr
         var copyMaterial = Blocks.OAK_LOG.defaultBlockState()
                                          .setValue(BlockStateProperties.AXIS, axis);
         
-        if (blockView.getBlockEntityRenderData(pos) instanceof StructureMemberBlockEntity.RenderData renderData) {
+        if (blockView.getBlockEntityRenderData(pos) instanceof BeamBlockEntity.RenderData renderData) {
             var material = renderData.material();
             copyMaterial = material != null ? material : copyMaterial;
         }
@@ -121,7 +120,7 @@ public class FabricProceduralBeamModel implements UnbakedModel, BakedModel, Fabr
     }
     
     @Override
-    public Collection<ResourceLocation> getDependencies() {
+    public @NotNull Collection<ResourceLocation> getDependencies() {
         return List.of();
     }
     

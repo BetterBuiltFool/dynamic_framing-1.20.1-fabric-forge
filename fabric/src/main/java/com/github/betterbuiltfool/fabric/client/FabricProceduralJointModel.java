@@ -1,7 +1,7 @@
 package com.github.betterbuiltfool.fabric.client;
 
 import com.github.betterbuiltfool.blocks.JointBlock;
-import com.github.betterbuiltfool.blocks.block_entities.StructureJointBlockEntity;
+import com.github.betterbuiltfool.blocks.block_entities.JointBlockEntity;
 import com.github.betterbuiltfool.client.ProceduralJointModel;
 import net.fabricmc.fabric.api.renderer.v1.RendererAccess;
 import net.fabricmc.fabric.api.renderer.v1.model.FabricBakedModel;
@@ -46,7 +46,7 @@ public class FabricProceduralJointModel implements UnbakedModel, BakedModel, Fab
                                Supplier<RandomSource> randomSupplier,
                                RenderContext context
     ) {
-        if (!(blockView.getBlockEntityRenderData(pos) instanceof StructureJointBlockEntity.RenderData renderData)) {
+        if (!(blockView.getBlockEntityRenderData(pos) instanceof JointBlockEntity.RenderData renderData)) {
             return;
         }
         

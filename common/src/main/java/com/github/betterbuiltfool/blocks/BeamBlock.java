@@ -1,7 +1,7 @@
 package com.github.betterbuiltfool.blocks;
 
+import com.github.betterbuiltfool.blocks.block_entities.BeamBlockEntity;
 import com.github.betterbuiltfool.blocks.block_entities.Size;
-import com.github.betterbuiltfool.blocks.block_entities.StructureMemberBlockEntity;
 import com.github.betterbuiltfool.geometry.BeamGeometryData;
 import com.github.betterbuiltfool.registry.BlockEntityRegistry;
 import net.minecraft.core.BlockPos;
@@ -50,7 +50,7 @@ public class BeamBlock extends FrameBlock {
     public @Nullable BlockEntity newBlockEntity(BlockPos pos,
                                                 BlockState state
     ) {
-        return new StructureMemberBlockEntity(BlockEntityRegistry.MEMBER_ENTITY.get(), pos, state);
+        return new BeamBlockEntity(BlockEntityRegistry.MEMBER_ENTITY.get(), pos, state);
     }
     
     @Override
@@ -88,7 +88,7 @@ public class BeamBlock extends FrameBlock {
             return;
         }
         
-        if (!(level.getBlockEntity(pos) instanceof StructureMemberBlockEntity be)) {
+        if (!(level.getBlockEntity(pos) instanceof BeamBlockEntity be)) {
             super.spawnDestroyParticles(level, player, pos, state);
             return;
         }

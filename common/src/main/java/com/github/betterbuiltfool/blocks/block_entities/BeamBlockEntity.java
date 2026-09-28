@@ -17,15 +17,15 @@ import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class StructureMemberBlockEntity extends BlockEntity {
+public class BeamBlockEntity extends BlockEntity {
     
     public Direction direction;
     public BlockPos jointPos;
     private @Nullable BlockState material;
     
-    public StructureMemberBlockEntity(BlockEntityType<?> type,
-                                      BlockPos pos,
-                                      BlockState blockState
+    public BeamBlockEntity(BlockEntityType<?> type,
+                           BlockPos pos,
+                           BlockState blockState
     ) {
         super(type, pos, blockState);
     }
@@ -61,7 +61,7 @@ public class StructureMemberBlockEntity extends BlockEntity {
         assert level != null;
         if (jointPos == null) return null;
         var be = level.getBlockEntity(jointPos);
-        if (be instanceof StructureJointBlockEntity jointEntity) {
+        if (be instanceof JointBlockEntity jointEntity) {
             return jointEntity.getEdgeMaterial(direction);
         }
         

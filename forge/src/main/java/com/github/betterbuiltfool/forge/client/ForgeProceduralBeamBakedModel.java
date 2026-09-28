@@ -92,7 +92,8 @@ public class ForgeProceduralBeamBakedModel implements IForgeBakedModel, BakedMod
         TextureAtlasSprite particleSprite = null;
         
         if ((level.getBlockEntity(pos) instanceof StructureMemberBlockEntity be)) {
-            var material = be.getMaterial();
+            var material = be.getRenderData()
+                             .material();
             
             if (material != null) {
                 particleSprite = Minecraft.getInstance()

@@ -94,12 +94,8 @@ public class ForgeProceduralJointBakedModel implements IForgeBakedModel, BakedMo
         TextureAtlasSprite particleSprite = null;
         
         if ((level.getBlockEntity(pos) instanceof StructureJointBlockEntity be)) {
-            materials = be.getEdgeMaterials();
+            materials = be.getRenderData().renderMap();
             
-            materials.replaceAll((direction, material) ->
-                material != null ? material : Blocks.OAK_LOG.defaultBlockState()
-                                                            .setValue(BlockStateProperties.AXIS, direction.getAxis())
-            );
             BlockState particleState = materials.values().stream().findAny().orElse(null);
             if (particleState != null) {
                 particleSprite = Minecraft.getInstance()

@@ -112,6 +112,29 @@ public class RaycastService {
         return new GraphHit.EdgeHit(tracker.start, tracker.end, tracker.hit, tracker.minDistance);
     }
     
+    @Nullable
+    public static GraphHit.EdgeHit getClosestEdge(
+            Player player
+    ) {
+        Vec3 origin = player.getEyePosition(1.0f);
+        Vec3 direction = player.getViewVector(1.0f)
+                               .normalize();
+        
+        Level level = player.level();
+        
+        var graph = FramedStructureStorage.get(level)
+                                          .getOrCreateDimensionGraph(level.dimension());
+        
+        ChunkPos[] chunks =
+                FramedStructureStorage.getSurroundingChunks(new ChunkPos(BlockPos.containing(player.position())));
+        
+        LongSet packedPos = graph.getPackedNodesForChunk(chunks);
+        
+        NodeMap nodeMap = graph.getNodeMap(packedPos);
+        
+        return getClosestEdge(origin, direction, calcReach(player), nodeMap);
+    }
+    
     private static double calcReach(Player player) {
         return player.isCreative() ? 5 : 4.5;
     }

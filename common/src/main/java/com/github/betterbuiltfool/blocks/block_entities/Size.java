@@ -1,0 +1,46 @@
+package com.github.betterbuiltfool.blocks.block_entities;
+
+import net.minecraft.util.StringRepresentable;
+import org.jetbrains.annotations.NotNull;
+
+import java.util.Locale;
+
+// Of note: the ordinals of these value are used for bitwise mapping and unpacking, so altering the order
+// later may have consequences.
+public enum Size implements StringRepresentable {
+    QUARTER(0.25f),
+    HALF(0.5f),
+    FULL(0.75f),
+    // NONE is a sentinel value, do not use it for actual block states!
+    NONE(0.0f);
+    
+    final float thickness;
+    
+    private static final Size[] CACHE = Size.values();
+    
+    Size(float thickness) {
+        this.thickness = thickness;
+    }
+    
+    public float getThickness() {
+        return thickness;
+    }
+    
+    public static Size fromOrdinal(int ordinal) {
+        return CACHE[ordinal];
+    }
+    
+    @Override
+    public @NotNull String getSerializedName() {
+        return this.name()
+                   .toLowerCase(Locale.ROOT);
+    }
+    
+    public Size cycle() {
+        var newSize = CACHE[Math.floorMod(this.ordinal() - 1, CACHE.length)];
+        if (newSize == NONE) {
+            newSize = newSize.cycle();
+        }
+        return newSize;
+    }
+}

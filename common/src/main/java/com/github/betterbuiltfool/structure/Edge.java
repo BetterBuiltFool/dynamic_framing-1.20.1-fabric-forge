@@ -1,5 +1,6 @@
 package com.github.betterbuiltfool.structure;
 
+import com.github.betterbuiltfool.data.CoaxSelection;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import org.jetbrains.annotations.NotNull;
@@ -35,23 +36,7 @@ public record Edge(long firstPos, long secondPos, Direction.Axis axis) {
      * @return The appropriate coordinate along the edge's internal axis.
      */
     public int getCoordinate(long position) {
-        return getCoordinate(position, this.axis);
-    }
-    
-    /**
-     * Gets the BlockPos coordinate of the packed values along the specified axis.
-     * @param position A packed long position.
-     * @param axis The axis we want the coordinate along.
-     * @return The appropriate coordinate along the specified axis.
-     */
-    public static int getCoordinate(long position,
-                                     Direction.Axis axis
-    ) {
-        return switch (axis) {
-            case X -> BlockPos.getX(position);
-            case Y -> BlockPos.getY(position);
-            case Z -> BlockPos.getZ(position);
-        };
+        return CoaxSelection.getCoordinate(position, this.axis);
     }
     
     /**
@@ -106,7 +91,7 @@ public record Edge(long firstPos, long secondPos, Direction.Axis axis) {
      */
     public boolean isCoplanarTo(Edge other) {
         Direction.Axis normalAxis = getNormalAxis(other);
-        return getCoordinate(firstPos, normalAxis) == getCoordinate(other.firstPos(), normalAxis);
+        return CoaxSelection.getCoordinate(firstPos, normalAxis) == CoaxSelection.getCoordinate(other.firstPos(), normalAxis);
     }
     
     /**
@@ -136,8 +121,8 @@ public record Edge(long firstPos, long secondPos, Direction.Axis axis) {
             }
             default -> throw new IllegalArgumentException("Invalid axis");
         }
-        if (getCoordinate(this.firstPos(), firstPlanarAxis) != getCoordinate(other.firstPos, firstPlanarAxis) ||
-            getCoordinate(this.firstPos(), secondPlanarAxis) != getCoordinate(other.firstPos, secondPlanarAxis)) {
+        if (CoaxSelection.getCoordinate(this.firstPos(), firstPlanarAxis) != CoaxSelection.getCoordinate(other.firstPos, firstPlanarAxis) ||
+            CoaxSelection.getCoordinate(this.firstPos(), secondPlanarAxis) != CoaxSelection.getCoordinate(other.firstPos, secondPlanarAxis)) {
             return false;
         }
         int firstThis = getCoordinate(this.firstPos);
@@ -165,7 +150,7 @@ public record Edge(long firstPos, long secondPos, Direction.Axis axis) {
         result[this.axis.ordinal()] = this.getCoordinate(other.firstPos());
         result[other.axis()
                     .ordinal()] = other.getCoordinate(this.firstPos);
-        result[normalAxis.ordinal()] = Edge.getCoordinate(this.firstPos, normalAxis);
+        result[normalAxis.ordinal()] = CoaxSelection.getCoordinate(this.firstPos, normalAxis);
         
         return BlockPos.asLong(result[0], result[1], result[2]);
     }

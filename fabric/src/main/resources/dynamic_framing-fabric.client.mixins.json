@@ -4,7 +4,9 @@
   "package": "com.github.betterbuiltfool.fabric.mixin",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
-    "client.MixinFabricHandRenderer"
+    "client.MixinFabricHandRenderer",
+    "client.MixinJointBlockEntityAttachment",
+    "client.MixinBeamBlockEntityAttachment"
   ],
   "injectors": {
     "defaultRequire": 1

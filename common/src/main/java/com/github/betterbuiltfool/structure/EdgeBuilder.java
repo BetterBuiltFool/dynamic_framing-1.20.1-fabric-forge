@@ -1,5 +1,11 @@
 package com.github.betterbuiltfool.structure;
 
+import com.github.betterbuiltfool.blocks.BeamBlock;
+import com.github.betterbuiltfool.blocks.JointBlock;
+import com.github.betterbuiltfool.blocks.block_entities.Size;
+import com.github.betterbuiltfool.blocks.block_entities.StructureJointBlockEntity;
+import com.github.betterbuiltfool.blocks.block_entities.StructureMemberBlockEntity;
+import com.github.betterbuiltfool.registry.BlockRegistry;
 import com.github.betterbuiltfool.validation.BlockPosValidator;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -7,6 +13,7 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import org.jetbrains.annotations.NotNull;
 
@@ -22,19 +29,82 @@ public class EdgeBuilder {
         var startPos = BlockPos.of(firstPos);
         var endPos = BlockPos.of(secondPos);
         
-        var directionVector = startPos.subtract(endPos);
+        var directionVector = endPos.subtract(startPos);
         var facing = Direction.getNearest(
                 directionVector.getX(),
                 directionVector.getY(),
                 directionVector.getZ()
         );
         
-        var blockState = edgeMaterial.defaultBlockState()
+        var edgeMaterialBlockState = edgeMaterial.defaultBlockState()
                                      .setValue(BlockStateProperties.AXIS, facing.getAxis());
         
-        BlockPos.betweenClosedStream(BlockPos.of(firstPos), BlockPos.of(secondPos))
-                .filter(blockPos -> BlockPosValidator.validate(level, blockPos))
-                .forEach(pos -> level.setBlockAndUpdate(pos, blockState));
+        setEndJoint(level, startPos, endPos, edgeMaterialBlockState);
+        setEndJoint(level, endPos, startPos, edgeMaterialBlockState);
+        
+        var current = startPos.mutable();
+        var dist = startPos.distManhattan(endPos);
+        var halfway = dist / 2;
+        var opposite = facing.getOpposite();
+        for (int step = 0; step < halfway; step++) {
+            current = current.move(facing);
+            setFrameBlock(level, current, startPos, facing, edgeMaterialBlockState);
+        }
+        for (int step = halfway; step < dist - 1; step++) {
+            current = current.move(facing);
+            setFrameBlock(level, current, endPos, opposite, edgeMaterialBlockState);
+        }
+        
+    }
+    
+    private static void setFrameBlock(
+            Level level,
+            BlockPos.MutableBlockPos pos,
+            BlockPos jointPos,
+            Direction facing,
+            BlockState material
+    ) {
+        var axis = facing.getAxis();
+        BlockState state = BlockRegistry.BEAM_BLOCK.get()
+                                                   .defaultBlockState()
+                                                   .setValue(BeamBlock.AXIS, axis);
+        
+        level.setBlock(pos, state, Block.UPDATE_ALL);
+        
+        if (level.getBlockEntity(pos) instanceof StructureMemberBlockEntity be) {
+            be.setJointPos(jointPos);
+            be.setDirection(facing);
+            be.setMaterial(material);
+            be.setChanged();
+        }
+        
+    }
+    
+    private static void setEndJoint(
+            Level level,
+            BlockPos pos,
+            BlockPos connectedPos,
+            BlockState material
+    ) {
+        var state = level.getBlockState(pos);
+        
+        Block jointBlock = BlockRegistry.JOINT_BLOCK.get();
+        if (!state.is(jointBlock)) {
+            state = jointBlock.defaultBlockState();
+        }
+        var directionVector = connectedPos.subtract(pos);
+        var direction = Direction.getNearest(directionVector.getX(), directionVector.getY(), directionVector.getZ());
+        
+        var connectionProperty = JointBlock.connectionProperties.get(direction);
+        state = state.setValue(connectionProperty, Size.FULL);
+        
+        level.setBlockAndUpdate(pos, state);
+        
+        if (!(level.getBlockEntity(pos) instanceof StructureJointBlockEntity be)) {
+            return;
+        }
+        
+        be.registerConnection(connectedPos, material, Size.FULL);
         
     }
     

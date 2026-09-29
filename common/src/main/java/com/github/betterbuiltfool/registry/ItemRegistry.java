@@ -2,6 +2,7 @@ package com.github.betterbuiltfool.registry;
 
 import com.github.betterbuiltfool.DynamicFraming;
 import com.github.betterbuiltfool.items.FramingHammer;
+import com.github.betterbuiltfool.items.FroeTool;
 import dev.architectury.registry.registries.DeferredRegister;
 import dev.architectury.registry.registries.RegistrySupplier;
 import net.minecraft.core.registries.Registries;
@@ -17,12 +18,17 @@ public class ItemRegistry {
     );
     
     public static RegistrySupplier<Item> FRAMING_HAMMER;
+    public static  RegistrySupplier<Item> FROE;
     
     public static void register() {
         DynamicFraming.LOGGER.info("Registering items");
         FRAMING_HAMMER = register(
                 FramingHammer.ITEM_ID,
                 () -> new FramingHammer(new Item.Properties().arch$tab(TabRegistry.FRAMING_TOOLS).stacksTo(1))
+        );
+        FROE = register(
+                FroeTool.ITEM_ID,
+                () -> new FroeTool(new Item.Properties().arch$tab(TabRegistry.FRAMING_TOOLS).stacksTo(1))
         );
         
         ITEMS.register();

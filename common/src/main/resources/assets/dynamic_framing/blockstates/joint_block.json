@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "": {
+      "model": "dynamic_framing:block/joint_block"
+    }
+  }
+}

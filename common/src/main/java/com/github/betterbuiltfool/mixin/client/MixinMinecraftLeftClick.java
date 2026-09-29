@@ -1,7 +1,7 @@
 package com.github.betterbuiltfool.mixin.client;
 
 import com.github.betterbuiltfool.client.ClientLeftClickInterception;
-import com.github.betterbuiltfool.items.FramingHammer;
+import com.github.betterbuiltfool.items.HasLeftClickUse;
 import net.minecraft.client.Minecraft;
 import net.minecraft.world.item.ItemStack;
 import org.spongepowered.asm.mixin.Mixin;
@@ -36,8 +36,8 @@ public class MixinMinecraftLeftClick {
         
         ItemStack itemStack = player.getMainHandItem();
         
-        if (itemStack.getItem() instanceof FramingHammer hammerTool) {
-            if (hammerTool.shouldBlockMining(player, itemStack)) {
+        if (itemStack.getItem() instanceof HasLeftClickUse leftClickTool) {
+            if (leftClickTool.shouldBlockMining(player, itemStack)) {
                 callbackInfo.cancel();
             }
         }

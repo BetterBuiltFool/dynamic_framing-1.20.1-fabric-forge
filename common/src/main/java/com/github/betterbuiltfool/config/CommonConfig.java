@@ -1,12 +1,7 @@
 package com.github.betterbuiltfool.config;
 
-import me.shedaniel.clothconfig2.api.ConfigBuilder;
-import me.shedaniel.clothconfig2.api.ConfigCategory;
-import me.shedaniel.clothconfig2.api.ConfigEntryBuilder;
-import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
@@ -25,7 +20,7 @@ public class CommonConfig {
     public static Color removeSelectionColor;
     
     public static TagList<Block> blockReplaceWhitelist;
-    public static TagList<Item> structureMaterialWhitelist;
+    public static TagList<Item> structureMaterialBlacklist;
     
     static {
         unpack(new ConfigData());
@@ -39,7 +34,7 @@ public class CommonConfig {
         removeSelectionColor = new Color(data.removeSelectionColor(), false);
         
         blockReplaceWhitelist = new TagList<>(data.blockReplaceWhiteList(), Registries.BLOCK);
-        structureMaterialWhitelist = new TagList<>(data.structureMaterialWhitelist(), Registries.ITEM);
+        structureMaterialBlacklist = new TagList<>(data.structureMaterialBlacklist(), Registries.ITEM);
     }
     
     public static ConfigData pack() {
@@ -50,7 +45,7 @@ public class CommonConfig {
                 selectionColor.getRGB(),
                 removeSelectionColor.getRGB(),
                 blockReplaceWhitelist.tagStrings(),
-                structureMaterialWhitelist.tagStrings()
+                structureMaterialBlacklist.tagStrings()
         );
     }
     

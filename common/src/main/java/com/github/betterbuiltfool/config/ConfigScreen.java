@@ -41,10 +41,10 @@ public class ConfigScreen {
         
         ConfigHelper structureHelper = new ConfigHelper(structure, entryBuilder);
         structureHelper.addStringList(ModTexts.CONFIG_OPTION_STRUCTURE_MATERIAL_WHITELIST,
-                                      CommonConfig.structureMaterialWhitelist.tagStrings(),
-                                      defaults.structureMaterialWhitelist(),
+                                      CommonConfig.structureMaterialBlacklist.tagStrings(),
+                                      defaults.structureMaterialBlacklist(),
                                       val ->
-                                              CommonConfig.structureMaterialWhitelist = new CommonConfig.TagList<>(
+                                              CommonConfig.structureMaterialBlacklist = new CommonConfig.TagList<>(
                                                       val,
                                                       Registries.ITEM
                                               )

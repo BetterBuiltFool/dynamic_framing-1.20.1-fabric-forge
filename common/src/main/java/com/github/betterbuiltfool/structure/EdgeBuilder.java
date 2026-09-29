@@ -2,9 +2,9 @@ package com.github.betterbuiltfool.structure;
 
 import com.github.betterbuiltfool.blocks.BeamBlock;
 import com.github.betterbuiltfool.blocks.JointBlock;
+import com.github.betterbuiltfool.blocks.block_entities.BeamBlockEntity;
+import com.github.betterbuiltfool.blocks.block_entities.JointBlockEntity;
 import com.github.betterbuiltfool.blocks.block_entities.Size;
-import com.github.betterbuiltfool.blocks.block_entities.StructureJointBlockEntity;
-import com.github.betterbuiltfool.blocks.block_entities.StructureMemberBlockEntity;
 import com.github.betterbuiltfool.registry.BlockRegistry;
 import com.github.betterbuiltfool.validation.BlockPosValidator;
 import net.minecraft.core.BlockPos;
@@ -71,7 +71,7 @@ public class EdgeBuilder {
         
         level.setBlock(pos, state, Block.UPDATE_ALL);
         
-        if (level.getBlockEntity(pos) instanceof StructureMemberBlockEntity be) {
+        if (level.getBlockEntity(pos) instanceof BeamBlockEntity be) {
             be.setJointPos(jointPos);
             be.setDirection(facing);
             be.setMaterial(material);
@@ -100,7 +100,7 @@ public class EdgeBuilder {
         
         level.setBlockAndUpdate(pos, state);
         
-        if (!(level.getBlockEntity(pos) instanceof StructureJointBlockEntity be)) {
+        if (!(level.getBlockEntity(pos) instanceof JointBlockEntity be)) {
             return;
         }
         

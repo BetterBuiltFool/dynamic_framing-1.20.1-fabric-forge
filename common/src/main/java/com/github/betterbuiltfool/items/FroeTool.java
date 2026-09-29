@@ -1,8 +1,8 @@
 package com.github.betterbuiltfool.items;
 
 import com.github.betterbuiltfool.blocks.FrameBlock;
-import com.github.betterbuiltfool.blocks.block_entities.StructureJointBlockEntity;
-import com.github.betterbuiltfool.blocks.block_entities.StructureMemberBlockEntity;
+import com.github.betterbuiltfool.blocks.block_entities.BeamBlockEntity;
+import com.github.betterbuiltfool.blocks.block_entities.JointBlockEntity;
 import com.github.betterbuiltfool.client.ClientLocalNodes;
 import com.github.betterbuiltfool.config.CommonConfig;
 import com.github.betterbuiltfool.data.RaycastService;
@@ -221,17 +221,17 @@ public class FroeTool extends Item implements RendersOverlay, SuppressesEquipAni
         jointEntity.cycleAxisAlignment(faceAxis);
     }
     
-    private @Nullable StructureJointBlockEntity getJointEntity(Level level,
-                                                               BlockPos pos
+    private @Nullable JointBlockEntity getJointEntity(Level level,
+                                                      BlockPos pos
     ) {
         var entity = level.getBlockEntity(pos);
-        if (entity instanceof StructureMemberBlockEntity be) {
+        if (entity instanceof BeamBlockEntity be) {
             var jointPosEntity = level.getBlockEntity(be.getJointPos());
-            if (jointPosEntity instanceof StructureJointBlockEntity jbe) {
+            if (jointPosEntity instanceof JointBlockEntity jbe) {
                 return jbe;
             }
         }
-        if (entity instanceof StructureJointBlockEntity jbe) {
+        if (entity instanceof JointBlockEntity jbe) {
             return jbe;
         }
         return null;

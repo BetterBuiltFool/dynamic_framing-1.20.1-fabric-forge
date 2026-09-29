@@ -1,8 +1,8 @@
 package com.github.betterbuiltfool.blocks;
 
 import com.github.betterbuiltfool.blocks.block_entities.Alignment;
+import com.github.betterbuiltfool.blocks.block_entities.JointBlockEntity;
 import com.github.betterbuiltfool.blocks.block_entities.Size;
-import com.github.betterbuiltfool.blocks.block_entities.StructureJointBlockEntity;
 import com.github.betterbuiltfool.geometry.CommonGeometry;
 import com.github.betterbuiltfool.registry.BlockEntityRegistry;
 import net.minecraft.core.BlockPos;
@@ -66,7 +66,7 @@ public class JointBlock extends FrameBlock {
     public @Nullable BlockEntity newBlockEntity(BlockPos pos,
                                                 BlockState state
     ) {
-        return new StructureJointBlockEntity(BlockEntityRegistry.JOINT_ENTITY.get(), pos, state);
+        return new JointBlockEntity(BlockEntityRegistry.JOINT_ENTITY.get(), pos, state);
     }
     
     @Override
@@ -111,7 +111,7 @@ public class JointBlock extends FrameBlock {
             return;
         }
         
-        if (!(level.getBlockEntity(pos) instanceof StructureJointBlockEntity be)) {
+        if (!(level.getBlockEntity(pos) instanceof JointBlockEntity be)) {
             super.spawnDestroyParticles(level, player, pos, state);
             return;
         }

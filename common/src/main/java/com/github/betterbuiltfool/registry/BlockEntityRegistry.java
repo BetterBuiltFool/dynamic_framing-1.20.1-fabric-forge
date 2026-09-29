@@ -1,8 +1,8 @@
 package com.github.betterbuiltfool.registry;
 
 import com.github.betterbuiltfool.DynamicFraming;
-import com.github.betterbuiltfool.blocks.block_entities.StructureJointBlockEntity;
-import com.github.betterbuiltfool.blocks.block_entities.StructureMemberBlockEntity;
+import com.github.betterbuiltfool.blocks.block_entities.BeamBlockEntity;
+import com.github.betterbuiltfool.blocks.block_entities.JointBlockEntity;
 import dev.architectury.registry.registries.DeferredRegister;
 import dev.architectury.registry.registries.RegistrySupplier;
 import net.minecraft.core.registries.Registries;
@@ -17,18 +17,18 @@ public class BlockEntityRegistry {
             DynamicFraming.MOD_ID, Registries.BLOCK_ENTITY_TYPE
     );
     
-    public static RegistrySupplier<BlockEntityType<StructureJointBlockEntity>> JOINT_ENTITY;
-    public static RegistrySupplier<BlockEntityType<StructureMemberBlockEntity>> MEMBER_ENTITY;
+    public static RegistrySupplier<BlockEntityType<JointBlockEntity>> JOINT_ENTITY;
+    public static RegistrySupplier<BlockEntityType<BeamBlockEntity>> MEMBER_ENTITY;
     
     public static void register() {
         JOINT_ENTITY = register("joint_entity", () -> BlockEntityType.Builder.of(
-                                                                             (blockPos, blockState) -> new StructureJointBlockEntity(JOINT_ENTITY.get(), blockPos, blockState),
+                                                                             (blockPos, blockState) -> new JointBlockEntity(JOINT_ENTITY.get(), blockPos, blockState),
                                                                              BlockRegistry.JOINT_BLOCK.get()
                                                                      )
                                                                              .build(null)
         );
         MEMBER_ENTITY = register("member_entity", () -> BlockEntityType.Builder.of(
-                                                                              (blockPos, blockState) -> new StructureMemberBlockEntity(MEMBER_ENTITY.get(), blockPos, blockState),
+                                                                               (blockPos, blockState) -> new BeamBlockEntity(MEMBER_ENTITY.get(), blockPos, blockState),
                                                                               BlockRegistry.BEAM_BLOCK.get()
                                                                       )
                                                                               .build(null)

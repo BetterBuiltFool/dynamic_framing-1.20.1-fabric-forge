@@ -1,8 +1,8 @@
 package com.github.betterbuiltfool.blocks;
 
 import com.github.betterbuiltfool.blocks.block_entities.Alignment;
-import com.github.betterbuiltfool.blocks.block_entities.StructureJointBlockEntity;
-import com.github.betterbuiltfool.blocks.block_entities.StructureMemberBlockEntity;
+import com.github.betterbuiltfool.blocks.block_entities.BeamBlockEntity;
+import com.github.betterbuiltfool.blocks.block_entities.JointBlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.BlockGetter;
@@ -38,10 +38,12 @@ public abstract class FrameBlock extends Block implements EntityBlock {
             BlockPos pos
     ) {
         var blockEntity = level.getBlockEntity(pos);
-        if (!(blockEntity instanceof StructureMemberBlockEntity structureBE)) return null;
+        if (!(blockEntity instanceof BeamBlockEntity structureBE)) {
+            return null;
+        }
         var jointPos = structureBE.getJointPos();
         
-        if (!(level.getBlockEntity(jointPos) instanceof StructureJointBlockEntity jbEntity)) {
+        if (!(level.getBlockEntity(jointPos) instanceof JointBlockEntity jbEntity)) {
             return null;
         }
         return jbEntity.getEdgeProfile(structureBE.getDirection())
@@ -49,7 +51,7 @@ public abstract class FrameBlock extends Block implements EntityBlock {
     }
     
     @Override
-    @Deprecated
+    @SuppressWarnings("deprecation")
     public float getDestroyProgress(BlockState state,
                                     Player player,
                                     BlockGetter level,

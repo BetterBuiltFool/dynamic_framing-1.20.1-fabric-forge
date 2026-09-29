@@ -2,8 +2,8 @@ package com.github.betterbuiltfool.forge.client;
 
 import com.github.betterbuiltfool.blocks.BeamBlock;
 import com.github.betterbuiltfool.blocks.block_entities.Alignment;
+import com.github.betterbuiltfool.blocks.block_entities.BeamBlockEntity;
 import com.github.betterbuiltfool.blocks.block_entities.Size;
-import com.github.betterbuiltfool.blocks.block_entities.StructureMemberBlockEntity;
 import com.github.betterbuiltfool.client.ProceduralFrameModel;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderType;
@@ -91,8 +91,9 @@ public class ForgeProceduralBeamBakedModel implements IForgeBakedModel, BakedMod
                                          .setValue(BlockStateProperties.AXIS, axis);
         TextureAtlasSprite particleSprite = null;
         
-        if ((level.getBlockEntity(pos) instanceof StructureMemberBlockEntity be)) {
-            var material = be.getMaterial();
+        if ((level.getBlockEntity(pos) instanceof BeamBlockEntity be)) {
+            var material = be.getRenderData()
+                             .material();
             
             if (material != null) {
                 particleSprite = Minecraft.getInstance()

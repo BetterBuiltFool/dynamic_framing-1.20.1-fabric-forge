@@ -2,8 +2,8 @@ package com.github.betterbuiltfool.forge.client;
 
 import com.github.betterbuiltfool.blocks.JointBlock;
 import com.github.betterbuiltfool.blocks.block_entities.Alignment;
+import com.github.betterbuiltfool.blocks.block_entities.JointBlockEntity;
 import com.github.betterbuiltfool.blocks.block_entities.Size;
-import com.github.betterbuiltfool.blocks.block_entities.StructureJointBlockEntity;
 import com.github.betterbuiltfool.client.ProceduralJointModel;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.RenderType;
@@ -17,7 +17,6 @@ import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraftforge.client.extensions.IForgeBakedModel;
 import net.minecraftforge.client.model.data.ModelData;
 import net.minecraftforge.client.model.data.ModelProperty;
@@ -93,13 +92,9 @@ public class ForgeProceduralJointBakedModel implements IForgeBakedModel, BakedMo
         Map<Direction, BlockState> materials = new HashMap<>();
         TextureAtlasSprite particleSprite = null;
         
-        if ((level.getBlockEntity(pos) instanceof StructureJointBlockEntity be)) {
-            materials = be.getEdgeMaterials();
+        if ((level.getBlockEntity(pos) instanceof JointBlockEntity be)) {
+            materials = be.getRenderData().renderMap();
             
-            materials.replaceAll((direction, material) ->
-                material != null ? material : Blocks.OAK_LOG.defaultBlockState()
-                                                            .setValue(BlockStateProperties.AXIS, direction.getAxis())
-            );
             BlockState particleState = materials.values().stream().findAny().orElse(null);
             if (particleState != null) {
                 particleSprite = Minecraft.getInstance()

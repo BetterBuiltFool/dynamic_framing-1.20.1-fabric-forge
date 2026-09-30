@@ -127,6 +127,8 @@ public class FroeTool extends Item implements RendersOverlay, SuppressesEquipAni
                                           Player player,
                                           InteractionHand interactionHand
     ) {
+        if (!player.isShiftKeyDown()) return InteractionResult.PASS;
+        
         var pos = getLookPos(player, level);
         
         if (!level.isClientSide()) {

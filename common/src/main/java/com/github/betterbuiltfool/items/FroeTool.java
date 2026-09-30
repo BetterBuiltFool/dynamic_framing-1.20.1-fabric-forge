@@ -5,6 +5,7 @@ import com.github.betterbuiltfool.blocks.block_entities.BeamBlockEntity;
 import com.github.betterbuiltfool.blocks.block_entities.JointBlockEntity;
 import com.github.betterbuiltfool.client.ClientLocalNodes;
 import com.github.betterbuiltfool.config.CommonConfig;
+import com.github.betterbuiltfool.data.FramedStructureStorage;
 import com.github.betterbuiltfool.data.RaycastService;
 import com.github.betterbuiltfool.items.nbtHelper.FroeData;
 import com.github.betterbuiltfool.structure.EdgeBuilder;
@@ -109,6 +110,14 @@ public class FroeTool extends Item implements RendersOverlay, SuppressesEquipAni
         }
         if (!level.isClientSide()) {
             EdgeBuilder.build(level, selection.posA(), selection.posB(), offhandBlockItem.getBlock());
+            
+            var storage = FramedStructureStorage.get(level);
+            var graph = storage.getDimensionGraph(level.dimension());
+            
+            graph.remove(selection.posA(), selection.posB());
+            storage.setDirty();
+            
+            froeTool.clearSelection();
         }
         return InteractionResultHolder.success(stack);
     }

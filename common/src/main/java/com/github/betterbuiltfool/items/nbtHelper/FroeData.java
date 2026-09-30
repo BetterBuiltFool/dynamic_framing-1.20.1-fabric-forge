@@ -66,6 +66,11 @@ public class FroeData {
         GraphHitNbtData.saveGraphHit(this.containerTag, this.selection);
     }
     
+    public void clearSelection() {
+        this.selection = null;
+        GraphHitNbtData.saveGraphHit(this.containerTag, null);
+    }
+    
     //region Private NBT Modifiers
     @Nullable
     private Long getPos(

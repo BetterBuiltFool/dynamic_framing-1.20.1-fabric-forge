@@ -24,7 +24,7 @@ public class ModTranslationRegister {
         provider.add(Category.CONFIG, "option", "remove_selection_color", "Remove Selection Color");
         
         provider.add(Category.CONFIG, "option", "block_replacement_whitelist", "Block Replacement Whitelist");
-        provider.add(Category.CONFIG, "option", "structure_material_whitelist", "Valid Structure Materials");
+        provider.add(Category.CONFIG, "option", "structure_material_blacklist", "Structure Material Blacklist");
         
     }
 }

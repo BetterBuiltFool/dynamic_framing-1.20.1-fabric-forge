@@ -40,7 +40,7 @@ public class ConfigScreen {
         );
         
         ConfigHelper structureHelper = new ConfigHelper(structure, entryBuilder);
-        structureHelper.addStringList(ModTexts.CONFIG_OPTION_STRUCTURE_MATERIAL_WHITELIST,
+        structureHelper.addStringList(ModTexts.CONFIG_OPTION_STRUCTURE_MATERIAL_BLACKLIST,
                                       CommonConfig.structureMaterialBlacklistStrings,
                                       defaults.structureMaterialBlacklist(),
                                       val -> {

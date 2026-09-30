@@ -130,7 +130,7 @@ public class EdgeBuilder {
      * @param offhandItem  The item type to be removed, and secondary source of raw materials
      * @param materialCost The total amount of materials to be extracted.
      */
-    private void removeMaterialCost(
+    public static void removeMaterialCost(
             @NotNull Inventory inventory,
             @NotNull ItemStack offhandItem,
             int materialCost

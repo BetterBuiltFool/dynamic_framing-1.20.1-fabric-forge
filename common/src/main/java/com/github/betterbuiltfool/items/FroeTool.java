@@ -100,10 +100,15 @@ public class FroeTool extends Item implements RendersOverlay, SuppressesEquipAni
         if (offhandBlockItem == null) {
             return InteractionResultHolder.pass(stack);
         }
-        // TODO: Check inventory amount of offhandItem;
+        int materialRequirements = EdgeBuilder.getMaterialCost(level, selection.posA(), selection.posB());
+        if (!player.isCreative()) {
+            if (player.getInventory().countItem(offhandItem.getItem()) < materialRequirements) {
+                return InteractionResultHolder.pass(stack);
+            }
+            EdgeBuilder.removeMaterialCost(player.getInventory(), offhandItem, materialRequirements);
+        }
         if (!level.isClientSide()) {
             EdgeBuilder.build(level, selection.posA(), selection.posB(), offhandBlockItem.getBlock());
-            // TODO: Handle inventory adjustment
         }
         return InteractionResultHolder.success(stack);
     }

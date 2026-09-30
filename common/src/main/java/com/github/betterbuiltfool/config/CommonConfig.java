@@ -1,16 +1,19 @@
 package com.github.betterbuiltfool.config;
 
 import net.minecraft.core.Registry;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Predicate;
 
 public class CommonConfig {
     public static Color lineColor;
@@ -20,7 +23,9 @@ public class CommonConfig {
     public static Color removeSelectionColor;
     
     public static TagList<Block> blockReplaceWhitelist;
-    public static TagList<Item> structureMaterialBlacklist;
+    
+    public static List<String> structureMaterialBlacklistStrings;
+    public final static List<Predicate<ItemStack>> structureMaterialBlacklist = new ArrayList<>();
     
     static {
         unpack(new ConfigData());
@@ -34,7 +39,8 @@ public class CommonConfig {
         removeSelectionColor = new Color(data.removeSelectionColor(), false);
         
         blockReplaceWhitelist = new TagList<>(data.blockReplaceWhiteList(), Registries.BLOCK);
-        structureMaterialBlacklist = new TagList<>(data.structureMaterialBlacklist(), Registries.ITEM);
+        structureMaterialBlacklistStrings = data.structureMaterialBlacklist();
+        parseStructureMaterialBlacklist(structureMaterialBlacklist, structureMaterialBlacklistStrings);
     }
     
     public static ConfigData pack() {
@@ -45,8 +51,47 @@ public class CommonConfig {
                 selectionColor.getRGB(),
                 removeSelectionColor.getRGB(),
                 blockReplaceWhitelist.tagStrings(),
-                structureMaterialBlacklist.tagStrings()
+                structureMaterialBlacklistStrings
         );
+    }
+    
+    public static void parseStructureMaterialBlacklist(List<Predicate<ItemStack>> blacklist,
+                                                       List<String> entries
+    ) {
+        blacklist.clear();
+        
+        for (var entry : entries) {
+            String value = entry.trim();
+            
+            if (value.isEmpty()) {
+                continue;
+            }
+            
+            boolean isExplicitTag = entry.startsWith("#");
+            
+            if (isExplicitTag) {
+                entry = entry.substring(1);
+            }
+            
+            ResourceLocation id = ResourceLocation.tryParse(entry);
+            
+            if (id == null) {
+                continue;
+            }
+            
+            if (isExplicitTag) {
+                TagKey<Item> tagKey = TagKey.create(Registries.ITEM, id);
+                blacklist.add(stack -> stack.is(tagKey));
+            } else if (BuiltInRegistries.ITEM.containsKey(id)) {
+                Item item = BuiltInRegistries.ITEM.get(id);
+                blacklist.add(stack -> stack.is(item));
+            } else {
+                // Implicit tag
+                TagKey<Item> tagKey = TagKey.create(Registries.ITEM, id);
+                blacklist.add(stack -> stack.is(tagKey));
+            }
+        }
+        
     }
     
     public record TagList<T> (List<String> tagStrings, List<TagKey<T>> tags) {

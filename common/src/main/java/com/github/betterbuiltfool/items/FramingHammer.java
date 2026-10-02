@@ -1,6 +1,7 @@
 package com.github.betterbuiltfool.items;
 
 import com.github.betterbuiltfool.DynamicFraming;
+import com.github.betterbuiltfool.blocks.FrameBlock;
 import com.github.betterbuiltfool.client.ClientLocalNodes;
 import com.github.betterbuiltfool.config.CommonConfig;
 import com.github.betterbuiltfool.data.CoaxSelection;
@@ -27,6 +28,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
 import net.minecraft.world.level.ClipContext;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -140,8 +142,8 @@ public class FramingHammer extends Item implements RendersOverlay, SuppressesEqu
         var ray = getPlayerPOVHitResult(level, player, ClipContext.Fluid.NONE);
         BlockPos lookPos;
         var hitPos = ray.getBlockPos();
-        if (level.getBlockState(hitPos)
-                 .isAir()) {
+        BlockState lookState = level.getBlockState(hitPos);
+        if (lookState.isAir() || lookState.getBlock() instanceof FrameBlock) {
             lookPos = hitPos;
         } else {
             lookPos = hitPos.relative(ray.getDirection());

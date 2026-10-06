@@ -1,6 +1,7 @@
 package com.github.betterbuiltfool.blocks;
 
 import com.github.betterbuiltfool.blocks.block_entities.Alignment;
+import com.github.betterbuiltfool.blocks.block_entities.EdgeProfile;
 import com.github.betterbuiltfool.blocks.block_entities.JointBlockEntity;
 import com.github.betterbuiltfool.blocks.block_entities.Size;
 import com.github.betterbuiltfool.geometry.CommonGeometry;
@@ -60,6 +61,17 @@ public class JointBlock extends FrameBlock {
                                       .setValue(DOWN, Size.NONE)
                                       .setValue(ALIGNMENT_TERTIARY, Alignment.CENTER)
         );
+    }
+    
+    public static void removeConnection(
+            Level level,
+            BlockPos posA,
+            BlockPos posB
+    ) {
+        if (!(level.getBlockEntity(posA) instanceof JointBlockEntity jbe)) {
+            return;
+        }
+        jbe.removeConnection(posB.asLong());
     }
     
     @Override
@@ -147,6 +159,17 @@ public class JointBlock extends FrameBlock {
         }
         
         return shape;
+    }
+    
+    public static @Nullable EdgeProfile getEdgeProfile(
+            Level level,
+            BlockPos pos,
+            Direction direction
+    ) {
+        if (!(level.getBlockEntity(pos) instanceof JointBlockEntity jbe)) {
+            return null;
+        }
+        return jbe.getEdgeProfile(direction);
     }
     
     public static Map<Direction, Size> getConnectionSizes(BlockState state) {

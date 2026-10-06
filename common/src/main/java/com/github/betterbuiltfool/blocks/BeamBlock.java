@@ -4,6 +4,7 @@ import com.github.betterbuiltfool.blocks.block_entities.BeamBlockEntity;
 import com.github.betterbuiltfool.blocks.block_entities.Size;
 import com.github.betterbuiltfool.geometry.BeamGeometryData;
 import com.github.betterbuiltfool.registry.BlockEntityRegistry;
+import com.github.betterbuiltfool.structure.Edge;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.entity.player.Player;
@@ -101,6 +102,16 @@ public class BeamBlock extends FrameBlock {
         }
         
         super.spawnDestroyParticles(level, player, pos, material);
+    }
+    
+    public static @Nullable Edge getEdge(Level level, BlockPos pos) {
+        if (!(level.getBlockEntity(pos) instanceof BeamBlockEntity be)) return null;
+        return be.getEdge();
+    }
+    
+    public static void setJoint(Level level, BlockPos pos, BlockPos jointPos) {
+        if (!(level.getBlockEntity(pos) instanceof BeamBlockEntity be)) return;
+        be.jointPos = jointPos;
     }
     
     private VoxelShape calcShape(BlockState state) {

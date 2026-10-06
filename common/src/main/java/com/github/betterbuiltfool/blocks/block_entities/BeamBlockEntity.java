@@ -1,5 +1,6 @@
 package com.github.betterbuiltfool.blocks.block_entities;
 
+import com.github.betterbuiltfool.structure.Edge;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -52,6 +53,16 @@ public class BeamBlockEntity extends BlockEntity {
     
     public BlockPos getJointPos() {
         return jointPos;
+    }
+    
+    public @Nullable Edge getEdge() {
+        if (level == null || jointPos == null) return null;
+        
+        if (level.getBlockEntity(jointPos) instanceof JointBlockEntity jbe) {
+            var connectionPos = jbe.getConnection(direction);
+            return new Edge(jointPos.asLong(), connectionPos);
+        }
+        return null;
     }
     
     public @Nullable BlockState getMaterial() {

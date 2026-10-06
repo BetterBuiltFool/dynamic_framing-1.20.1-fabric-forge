@@ -72,6 +72,13 @@ public class JointBlockEntity extends BlockEntity {
         sync();
     }
     
+    public void removeConnection(long position) {
+        if (!edges.containsKey(position)) return;
+        var edgeProfile = edges.get(position);
+        edges.remove(position);
+        connections.removeLong(edgeProfile.direction());
+    }
+    
     //endregion
     //region Accessors
     
@@ -85,6 +92,10 @@ public class JointBlockEntity extends BlockEntity {
     
     public Alignment getAlignZ() {
         return alignZ;
+    }
+    
+    public long getConnection(Direction direction) {
+        return connections.getLong(direction);
     }
     
     public EdgeProfile getEdgeProfile(BlockPos connectedPos) {

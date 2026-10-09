@@ -43,17 +43,46 @@ public class EdgeBuilder {
         
         var edgeMaterialBlockState = edgeMaterial.defaultBlockState()
                                      .setValue(BlockStateProperties.AXIS, facing.getAxis());
-        
+        startPos = getEndpoint(level, startPos, facing.getOpposite(), edgeMaterialBlockState);
+        endPos = getEndpoint(level, endPos, facing, edgeMaterialBlockState);
         setEndJoint(level, startPos, endPos, edgeMaterialBlockState);
         setEndJoint(level, endPos, startPos, edgeMaterialBlockState);
         
+        BlockPos finalStartPos = startPos;
+        BlockPos finalEndPos = endPos;
         edgeWalk(
                 startPos,
                 endPos,
                 facing,
-                mutPos -> setFrameBlock(level, mutPos, startPos, facing, edgeMaterialBlockState),
-                mutPos -> setFrameBlock(level, mutPos, endPos, facing, edgeMaterialBlockState)
+                mutPos -> setFrameBlock(level, mutPos, finalStartPos, facing, edgeMaterialBlockState),
+                mutPos -> setFrameBlock(level, mutPos, finalEndPos, facing, edgeMaterialBlockState)
         );
+    }
+    
+    private static BlockPos getEndpoint(
+            Level level,
+            BlockPos pos,
+            Direction direction,
+            BlockState edgeMaterialBlockState
+    ) {
+        
+        BlockState state = level.getBlockState(pos);
+        if (!state.is(BlockRegistry.JOINT_BLOCK.get())) {
+            return pos;
+        }
+        if (!(level.getBlockEntity(pos) instanceof JointBlockEntity be)) {
+            return pos;
+        }
+        if (be.getConnectionCount() != 1) {
+            return pos;
+        }
+        if (!be.hasConnection(direction)) {
+            return pos;
+        }
+        if (be.getEdgeMaterial(direction) != edgeMaterialBlockState) {
+            return pos;
+        }
+        return BlockPos.of(be.getConnection(direction));
     }
     
     public static void edgeWalk(

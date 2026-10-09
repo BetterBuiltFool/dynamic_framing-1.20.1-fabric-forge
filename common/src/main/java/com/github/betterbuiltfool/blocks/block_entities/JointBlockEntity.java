@@ -94,8 +94,16 @@ public class JointBlockEntity extends BlockEntity {
         return alignZ;
     }
     
+    public int getConnectionCount() {
+        return connections.size();
+    }
+    
     public long getConnection(Direction direction) {
         return connections.getLong(direction);
+    }
+    
+    public boolean hasConnection(Direction direction) {
+        return connections.containsKey(direction);
     }
     
     public EdgeProfile getEdgeProfile(BlockPos connectedPos) {
